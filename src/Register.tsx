@@ -8,7 +8,8 @@ import React from "react";
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import {CardMedia} from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
+import Api from "./Api";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -59,10 +60,6 @@ function validatePwd(pwd: string): boolean {
     return number && upper && special;
 }
 
-function submitRegister(arg: any) {
-    console.log(arg)
-}
-
 export function Register() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
@@ -77,21 +74,32 @@ export function Register() {
         setPassword(event.target.value)
     }
 
+    async function register() {
+        try {
+            await Api.register(email, password);
+            setRedirect(true)
+        } catch (e) {
+
+        }
+    }
+
     const validPwd: boolean = validatePwd(password);
+
+    if (redirect) {
+        return <Redirect to={{ pathname: "/login" }} />
+    }
 
     return <Card className={classes.root} elevation={5}>
         <CardMedia component={"img"} image={"/diary.jpg"} title={"diary"}/>
         <CardHeader title={"Encrypted Diary"} subheader={"So your private thoughts stay private"}/>
         <CardContent>
-            <form onSubmit={submitRegister}>
                 <TextField className={classes.field} required label="Email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
                 <TextField className={classes.field} value={password} onChange={onChangePassword} variant="outlined" error={!validPwd} required label="Password" type="password"
                            helperText={"Minimum eight characters, at least one uppercase letter, " +
                            "one lowercase letter, one number and one special character"}/>
-            </form>
         </CardContent>
         <CardActions className={classes.action}>
-            <Button className={classes.button} variant={"contained"} color={"primary"}>Register</Button>
+            <Button className={classes.button} variant={"contained"} color={"primary"} onClick={register}>Register</Button>
             <Divider className={classes.divider}/>
             <Link to={"/login"}>Log in here</Link>
         </CardActions>

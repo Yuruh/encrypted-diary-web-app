@@ -15,7 +15,7 @@ import {
     createMuiTheme,
     ThemeProvider,
 } from '@material-ui/core/styles';
-import {blueGrey, deepOrange, deepPurple, grey, purple} from "@material-ui/core/colors";
+import {blueGrey, deepPurple} from "@material-ui/core/colors";
 import {Register} from "./Register";
 
 // @ts-ignore
@@ -108,35 +108,6 @@ function LoginPage() {
             <Button onClick={login}>Login</Button>
             <Link to={"/register"}>Register here</Link>
         </div>
-    )
-}
-
-function AuthSpotifyPage() {
-    function useQuery() {
-        return new URLSearchParams(useLocation().search);
-    }
-
-    const [redirectTo, setRedirectTo] = React.useState("");
-
-    const query = useQuery();
-
-    const code = query.get("code");
-    const state = query.get("state");
-
-    if (!code || ! state) {
-        return <p>Invalid params</p>
-    }
-    if (redirectTo === "") {
-        Api.registerSpotify(code, state)
-            .then(() => setRedirectTo("/"))
-            .catch();
-    }
-    if (redirectTo !== "") {
-        return <Redirect to={{ pathname: "/" }} />
-    }
-
-    return (
-        <div>Ongoing validation</div>
     )
 }
 

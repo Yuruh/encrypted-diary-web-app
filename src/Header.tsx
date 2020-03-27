@@ -31,7 +31,7 @@ export default function Header() {
                     <MenuIcon/>
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
-                    Self Tracker
+                    Encrypted diary
                 </Typography>
                 <Button color="inherit" onClick={() => console.log("todo")}>Logout</Button>
             </Toolbar>
