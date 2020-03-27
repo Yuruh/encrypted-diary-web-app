@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import CryptoJS, {WordArray} from "crypto-js";
+import {Entry} from "./models/Entry";
 const pbkdf2 = require('pbkdf2');
 
 
@@ -62,27 +63,59 @@ function taast() {
     return derivedKey*/
 }
 
-taast()
-
 export default class Api {
 
     static token: string | null = localStorage.getItem("token");
-    static encryptionKey: string;
+    static encryptionKey: string | null = process.env.NODE_ENV === "development" ? localStorage.getItem("key") : null;
 
     static axiosInstance = axios.create({
         baseURL: process.env.REACT_APP_API_URL || "http://localhost:8090",
         headers: {'Content-Type' : 'application/json', "Authorization": "Bearer " + Api.token}
     });
-
-    static getSpotifyUrl() {
-        return this.axiosInstance.get("/spotify/url")
-    }
-
     static register(email: string, pwd: string) {
         return this.axiosInstance.post("/register", {
             email,
             password: pwd
         });
+    }
+
+    static async getEntry(entryId: number | string) {
+        if (!this.encryptionKey) {
+            throw new Error("encryption key undefined");
+        }
+        const response = await this.axiosInstance.get("/entries/" + entryId);
+        response.data.entry.content = decrypt(response.data.entry.content, this.encryptionKey);
+        return response
+    }
+
+    static getEntries(limit?: number, page?: number) {
+        return this.axiosInstance.get("/entries", {
+            params: {
+                limit,
+                page,
+            }
+        })
+    }
+
+    static addEntry(entry: Entry) {
+        if (!this.encryptionKey) {
+            throw new Error("encryption key undefined");
+        }
+        entry.content = encrypt(entry.content, this.encryptionKey);
+        return this.axiosInstance.post("/entries", entry);
+    }
+
+    // expect a decrypted entry
+    static editEntry(entry: Entry) {
+        if (!this.encryptionKey) {
+            throw new Error("encryption key undefined");
+        }
+        entry.content = encrypt(entry.content, this.encryptionKey);
+        return this.axiosInstance.put("/entries/" + entry.id, entry)
+    }
+
+    static deleteEntry(entryId: number | string) {
+        return this.axiosInstance.delete("/entries/" + entryId)
     }
 
     static async login(email: string, pwd: string) {
@@ -96,6 +129,9 @@ export default class Api {
             localStorage.setItem("token", String(this.token));
 
             this.encryptionKey = generateEncryptionKey(pwd)
+            if (process.env.NODE_ENV === "development") {
+                localStorage.setItem("key", String(this.encryptionKey));
+            }
         } catch (e) {
             console.log(e);
         }

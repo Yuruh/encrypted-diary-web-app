@@ -17,6 +17,7 @@ import {
 } from '@material-ui/core/styles';
 import {blueGrey, deepPurple} from "@material-ui/core/colors";
 import {Register} from "./Register";
+import EntryPage from "./EntryPage";
 
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -25,8 +26,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
         if (!token) {
             // not logged in so redirect to login page with the return url
             return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
-        } else {
-            console.log("Attempt to access a private route worked")
         }
 
         // authorised so return component
@@ -46,7 +45,7 @@ const App = () => {
       <Router>
           <ThemeProvider theme={theme}>
               <div>
-                  {/* A <Switch> looks through its children <Route>s and
+                  {/* <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
                   <Switch>
                       <Route path="/login">
@@ -64,6 +63,7 @@ const App = () => {
                                   </div>
                               </div>
                       </Route>
+                      <PrivateRoute component={EntryPage} path="/entry/:id"/>
                       <PrivateRoute component={HomePage} path="/"/>
                   </Switch>
               </div>
