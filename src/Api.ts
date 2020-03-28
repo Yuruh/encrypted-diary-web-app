@@ -65,7 +65,7 @@ function taast() {
 
 export default class Api {
 
-    static token: string | null = localStorage.getItem("token");
+    static token: string | null = process.env.NODE_ENV === "development" ? localStorage.getItem("token"): null;
     static encryptionKey: string | null = process.env.NODE_ENV === "development" ? localStorage.getItem("key") : null;
 
     static axiosInstance = axios.create({
@@ -126,10 +126,10 @@ export default class Api {
             });
             this.token = response.data.token;
             this.axiosInstance.defaults.headers.Authorization = "Bearer " + this.token;
-            localStorage.setItem("token", String(this.token));
 
-            this.encryptionKey = generateEncryptionKey(pwd)
+            this.encryptionKey = generateEncryptionKey(pwd);
             if (process.env.NODE_ENV === "development") {
+                localStorage.setItem("token", String(this.token));
                 localStorage.setItem("key", String(this.encryptionKey));
             }
         } catch (e) {
