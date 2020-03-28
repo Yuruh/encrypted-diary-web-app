@@ -15,7 +15,7 @@ import {
     createMuiTheme,
     ThemeProvider,
 } from '@material-ui/core/styles';
-import {blueGrey, deepPurple} from "@material-ui/core/colors";
+import {blueGrey, deepPurple, indigo} from "@material-ui/core/colors";
 import {Register} from "./Register";
 import EntryPage from "./EntryPage";
 
@@ -35,7 +35,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 
 const theme = createMuiTheme({
     palette: {
-        primary: deepPurple,
+        primary: indigo,
         secondary: blueGrey
     },
 } as any);

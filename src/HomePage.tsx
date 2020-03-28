@@ -93,7 +93,7 @@ export default function HomePage() {
         <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={() => {
             const entry: Entry = new Entry()
             entry.title = "title " + Math.random() * 12;
-            entry.content = "Le contenu de l'entry";
+            entry.content = "# Le contenu de l'entry  coucou";
             Api.addEntry(entry);
         }}>
             <AddIcon/>
