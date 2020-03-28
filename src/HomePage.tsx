@@ -14,7 +14,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {Edit, Visibility} from "@material-ui/icons";
 import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function HomePage() {
     const classes = useStyles({});
+    const history = useHistory();
 
     const [entries, setEntries] = React.useState<Entry[]>([]);
     const [fetching, setFetching] = React.useState(false);
@@ -64,7 +65,7 @@ export default function HomePage() {
     }
 
     if (redirect != "") {
-        return <Redirect to={{pathname: redirect}}/>
+        history.push(redirect);
     }
 
     return <div>
