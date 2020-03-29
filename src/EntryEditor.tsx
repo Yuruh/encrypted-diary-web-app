@@ -29,7 +29,8 @@ const styles = (theme: Theme) => createStyles({
     },
     preview: {
         height: "100%",
-        padding: 5
+        padding: 5,
+        overflowWrap: "anywhere"
     },
     fab: {
         margin: 0,
@@ -170,7 +171,8 @@ class EntryEditor extends React.Component<IProps, IState> {
                         <CodeMirror value={this.state.entry.content} onBeforeChange={this.changeEntryContent} options={{
                             mode: "markdown",
                             theme: 'material',
-                            autofocus: true
+                            autofocus: true,
+                            lineWrapping: true
                         }}/>
                     </Paper>
                 </Grid>
