@@ -1,22 +1,25 @@
 import React, {ChangeEvent} from "react"
-import {createStyles, Theme, WithStyles} from "@material-ui/core";
-import {Entry} from "./models/Entry";
-import Api from "./Api";
+import {createStyles, IconButton, Theme, WithStyles} from "@material-ui/core";
+import {Entry} from "../models/Entry";
+import Api from "../Api";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {Controlled as CodeMirror} from "react-codemirror2";
 import Fab from "@material-ui/core/Fab";
-import {Clear, Done} from "@material-ui/icons";
+import {Clear, Done, Edit, Visibility} from "@material-ui/icons";
 import withStyles from "@material-ui/core/styles/withStyles";
-import EntrySaveDisplay from "./entry/EntrySaveDisplay";
+import SaveDisplay from "./SaveDisplay";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import {useHistory, useLocation, RouteComponentProps, withRouter} from "react-router-dom";
 
 const ReactMarkdown = require('react-markdown');
 require('codemirror/mode/markdown/markdown');
 require('codemirror/lib/codemirror.css');
 require('codemirror/theme/material.css');
 
-require("./extend-codemirror.css");
+require("../extend-codemirror.css");
+
 // Theme-dependent styles
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -29,28 +32,12 @@ const styles = (theme: Theme) => createStyles({
     },
     preview: {
         height: "100%",
-        padding: 5,
+        padding: "5px 5px 0px 5px",
         overflowWrap: "anywhere"
     },
-    fab: {
-        margin: 0,
-        top: 'auto',
-        right: 20,
-        bottom: 20,
-        left: 'auto',
-        position: 'fixed',
-    },
-    cancelFab: {
-        margin: 0,
-        top: 'auto',
-        right: 100,
-        bottom: 20,
-        left: 'auto',
-        position: 'fixed',
-    }
 });
 
-interface IProps extends WithStyles<typeof styles> {
+interface IProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
     entryId: number | string
 }
 
@@ -69,7 +56,7 @@ export enum EntrySaveStatus {
 
 const TIME_BEFORE_SAVE_MS = 3000;
 
-class EntryEditor extends React.Component<IProps, IState> {
+class Editor extends React.Component<IProps, IState> {
     timeout: NodeJS.Timeout | null = null;
     constructor(props: IProps) {
         super(props);
@@ -144,18 +131,24 @@ class EntryEditor extends React.Component<IProps, IState> {
     }
 
     render() {
+
         return <div>
             <div style={{
-                display: "flex"
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
             }}>
+                <div style={{marginRight: 20, marginLeft: 20}}>
+                    <SaveDisplay status={this.state.saveStatus}/>
+                </div>
                 <div style={{
                     flexGrow: 1
                 }}>
 
                 </div>
-                <div style={{marginRight: 20}}>
-                    <EntrySaveDisplay status={this.state.saveStatus}/>
-                </div>
+                <IconButton color={"primary"} onClick={() => {this.props.history.push(this.props.location.pathname + "?display=view")}}>
+                    <Visibility/>
+                </IconButton>
             </div>
             <TextField fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
                        inputProps={{
@@ -186,4 +179,4 @@ class EntryEditor extends React.Component<IProps, IState> {
     }
 }
 
-export default withStyles(styles)(EntryEditor);
+export default withRouter(withStyles(styles)(Editor));

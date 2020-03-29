@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core/styles';
 import {blueGrey, deepPurple, indigo} from "@material-ui/core/colors";
 import {Register} from "./Register";
-import EntryPage from "./EntryPage";
+import Page from "./entry/Page";
 
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -63,7 +63,7 @@ const App = () => {
                                   </div>
                               </div>
                       </Route>
-                      <PrivateRoute component={EntryPage} path="/entry/:id"/>
+                      <PrivateRoute component={Page} path="/entry/:id"/>
                       <PrivateRoute component={HomePage} path="/"/>
                   </Switch>
               </div>

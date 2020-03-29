@@ -1,4 +1,4 @@
-import {EntrySaveStatus} from "../EntryEditor";
+import {EntrySaveStatus} from "./Editor";
 import {CloudDone, CloudQueue, Error} from "@material-ui/icons";
 import React from "react"
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -16,7 +16,7 @@ const icon = (status: EntrySaveStatus) => {
     }
 };
 
-export default function EntrySaveDisplay(props: {
+export default function SaveDisplay(props: {
     status: EntrySaveStatus
 }) {
     return <BoxCenter>
