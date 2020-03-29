@@ -110,8 +110,9 @@ export default class Api {
         if (!this.encryptionKey) {
             throw new Error("encryption key undefined");
         }
-        entry.content = encrypt(entry.content, this.encryptionKey);
-        return this.axiosInstance.put("/entries/" + entry.id, entry)
+        const cloned: Entry = {...entry};
+        cloned.content = encrypt(cloned.content, this.encryptionKey);
+        return this.axiosInstance.put("/entries/" + entry.id, cloned)
     }
 
     static deleteEntry(entryId: number | string) {
