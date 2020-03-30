@@ -60,7 +60,7 @@ function validatePwd(pwd: string): boolean {
     return number && upper && special;
 }
 
-export function Register() {
+export function Login() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -74,34 +74,37 @@ export function Register() {
         setPassword(event.target.value)
     }
 
-    async function register() {
+    async function login() {
         try {
-            await Api.register(email, password);
+            await Api.login(email, password);
             setRedirect(true)
         } catch (e) {
+            console.log(e);
+            // todo
+        }
 
+    }
+
+    if (redirect) {
+        return <Redirect to={{ pathname: "/" }} />
+    }
+
+    async function keyPress(e: any) {
+        if (e.keyCode === 13) {
+            await login();
         }
     }
 
-    const validPwd: boolean = validatePwd(password);
-
-    if (redirect) {
-        return <Redirect to={{ pathname: "/login" }} />
-    }
-
     return <Card className={classes.root} elevation={5}>
-        <CardMedia component={"img"} image={"/diary.jpg"} title={"diary"}/>
-        <CardHeader title={"Encrypted Diary"} subheader={"So your private thoughts stay private"}/>
+        <CardHeader title={"Encrypted Diary"} subheader={"Log in"}/>
         <CardContent>
-            <TextField className={classes.field} required label="Email" type="email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
-            <TextField className={classes.field} value={password} onChange={onChangePassword} variant="outlined" error={!validPwd} required label="Password" type="password"
-                       helperText={"Minimum eight characters, at least one uppercase letter, " +
-                       "one lowercase letter, one number and one special character"}/>
+            <TextField className={classes.field} type={"email"} onKeyDown={keyPress} label="Email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
+            <TextField className={classes.field} value={password} onKeyDown={keyPress} onChange={onChangePassword} variant="outlined" label="Password" type="password"/>
         </CardContent>
         <CardActions className={classes.action}>
-            <Button className={classes.button} variant={"contained"} color={"primary"} onClick={register}>Register</Button>
+            <Button className={classes.button} variant={"contained"} color={"primary"} onClick={login}>Log in</Button>
             <Divider className={classes.divider}/>
-            <Link to={"/login"}>Log in here</Link>
+            <Link to={"/register"}>Register here</Link>
         </CardActions>
     </Card>;
 }

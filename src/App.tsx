@@ -18,6 +18,7 @@ import {
 import {blueGrey, deepPurple, indigo} from "@material-ui/core/colors";
 import {Register} from "./Register";
 import Page from "./entry/Page";
+import {Login} from "./Login";
 
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -49,7 +50,16 @@ const App = () => {
             renders the first one that matches the current URL. */}
                   <Switch>
                       <Route path="/login">
-                          <LoginPage/>
+                          <div style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              flexDirection: "column",
+                          }}>
+                              <div style={{marginTop: 50}}>
+                                  <Login/>
+                              </div>
+                          </div>
                       </Route>
                       <Route path="/register">
                               <div style={{
@@ -59,7 +69,7 @@ const App = () => {
                                   flexDirection: "column",
                               }}>
                                   <div style={{marginTop: 50}}>
-                                  <Register/>
+                                      <Register/>
                                   </div>
                               </div>
                       </Route>
@@ -71,44 +81,5 @@ const App = () => {
       </Router>
   );
 };
-
-function LoginPage() {
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
-    const [redirect, setRedirect] = React.useState<boolean>(false);
-
-    function onChangeEmail(event: any) {
-        setEmail(event.target.value)
-    }
-
-    function onChangePassword(event: any) {
-        setPassword(event.target.value)
-    }
-
-    async function login() {
-        await Api.login(email, password);
-
-        setRedirect(true)
-    }
-    if (redirect) {
-        return <Redirect to={{ pathname: "/" }} />
-    }
-
-    return (
-        <div style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-        }}>
-            <Typography component={"h1"}>Log in</Typography>
-            <TextField required label="Email" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
-            <TextField value={password} onChange={onChangePassword} required label="Password" type="password"/>
-            <Button onClick={login}>Login</Button>
-            <Link to={"/register"}>Register here</Link>
-        </div>
-    )
-}
 
 export default App;

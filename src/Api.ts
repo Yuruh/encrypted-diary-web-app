@@ -120,21 +120,17 @@ export default class Api {
     }
 
     static async login(email: string, pwd: string) {
-        try {
-            const response = await this.axiosInstance.post("/login", {
-                email,
-                password: pwd
-            });
-            this.token = response.data.token;
-            this.axiosInstance.defaults.headers.Authorization = "Bearer " + this.token;
+        const response = await this.axiosInstance.post("/login", {
+            email,
+            password: pwd
+        });
+        this.token = response.data.token;
+        this.axiosInstance.defaults.headers.Authorization = "Bearer " + this.token;
 
-            this.encryptionKey = generateEncryptionKey(pwd);
-            if (process.env.NODE_ENV === "development") {
-                localStorage.setItem("token", String(this.token));
-                localStorage.setItem("key", String(this.encryptionKey));
-            }
-        } catch (e) {
-            console.log(e);
+        this.encryptionKey = generateEncryptionKey(pwd);
+        if (process.env.NODE_ENV === "development") {
+            localStorage.setItem("token", String(this.token));
+            localStorage.setItem("key", String(this.encryptionKey));
         }
     }
 
