@@ -10,7 +10,7 @@ import {
     Route,
     Link, Redirect, useLocation
 } from "react-router-dom";
-import HomePage from "./HomePage";
+import EntryList from "./EntryList";
 import {
     createMuiTheme,
     ThemeProvider,
@@ -74,7 +74,7 @@ const App = () => {
                               </div>
                       </Route>
                       <PrivateRoute component={Page} path="/entry/:id"/>
-                      <PrivateRoute component={HomePage} path="/"/>
+                      <PrivateRoute component={EntryList} path="/"/>
                   </Switch>
               </div>
           </ThemeProvider>

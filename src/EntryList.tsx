@@ -40,14 +40,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-export default function HomePage() {
+export default function EntryList() {
     const classes = useStyles({});
     const history = useHistory();
 
     const [entries, setEntries] = React.useState<Entry[]>([]);
     const [fetching, setFetching] = React.useState(false);
     const [redirect, setRedirect] = React.useState("");
-
 
     const fetchData = async() => {
         setFetching(true);
