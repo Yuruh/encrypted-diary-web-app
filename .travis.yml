@@ -4,8 +4,8 @@ node_js:
 cache:
   directories:
     - node_modules
-script:
+#script:
   #- yarn test
-  - yarn run build
+#  - yarn run build
 after_success:
   - ./get_next_tag.sh
