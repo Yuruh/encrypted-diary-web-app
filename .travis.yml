@@ -1,12 +1,12 @@
 language: node_js
 node_js:
   - "stable"
-  -
 services:
   - docker
 
 script:
-  - docker build .
+  - echo "aze"
+  #- docker build .
 
 after_success:
-  - ./get_next_tag.sh
+  - ./get_next_tag.sh $TRAVIS_BRANCH $(git describe --abbrev=0)
