@@ -1,6 +1,3 @@
-# branch should have the format <RELEASE|FEATURE|FIX>_<any-branch-name>
-# tag should have the format <major>.<minor>.<fix>
-
 usage() {
     echo "USAGE:"
     echo "./get_next_tag.sh BRANCH_NAME CURRENT_TAG"
@@ -8,9 +5,8 @@ usage() {
     echo "CURRENT_TAG should have the format <major>.<minor>.<fix>"
 }
 
-
-branch=$1 #"RELEASE_patate_douce"
-tag=$2 #"154.423.7"
+branch=$1
+tag=$2
 
 if [ $# -lt 2 ]
 then
@@ -47,18 +43,21 @@ branch_type=$(awk -v a=$branch -v b=$underscore_position "BEGIN{print substr(a,0
 #echo "Version: major=$major minor=$minor fix=$fix"
 #echo "Branch type=$branch_type"
 
-if [ $branch_type = "RELEASE" ]
+if [ $underscord_position -gt 0 ]
 then
-  let "major+=1"
-  let "minor=0"
-  let "fix=0"
-elif [ $branch_type = "FEATURE" ]
-then
-  let "minor+=1"
-  let "fix=0"
-elif [ $branch_type = "FIX" ]
-then
-  let "fix+=1"
+  if [ $branch_type = "RELEASE" ]
+  then
+    let "major+=1"
+    let "minor=0"
+    let "fix=0"
+  elif [ $branch_type = "FEATURE" ]
+  then
+    let "minor+=1"
+    let "fix=0"
+  elif [ $branch_type = "FIX" ]
+  then
+    let "fix+=1"
+  fi
 fi
 
 result_version="$major.$minor.$fix"
