@@ -6,6 +6,8 @@ services:
 
 script:
   - echo "aze"
+  - env
+  - echo $TRAVIS_BRANCH
   #- docker build .
 
 after_success:
