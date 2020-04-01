@@ -22,6 +22,7 @@ fi
 #find position of "_" in the branch name
 underscore_position=$(awk -v a=$branch -v b="_" "BEGIN{print index(a,b)}")
 
+echo "underscorde= $underscore_position"
 
 # Coud be refactored to find n value
 major=$(awk 'match($0, /[0-9]+/) {
@@ -43,6 +44,7 @@ fix=$(awk 'match($0, /[0-9]+/) {
 };' <<< $tag)
 
 branch_type=$(awk -v a=$branch -v b=$underscore_position "BEGIN{print substr(a,0,b)}")
+echo "branch_type = $branch_type"
 
 #echo "Version: major=$major minor=$minor fix=$fix"
 #echo "Branch type=$branch_type"
