@@ -15,10 +15,11 @@ services:
 jobs:
   include:
     - stage: test
-      script: echo "Testing stage"
+      script: echo "Testing stage" && return 1
     - stage: deploy
-      script: ./get_next_tag.sh $TRAVIS_BRANCH $(git describe --abbrev=0)
+      script: ./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0)
 
 stages:
+  - name: test
   - name: deploy
     if: branch = master
