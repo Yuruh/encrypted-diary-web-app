@@ -23,7 +23,11 @@ jobs:
         - echo $TRAVIS_PULL_REQUEST
         - echo $TRAVIS_PULL_REQUEST_BRANCH
     - stage: deploy
-      script: ./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0)
+      script:
+        - echo $TRAVIS_PULL_REQUEST_BRANCH
+        - echo $(git describe --abbrev=0)
+        - cat get_next_tag.sh
+        - ./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0)
 
 stages:
   - name: test
