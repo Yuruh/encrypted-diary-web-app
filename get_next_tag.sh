@@ -8,6 +8,10 @@ usage() {
 branch=$1
 tag=$2
 
+echo "BRANCH = $branch"
+echo "TAG =$tag"
+
+
 if [ $# -lt 2 ]
 then
   usage;
@@ -47,15 +51,20 @@ if [ $underscore_position -gt 0 ]
 then
   if [ $branch_type = "RELEASE" ]
   then
+    echo "found release"
     let "major+=1"
     let "minor=0"
     let "fix=0"
   elif [ $branch_type = "FEATURE" ]
   then
+    echo "found feature"
+    echo "minor before $minor"
     let "minor+=1"
     let "fix=0"
+    echo "minor after $minor"
   elif [ $branch_type = "FIX" ]
   then
+    echo "found fix"
     let "fix+=1"
   fi
 fi

@@ -26,7 +26,6 @@ jobs:
       script:
         - echo $TRAVIS_PULL_REQUEST_BRANCH
         - echo $(git describe --abbrev=0)
-        - cat get_next_tag.sh
         - export NEXT_TAG=$(./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0))
         - echo $NEXT_TAG
         - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
