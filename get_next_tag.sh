@@ -10,10 +10,6 @@ usage() {
 branch=$1
 tag=$2
 
-echo "BRANCH = $branch"
-echo "TAG =$tag"
-
-
 if [ $# -lt 2 ]
 then
   usage;
@@ -23,8 +19,6 @@ fi
 
 #find position of "_" in the branch name
 underscore_position=$(gawk -v a=$branch -v b="_" "BEGIN{print index(a,b)}")
-
-echo "underscorde= $underscore_position"
 
 # Coud be refactored to find n value
 major=$(gawk 'match($0, /[0-9]+/) {
@@ -46,7 +40,6 @@ fix=$(gawk 'match($0, /[0-9]+/) {
 };' <<< $tag)
 
 branch_type=$(gawk -v a=$branch -v b=$underscore_position "BEGIN{print substr(a,0,b - 1)}")
-echo "branch_type = $branch_type"
 
 #echo "Version: major=$major minor=$minor fix=$fix"
 #echo "Branch type=$branch_type"
@@ -55,20 +48,15 @@ if [ $underscore_position -gt 0 ]
 then
   if [ $branch_type = "RELEASE" ]
   then
-    echo "found release"
     let "major+=1"
     let "minor=0"
     let "fix=0"
   elif [ $branch_type = "FEATURE" ]
   then
-    echo "found feature"
-    echo "minor before $minor"
     let "minor+=1"
     let "fix=0"
-    echo "minor after $minor"
   elif [ $branch_type = "FIX" ]
   then
-    echo "found fix"
     let "fix+=1"
   fi
 fi
