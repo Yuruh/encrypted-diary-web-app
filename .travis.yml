@@ -11,7 +11,6 @@ services:
 #  - echo $TRAVIS_COMMIT_MESSAGE
 #  - echo $TRAVIS_PULL_REQUEST
   #- docker build .
-
 jobs:
   include:
     - stage: test
@@ -24,6 +23,7 @@ jobs:
         - echo $TRAVIS_PULL_REQUEST_BRANCH
     - stage: deploy
       script:
+        - sudo apt install gawk
         - echo $TRAVIS_PULL_REQUEST_BRANCH
         - echo $(git describe --abbrev=0)
         - export NEXT_TAG=$(./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0))
