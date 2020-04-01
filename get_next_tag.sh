@@ -1,3 +1,5 @@
+#!/bin/bash
+
 usage() {
     echo "USAGE:"
     echo "./get_next_tag.sh BRANCH_NAME CURRENT_TAG"
