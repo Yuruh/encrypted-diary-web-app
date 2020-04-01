@@ -4,13 +4,21 @@ node_js:
 services:
   - docker
 
-script:
-  - echo "aze"
-  - env
-  - echo $TRAVIS_BRANCH
-  - echo $TRAVIS_COMMIT_MESSAGE
-  - echo $TRAVIS_PULL_REQUEST
-  #- docker build .
+jobs:
+  include:
+    - stage: test
+      script:
+        - echo "Testing stage" && return 0
+    - stage: deploy
+      script:
+        - sudo apt install gawk
+        - export NEXT_TAG=$(./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0))
+        - echo "Next version = $NEXT_TAG"
+        - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
+        - docker login -u yuruh -p $DOCKER_PWD
+        - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
 
-after_success:
-  - ./get_next_tag.sh $TRAVIS_BRANCH $(git describe --abbrev=0)
+stages:
+  - name: test
+  - name: deploy
+    if: branch = master
