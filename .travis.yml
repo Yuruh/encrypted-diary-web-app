@@ -15,7 +15,13 @@ services:
 jobs:
   include:
     - stage: test
-      script: echo "Testing stage" && return 0
+      script:
+        - echo "Testing stage" && return 0
+        - env
+        - echo $TRAVIS_BRANCH
+        - echo $TRAVIS_COMMIT_MESSAGE
+        - echo $TRAVIS_PULL_REQUEST
+        - echo $TRAVIS_PULL_REQUEST_BRANCH
     - stage: deploy
       script: ./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0)
 
