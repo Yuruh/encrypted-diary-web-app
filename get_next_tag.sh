@@ -43,7 +43,7 @@ branch_type=$(awk -v a=$branch -v b=$underscore_position "BEGIN{print substr(a,0
 #echo "Version: major=$major minor=$minor fix=$fix"
 #echo "Branch type=$branch_type"
 
-if [ $underscord_position -gt 0 ]
+if [ $underscore_position -gt 0 ]
 then
   if [ $branch_type = "RELEASE" ]
   then

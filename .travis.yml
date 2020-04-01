@@ -12,5 +12,13 @@ script:
   - echo $TRAVIS_PULL_REQUEST
   #- docker build .
 
-after_success:
-  - ./get_next_tag.sh $TRAVIS_BRANCH $(git describe --abbrev=0)
+jobs:
+  include:
+    - stage: test
+      script: echo "Testing stage"
+    - stage: deploy
+      script: ./get_next_tag.sh $TRAVIS_BRANCH $(git describe --abbrev=0)
+
+stages:
+  - name: deploy
+    if: branch = master
