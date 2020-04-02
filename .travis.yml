@@ -15,17 +15,15 @@ jobs:
         - sudo apt install gawk
 
         # Computing next tag name based on branch name
-        #- export NEXT_TAG=$(./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0))
-        #- echo "Next version = $NEXT_TAG"
-        #- docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
-        #- docker login -u yuruh -p $DOCKER_PWD
-
-#        - git tag -a $NEXT_TAG -m "Merge from pull request $TRAVIS_PULL_REQUEST"
-        - git tag -a 0.4.0 -m "Merge from pull request $TRAVIS_PULL_REQUEST"
+        - export NEXT_TAG=$(./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0))
+        - echo "Next version = $NEXT_TAG"
+        - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
+        - docker login -u yuruh -p $DOCKER_PWD
+        - git tag -a $NEXT_TAG -m "Merge from pull request $TRAVIS_PULL_REQUEST"
         - git push "https://$GITHUB_TOKEN@github.com/Yuruh/encrypted-diary-web-app.git" --tags
         - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
 
 stages:
   - name: test
   - name: deploy
-    if: branch = master
+    if: branch = master AND type = pull_request
