@@ -4,6 +4,10 @@ node_js:
 services:
   - docker
 
+# Okay this is almost good, one problem remains:
+# tags are apposed on a "fake commit", that exists only for PR, so it doesn't appear in git log nor in git describe
+# this reinforce the need to run this on merge to master, not on PR creation
+# so we'll have to parse the commit message, as ugly as it seems.
 jobs:
   include:
     - stage: test
@@ -15,15 +19,15 @@ jobs:
         - sudo apt install gawk
 
         # Computing next tag name based on branch name
-        - export NEXT_TAG=$(./get_next_tag.sh $TRAVIS_PULL_REQUEST_BRANCH $(git describe --abbrev=0))
+        - export NEXT_TAG=$(./get_next_tag.sh $TRAVIS_COMMIT_MESSAGE $(git describe --abbrev=0))
         - echo "Next version = $NEXT_TAG"
         - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
         - docker login -u yuruh -p $DOCKER_PWD
-        - git tag -a $NEXT_TAG -m "Merge from pull request $TRAVIS_PULL_REQUEST"
+        - git tag -a $NEXT_TAG -m "$TRAVIS_COMMIT_MESSAGE"
         - git push "https://$GITHUB_TOKEN@github.com/Yuruh/encrypted-diary-web-app.git" --tags
         - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
 
 stages:
   - name: test
   - name: deploy
-    if: branch = master AND type = pull_request
+    if: branch = master AND type = push
