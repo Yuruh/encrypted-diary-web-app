@@ -15,6 +15,7 @@ import {Edit, Visibility} from "@material-ui/icons";
 import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -30,11 +31,18 @@ const useStyles = makeStyles((theme: Theme) =>
             position: 'fixed',
         },
         grid: {
-            paddingLeft: 10,
-            paddingRight: 10,
+            [theme.breakpoints.up("md")]: {
+                padding: "30px 100px 20px 100px",
+            },
+            [theme.breakpoints.down("sm")]: {
+                padding: "5px",
+            },
         },
         cardAction: {
             marginLeft: 'auto'
+        },
+        root: {
+
         }
     }),
 );
@@ -73,9 +81,9 @@ export default function EntryList() {
             {entries.map((elem: Entry, i) => {
                 return <Grid item xs={12} sm={6} lg={3} key={i}>
                     <Card elevation={3}>
-                        <CardHeader title={elem.title} subheader={new Date(elem.created_at).toLocaleDateString()}/>
+                        <CardHeader title={new Date(elem.created_at).toLocaleDateString()} subheader={elem.title}/>
                         <CardContent>
-                            Labels
+
                         </CardContent>
                         <CardActions>
                             <IconButton onClick={() => setRedirect("/entry/" + elem.id + "?display=edit")} aria-label="edit" className={classes.cardAction}>
@@ -89,11 +97,16 @@ export default function EntryList() {
                 </Grid>
             })}
         </Grid>
-        <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={() => {
-            const entry: Entry = new Entry()
-            entry.title = "title " + Math.random() * 12;
-            entry.content = "# Le contenu de l'entry  coucou";
-            Api.addEntry(entry);
+        <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={async () => {
+            const entry: Entry = new Entry();
+            entry.title = "Diary Entry";
+            entry.content = "Your entry content, in **markdown** format, client-side encrypted";
+            try {
+                const res = await Api.addEntry(entry);
+                setRedirect("/entry/" + res.data.entry.id + "?display=edit")
+            } catch (e) {
+                // todo
+            }
         }}>
             <AddIcon/>
         </Fab>

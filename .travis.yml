@@ -16,6 +16,8 @@ jobs:
         - echo "Next version = $NEXT_TAG"
         - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
         - docker login -u yuruh -p $DOCKER_PWD
+        - git tag -a $NEXT_TAG -m $TRAVIS_COMMIT_MESSAGE
+        - git push origin --tags
         - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
 
 stages:
