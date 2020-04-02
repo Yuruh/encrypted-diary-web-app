@@ -1,21 +1,18 @@
 import React from 'react';
 import './App.css';
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import Api from "./Api";
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link, Redirect, useLocation
+    Redirect
 } from "react-router-dom";
 import EntryList from "./EntryList";
 import {
     createMuiTheme,
     ThemeProvider,
 } from '@material-ui/core/styles';
-import {blueGrey, deepPurple, indigo} from "@material-ui/core/colors";
+import {blueGrey, indigo} from "@material-ui/core/colors";
 import {Register} from "./Register";
 import Page from "./entry/Page";
 import {Login} from "./Login";
