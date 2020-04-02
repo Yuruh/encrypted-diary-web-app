@@ -22,7 +22,12 @@ const useStyles = makeStyles((theme: Theme) =>
             transform: "rotate(180deg)"
         },
         preview: {
-            padding: "20px 40px 20px 40px",
+            [theme.breakpoints.up("md")]: {
+                padding: "20px 40px 20px 40px",
+            },
+            [theme.breakpoints.down("sm")]: {
+                padding: "0px",
+            },
             overflowWrap: "anywhere"
         },
         date: {

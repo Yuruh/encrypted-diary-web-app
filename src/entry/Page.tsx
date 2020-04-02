@@ -16,12 +16,18 @@ import Viewer from "./Viewer";
 import {Entry} from "../models/Entry";
 import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Box from "@material-ui/core/Box";
+import Hidden from "@material-ui/core/Hidden";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         prevIcon: {
             transform: "rotate(180deg)"
         },
+        root: {
+            display: "flex",
+            justifyContent: "center",
+        }
     }),
 );
 
@@ -77,17 +83,21 @@ export default function Page() {
     let content;
 
     if (display !== "edit") {
-        content = <BoxCenter>
+        content = <Box className={classes.root}>
+            <Hidden xsDown={true}>
             <IconButton color={"primary"}  disabled={prevEntryId === undefined} onClick={loadPrevEntry}>
                 <NavigateNext className={classes.prevIcon}/>
             </IconButton>
-            <div style={{maxWidth: 1000}}>
+            </Hidden>
+            <div style={{maxWidth: 1000, width: 1000}}>
                 <Viewer entry={entry}/>
             </div>
+            <Hidden xsDown={true}>
             <IconButton color={"primary"} disabled={nextEntryId === undefined} onClick={loadNextEntry}>
                 <NavigateNext/>
             </IconButton>
-        </BoxCenter>
+            </Hidden>
+        </Box>
     } else {
         content = <Editor entryId={id || ""}/>
     }
