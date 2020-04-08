@@ -2,6 +2,7 @@ import axios from "axios";
 
 import CryptoJS, {WordArray} from "crypto-js";
 import {Entry} from "./models/Entry";
+import {Label} from "./models/Label";
 const pbkdf2 = require('pbkdf2');
 
 
@@ -79,6 +80,14 @@ export default class Api {
         });
     }
 
+    static async getLabels() {
+
+    }
+
+    static async addLabel(label: Label) {
+        return this.axiosInstance.post("/labels", label);
+    }
+
     static async getEntry(entryId: number | string) {
         if (!this.encryptionKey) {
             throw new Error("encryption key undefined");
@@ -106,13 +115,16 @@ export default class Api {
     }
 
     // expect a decrypted entry
-    static editEntry(entry: Entry) {
+    static editEntry(entry: Entry, labels_id: number[]) {
         if (!this.encryptionKey) {
             throw new Error("encryption key undefined");
         }
         const cloned: Entry = {...entry};
         cloned.content = encrypt(cloned.content, this.encryptionKey);
-        return this.axiosInstance.put("/entries/" + entry.id, cloned)
+        return this.axiosInstance.put("/entries/" + entry.id, {
+            ...cloned,
+            labels_id
+        })
     }
 
     static deleteEntry(entryId: number | string) {

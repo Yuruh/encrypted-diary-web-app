@@ -12,6 +12,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import SaveDisplay from "./SaveDisplay";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {useHistory, useLocation, RouteComponentProps, withRouter} from "react-router-dom";
+import Picker from "../label/Picker";
 
 const ReactMarkdown = require('react-markdown');
 require('codemirror/mode/markdown/markdown');
@@ -69,7 +70,7 @@ class Editor extends React.Component<IProps, IState> {
         this.changeEntryTitle = this.changeEntryTitle.bind(this);
         this.changeEntryContent = this.changeEntryContent.bind(this);
         this.triggerSave = this.triggerSave.bind(this);
-
+        this.addLabelToEntry = this.addLabelToEntry.bind(this);
     }
 
     async componentDidMount(): Promise<void> {
@@ -98,7 +99,7 @@ class Editor extends React.Component<IProps, IState> {
                 saveStatus: EntrySaveStatus.SAVING,
             });
             try {
-                await Api.editEntry(this.state.entry);
+                await Api.editEntry(this.state.entry, this.state.entry.labels.map((elem) => elem.id));
                 this.setState({
                     saveStatus: EntrySaveStatus.SAVED,
                 });
@@ -130,9 +131,23 @@ class Editor extends React.Component<IProps, IState> {
         });
     }
 
+    async addLabelToEntry(id: number) {
+        try {
+            await Api.editEntry(this.state.entry, this.state.entry.labels.map((elem) => elem.id).concat([id]));
+            this.setState({
+                saveStatus: EntrySaveStatus.SAVED,
+            });
+        } catch (e) {
+            this.setState({
+                saveStatus: EntrySaveStatus.ERROR,
+            });
+        }
+    }
+
     render() {
 
         return <div>
+            <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
             <div style={{
                 display: "flex",
                 justifyContent: "center",
