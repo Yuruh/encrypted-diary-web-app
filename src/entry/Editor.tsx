@@ -40,7 +40,8 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface IProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
-    entryId: number | string
+    entry: Entry
+    updateEntry: (entry: Entry) => void
 }
 
 interface IState {
@@ -63,7 +64,7 @@ class Editor extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            entry: new Entry(),
+            entry: props.entry,
             fetching: false,
             saveStatus: EntrySaveStatus.SAVED
         };
@@ -72,19 +73,6 @@ class Editor extends React.Component<IProps, IState> {
         this.changeEntryContent = this.changeEntryContent.bind(this);
         this.triggerSave = this.triggerSave.bind(this);
         this.addLabelToEntry = this.addLabelToEntry.bind(this);
-    }
-
-    async componentDidMount(): Promise<void> {
-        this.setState({fetching: true});
-        try {
-            const result = await Api.getEntry(this.props.entryId);
-            this.setState({
-                entry: result.data.entry,
-                fetching: false,
-            });
-        } catch (e) {
-            //todo handle error
-        }
     }
 
     triggerSave() {
@@ -104,6 +92,7 @@ class Editor extends React.Component<IProps, IState> {
                 this.setState({
                     saveStatus: EntrySaveStatus.SAVED,
                 });
+                this.props.updateEntry(this.state.entry);
             } catch (e) {
                 this.setState({
                     saveStatus: EntrySaveStatus.ERROR,
@@ -132,12 +121,13 @@ class Editor extends React.Component<IProps, IState> {
         });
     }
 
-    async addLabelToEntry(id: number) {
+    async addLabelToEntry(labels_id: number[]) {
         try {
-            await Api.editEntry(this.state.entry, this.state.entry.labels.map((elem) => elem.id).concat([id]));
+            await Api.editEntry(this.state.entry, labels_id);
             this.setState({
                 saveStatus: EntrySaveStatus.SAVED,
             });
+            // todo once the api correctly returns populated labels call this.props.updateEntry(res.data.entry);
         } catch (e) {
             this.setState({
                 saveStatus: EntrySaveStatus.ERROR,
@@ -146,10 +136,7 @@ class Editor extends React.Component<IProps, IState> {
     }
 
     render() {
-        console.log(this.state.entry);
         return <div>
-            <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
-            <LabelList labels={this.state.entry.labels}/>
             <div style={{
                 display: "flex",
                 justifyContent: "center",
@@ -167,7 +154,8 @@ class Editor extends React.Component<IProps, IState> {
                     <Visibility/>
                 </IconButton>
             </div>
-            <TextField fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
+            <div style={{margin: 10}}>
+            <TextField label={"Title"} fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
                        inputProps={{
                            style: {
                                fontSize: 30,
@@ -175,6 +163,10 @@ class Editor extends React.Component<IProps, IState> {
                            }
                        }}
             />
+            </div>
+            <div style={{margin: 10}}>
+            <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
+            </div>
             <Grid container spacing={0} className={this.props.classes.root}>
                 <Grid item xs={12} sm={6} lg={6}>
                     <Paper elevation={2}>

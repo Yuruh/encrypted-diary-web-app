@@ -18,7 +18,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface IProps extends WithStyles<typeof styles> {
-    addLabelToEntry: (id: number) => Promise<void>
+    addLabelToEntry: (ids: number[]) => Promise<void>
     labels: Label[]
 }
 
@@ -101,10 +101,20 @@ class Picker extends React.Component<IProps, IState> {
         })
     }
 
-    onOptionsChange(event: React.ChangeEvent<{}>, value: Label[]) {
+    async onOptionsChange(event: React.ChangeEvent<{}>, value: Label[]) {
         this.setState({
             labels: value
         });
+        try {
+/*            const res = await Api.addLabel(label);
+
+            this.setState({
+                newLabelName: ""
+            });*/
+            await this.props.addLabelToEntry(value.map((elem: Label) => elem.id));
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     // https://material-ui.com/components/autocomplete/
@@ -147,7 +157,7 @@ class Picker extends React.Component<IProps, IState> {
             renderTags={(value: Label[], getTagProps: any) =>
                 value.map((option: Label, index: number) => {
                     return (
-                        <LabelChip key={index} onDelete={getTagProps({ index }).onDelete} color={option.color} label={option.name}  />
+                        <LabelChip key={index} onDelete={getTagProps({ index }).onDelete} color={option.color} label={option.name} style={{marginLeft: 3}} />
                     )})
             }
 

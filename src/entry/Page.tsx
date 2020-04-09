@@ -99,7 +99,7 @@ export default function Page() {
             </Hidden>
         </Box>
     } else {
-        content = <Editor entryId={id || ""}/>
+        content = <Editor entry={entry} updateEntry={(updated: Entry) => setEntry(updated)}/>
     }
 
     return <div>
