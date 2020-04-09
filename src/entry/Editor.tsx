@@ -13,6 +13,7 @@ import SaveDisplay from "./SaveDisplay";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {useHistory, useLocation, RouteComponentProps, withRouter} from "react-router-dom";
 import Picker from "../label/Picker";
+import LabelList from "../label/LabelList";
 
 const ReactMarkdown = require('react-markdown');
 require('codemirror/mode/markdown/markdown');
@@ -148,6 +149,7 @@ class Editor extends React.Component<IProps, IState> {
 
         return <div>
             <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
+            <LabelList labels={this.state.entry.labels}/>
             <div style={{
                 display: "flex",
                 justifyContent: "center",
