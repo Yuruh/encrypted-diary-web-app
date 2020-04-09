@@ -8,11 +8,17 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         label: {
             color: "white",
-            textShadow: "0px 0px 2px black",
+            fontSize: 15,
+            webkitTextStrokeWidth: "1px black", // Doesn't seem to be actually supported
+            textShadow: "-1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;",
+
             //fontSize: "22px",
             //height: "50px",
             //borderRadius: "25px",
             backgroundColor: (props: any) => props.color
+        },
+        container: {
+            margin: 3
         }
     }),
 );
@@ -32,6 +38,7 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
         variant={"outlined"}
         className={classes.label}
         {...other}
+
     />
 }
 
@@ -39,13 +46,13 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
 export default function LabelList(props: {
     labels: Label[]
 }) {
-    return <React.Fragment>{props.labels.map((elem: Label, i) => {
+    const classes = useStyles();
 
-        return <LabelChip
-            key={i}
+    return <React.Fragment>{props.labels.map((elem: Label, i) => {
+        return <span className={classes.container} key={i}><LabelChip
             label={elem.name}
             color={elem.color}
-        />
+        /></span>
     })
     }</React.Fragment>
 }

@@ -8,7 +8,6 @@ import {
 import Header from "../Header";
 import "codemirror";
 import Editor from "./Editor";
-import {BoxCenter} from "../BoxCenter";
 import {NavigateNext} from "@material-ui/icons";
 import {createStyles, IconButton, Theme} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -85,17 +84,17 @@ export default function Page() {
     if (display !== "edit") {
         content = <Box className={classes.root}>
             <Hidden xsDown={true}>
-            <IconButton color={"primary"}  disabled={prevEntryId === undefined} onClick={loadPrevEntry}>
-                <NavigateNext className={classes.prevIcon}/>
-            </IconButton>
+                <IconButton color={"primary"}  disabled={prevEntryId === undefined} onClick={loadPrevEntry}>
+                    <NavigateNext className={classes.prevIcon}/>
+                </IconButton>
             </Hidden>
             <div style={{maxWidth: 1000, width: 1000}}>
                 <Viewer entry={entry}/>
             </div>
             <Hidden xsDown={true}>
-            <IconButton color={"primary"} disabled={nextEntryId === undefined} onClick={loadNextEntry}>
-                <NavigateNext/>
-            </IconButton>
+                <IconButton color={"primary"} disabled={nextEntryId === undefined} onClick={loadNextEntry}>
+                    <NavigateNext/>
+                </IconButton>
             </Hidden>
         </Box>
     } else {

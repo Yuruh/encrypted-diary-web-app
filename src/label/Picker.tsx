@@ -6,8 +6,6 @@ import TextField from "@material-ui/core/TextField";
 import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {EntrySaveStatus} from "../entry/Editor";
-import Chip from "@material-ui/core/Chip";
 import {LabelChip} from "./LabelList";
 
 // Theme-dependent styles
@@ -101,9 +99,35 @@ class Picker extends React.Component<IProps, IState> {
         })
     }
 
-    async onOptionsChange(event: React.ChangeEvent<{}>, value: Label[]) {
+    async onOptionsChange(event: React.ChangeEvent<{}>, value: Array<Label | string>) {
+        console.log("NEW VALUE ", value);
+        // If the last element is a string instead of a label, it means it was just created
+        if (value.length > 0 && typeof value[value.length - 1] === "string") {
+
+            // We start by checking if the value is in the offered labels, and if so we use this one instead of trying to create a new label
+            // We compare from lowercase to handle case
+            const existingIdx = this.state.offeredLabels.findIndex((elem: Label) => elem.name.toLowerCase() ===
+                (value[value.length - 1] as string).toLowerCase()
+            );
+            if (existingIdx != -1) {
+                value[value.length - 1] = this.state.offeredLabels[existingIdx];
+            } else {
+                const label: Label = new Label();
+                label.name = value[value.length - 1] as string;
+                try {
+                    const res = await Api.addLabel(label);
+
+                    this.setState({
+                        newLabelName: ""
+                    });
+                    value[value.length - 1] = res.data.label;
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+        }
         this.setState({
-            labels: value
+            labels: value as Label[]
         });
         try {
 /*            const res = await Api.addLabel(label);
@@ -111,7 +135,7 @@ class Picker extends React.Component<IProps, IState> {
             this.setState({
                 newLabelName: ""
             });*/
-            await this.props.addLabelToEntry(value.map((elem: Label) => elem.id));
+            await this.props.addLabelToEntry((value as Label[]).map((elem: Label) => elem.id));
         } catch (e) {
             console.log(e);
         }
@@ -163,7 +187,7 @@ class Picker extends React.Component<IProps, IState> {
 
 
             renderInput={(params) => <TextField
-                    onKeyDown={this.keyPress}
+                    //onKeyDown={this.keyPress}
                     {...params}
                     label="Labels"
                     variant="outlined"

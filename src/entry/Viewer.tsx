@@ -9,6 +9,7 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import {Edit} from "@material-ui/icons";
 import {useHistory, useLocation} from "react-router-dom";
+import LabelList from "../label/LabelList";
 const ReactMarkdown = require('react-markdown');
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,6 +48,7 @@ export default function Viewer(props: {
         />
 
         <CardContent>
+            <LabelList labels={props.entry.labels}/>
             <ReactMarkdown source={props.entry.content}/>
         </CardContent>
     </Card>

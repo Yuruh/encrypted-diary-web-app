@@ -6,14 +6,11 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import Fab from "@material-ui/core/Fab";
-import {Clear, Done, Edit, Visibility} from "@material-ui/icons";
+import {Visibility} from "@material-ui/icons";
 import withStyles from "@material-ui/core/styles/withStyles";
 import SaveDisplay from "./SaveDisplay";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import {useHistory, useLocation, RouteComponentProps, withRouter} from "react-router-dom";
+import {RouteComponentProps, withRouter} from "react-router-dom";
 import Picker from "../label/Picker";
-import LabelList from "../label/LabelList";
 
 const ReactMarkdown = require('react-markdown');
 require('codemirror/mode/markdown/markdown');
