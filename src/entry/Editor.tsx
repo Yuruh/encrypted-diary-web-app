@@ -146,7 +146,7 @@ class Editor extends React.Component<IProps, IState> {
     }
 
     render() {
-
+        console.log(this.state.entry);
         return <div>
             <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
             <LabelList labels={this.state.entry.labels}/>

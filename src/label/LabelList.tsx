@@ -9,9 +9,9 @@ const useStyles = makeStyles((theme: Theme) =>
         label: {
             color: "white",
             textShadow: "0px 0px 2px black",
-            fontSize: "22px",
-            height: "50px",
-            borderRadius: "25px",
+            //fontSize: "22px",
+            //height: "50px",
+            //borderRadius: "25px",
             backgroundColor: (props: any) => props.color
         }
     }),
@@ -22,13 +22,14 @@ interface ILabelChipProps {
 }
 
 // Takes as parameters custom labels and all chip props except those custom declared
-function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelChipProps>) {
+export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelChipProps>) {
     const classes = useStyles(props);
 
     // We separate color from the props
     const {color, ...other} = props;
 
     return <Chip
+        variant={"outlined"}
         className={classes.label}
         {...other}
     />

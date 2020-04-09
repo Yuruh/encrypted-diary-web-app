@@ -7,6 +7,8 @@ import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {EntrySaveStatus} from "../entry/Editor";
+import Chip from "@material-ui/core/Chip";
+import {LabelChip} from "./LabelList";
 
 // Theme-dependent styles
 const styles = (theme: Theme) => createStyles({
@@ -34,8 +36,9 @@ class Picker extends React.Component<IProps, IState> {
     timeout: NodeJS.Timeout | null = null;
     constructor(props: IProps) {
         super(props);
+        //console.log(props.labels)
         this.state = {
-            labels: [],
+            labels: props.labels,
             newLabelName: "",
             loading: false,
             open: false,
@@ -44,7 +47,10 @@ class Picker extends React.Component<IProps, IState> {
         this.keyPress = this.keyPress.bind(this);
         this.onChangeLabel = this.onChangeLabel.bind(this);
         this.triggerAutocompletion = this.triggerAutocompletion.bind(this);
+        this.onOptionsChange = this.onOptionsChange.bind(this);
+    }
 
+    componentDidMount(): void {
         this.triggerAutocompletion();
     }
 
@@ -94,64 +100,78 @@ class Picker extends React.Component<IProps, IState> {
             newLabelName: event.target.value
         })
     }
+
+    onOptionsChange(event: React.ChangeEvent<{}>, value: Label[]) {
+        this.setState({
+            labels: value
+        });
+    }
+
     // https://material-ui.com/components/autocomplete/
     render() {
-
-        // might need "freeSolo"
         return <Autocomplete
-                id="label-picker"
-                style={{ width: 300 }}
-                open={this.state.open}
-                onOpen={() => {
-                    this.setState({open: true});
-                }}
-                onClose={() => {
-                    this.setState({open: false});
-                }}
-                getOptionSelected={(option, value) => option.id === value.id}
-                getOptionLabel={(option) => option.name}
-                options={this.state.offeredLabels}
-                filterOptions={((options, state) => options)} // We don't want the component to filter, as it is done server side
-                loading={this.state.loading}
-                renderOption={(option: Label, {inputValue}) => {
+            multiple
+            freeSolo
+            id="label-picker"
+           // style={{ width: 300 }}
+            open={this.state.open}
+            onOpen={() => {
+                this.setState({open: true});
+            }}
+            onClose={() => {
+                this.setState({open: false});
+            }}
+            onChange={this.onOptionsChange}
+            value={this.state.labels}
+            getOptionSelected={(option, value) => {
+                return option.id === value.id
+            }}
+            getOptionLabel={(option) => option.name}
+            options={this.state.offeredLabels}
+            filterOptions={((options, state) => options)} // We don't want the component to filter, as it is done server side
+            loading={this.state.loading}
+            renderOption={(option: Label, {inputValue}) => {
+                return (
+                    <React.Fragment>
+                        <span style={{
+                            marginRight: 5,
+                            height: 20,
+                            width: 20,
+                            border: "1px solid black",
+                            backgroundColor: option.color
+                        }}/>
+                        {option.name}
+                    </React.Fragment>
+                )
+            }}
+            renderTags={(value: Label[], getTagProps: any) =>
+                value.map((option: Label, index: number) => {
                     return (
-                        <React.Fragment>
-                            <span style={{
-                                marginRight: 5,
-                                height: 20,
-                                width: 20,
-                                border: "1px solid black",
-                                backgroundColor: option.color
-                            }}/>
-                            {option.name}
-                        </React.Fragment>
-                    )
-                }}
-                //autoHighlight={true}
-                //freeSolo={true}
+                        <LabelChip key={index} onDelete={getTagProps({ index }).onDelete} color={option.color} label={option.name}  />
+                    )})
+            }
 
 
-                renderInput={(params) => (
-                    <TextField
-                        onKeyDown={this.keyPress}
-                        {...params}
-                        label="Add label"
-                        variant="outlined"
-                        placeholder="Work, Family, ..."
-                        value={this.state.newLabelName}
-                        onChange={this.onChangeLabel}
-                        InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                                <React.Fragment>
-                                    {this.state.loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                    {params.InputProps.endAdornment}
-                                </React.Fragment>
-                            ),
-                        }}
-                    />
-                )}
-            />
+            renderInput={(params) => <TextField
+                    onKeyDown={this.keyPress}
+                    {...params}
+                    label="Labels"
+                    variant="outlined"
+                    placeholder="Work, Family, ..."
+                    value={this.state.newLabelName}
+                    onChange={this.onChangeLabel}
+                    InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                            <React.Fragment>
+                                {this.state.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                            </React.Fragment>
+                        ),
+                    }}
+                />
+            }
+        />
     }
 }
 
