@@ -16,6 +16,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
+import LabelList from "./label/LabelList";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -83,7 +84,7 @@ export default function EntryList() {
                     <Card elevation={3}>
                         <CardHeader title={new Date(elem.created_at).toLocaleDateString()} subheader={elem.title}/>
                         <CardContent>
-
+                            <LabelList labels={elem.labels}/>
                         </CardContent>
                         <CardActions>
                             <IconButton onClick={() => setRedirect("/entry/" + elem.id + "?display=edit")} aria-label="edit" className={classes.cardAction}>

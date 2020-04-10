@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.9.1",
+    "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "latest",
+    "@material-ui/lab": "^4.0.0-alpha.48",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -18,6 +19,7 @@
     "codemirror": "^5.52.2",
     "crypto-js": "^4.0.0",
     "pbkdf2": "^3.0.17",
+    "randomcolor": "^0.5.4",
     "react": "^16.12.0",
     "react-codemirror2": "^7.1.0",
     "react-dom": "^16.12.0",

@@ -6,12 +6,11 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import {Controlled as CodeMirror} from "react-codemirror2";
-import Fab from "@material-ui/core/Fab";
-import {Clear, Done, Edit, Visibility} from "@material-ui/icons";
+import {Visibility} from "@material-ui/icons";
 import withStyles from "@material-ui/core/styles/withStyles";
 import SaveDisplay from "./SaveDisplay";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import {useHistory, useLocation, RouteComponentProps, withRouter} from "react-router-dom";
+import {RouteComponentProps, withRouter} from "react-router-dom";
+import Picker from "../label/Picker";
 
 const ReactMarkdown = require('react-markdown');
 require('codemirror/mode/markdown/markdown');
@@ -38,7 +37,8 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface IProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
-    entryId: number | string
+    entry: Entry
+    updateEntry: (entry: Entry) => void
 }
 
 interface IState {
@@ -61,7 +61,7 @@ class Editor extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            entry: new Entry(),
+            entry: props.entry,
             fetching: false,
             saveStatus: EntrySaveStatus.SAVED
         };
@@ -69,20 +69,7 @@ class Editor extends React.Component<IProps, IState> {
         this.changeEntryTitle = this.changeEntryTitle.bind(this);
         this.changeEntryContent = this.changeEntryContent.bind(this);
         this.triggerSave = this.triggerSave.bind(this);
-
-    }
-
-    async componentDidMount(): Promise<void> {
-        this.setState({fetching: true});
-        try {
-            const result = await Api.getEntry(this.props.entryId);
-            this.setState({
-                entry: result.data.entry,
-                fetching: false,
-            });
-        } catch (e) {
-            //todo handle error
-        }
+        this.addLabelToEntry = this.addLabelToEntry.bind(this);
     }
 
     triggerSave() {
@@ -98,10 +85,11 @@ class Editor extends React.Component<IProps, IState> {
                 saveStatus: EntrySaveStatus.SAVING,
             });
             try {
-                await Api.editEntry(this.state.entry);
+                await Api.editEntry(this.state.entry, this.state.entry.labels.map((elem) => elem.id));
                 this.setState({
                     saveStatus: EntrySaveStatus.SAVED,
                 });
+                this.props.updateEntry(this.state.entry);
             } catch (e) {
                 this.setState({
                     saveStatus: EntrySaveStatus.ERROR,
@@ -130,8 +118,21 @@ class Editor extends React.Component<IProps, IState> {
         });
     }
 
-    render() {
+    async addLabelToEntry(labels_id: number[]) {
+        try {
+            await Api.editEntry(this.state.entry, labels_id);
+            this.setState({
+                saveStatus: EntrySaveStatus.SAVED,
+            });
+            // todo once the api correctly returns populated labels call this.props.updateEntry(res.data.entry);
+        } catch (e) {
+            this.setState({
+                saveStatus: EntrySaveStatus.ERROR,
+            });
+        }
+    }
 
+    render() {
         return <div>
             <div style={{
                 display: "flex",
@@ -150,7 +151,8 @@ class Editor extends React.Component<IProps, IState> {
                     <Visibility/>
                 </IconButton>
             </div>
-            <TextField fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
+            <div style={{margin: 10}}>
+            <TextField label={"Title"} fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
                        inputProps={{
                            style: {
                                fontSize: 30,
@@ -158,6 +160,10 @@ class Editor extends React.Component<IProps, IState> {
                            }
                        }}
             />
+            </div>
+            <div style={{margin: 10}}>
+            <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
+            </div>
             <Grid container spacing={0} className={this.props.classes.root}>
                 <Grid item xs={12} sm={6} lg={6}>
                     <Paper elevation={2}>

@@ -1,34 +1,31 @@
 language: node_js
 node_js:
-  - "stable"
+- stable
 services:
-  - docker
-
-# Okay this is almost good, one problem remains:
-# tags are apposed on a "fake commit", that exists only for PR, so it doesn't appear in git log nor in git describe
-# this reinforce the need to run this on merge to master, not on PR creation
-# so we'll have to parse the commit message, as ugly as it seems.
+- docker
 jobs:
   include:
-    - stage: test
-      script:
-        - echo "Testing stage" && return 0
-    - stage: deploy
-      script:
-        # Installing gawk to get platform agnostic usage of command AWK
-        - sudo apt install gawk
-
-        # Computing next tag name based on branch name
-        - echo $TRAVIS_COMMIT_MESSAGE
-        - export NEXT_TAG=$(./get_next_tag.sh "$TRAVIS_COMMIT_MESSAGE" $(git describe --abbrev=0))
-        - echo "Next version = $NEXT_TAG"
-        - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
-        - docker login -u yuruh -p $DOCKER_PWD
-        - git tag -a $NEXT_TAG -m "$TRAVIS_COMMIT_MESSAGE"
-        - git push "https://$GITHUB_TOKEN@github.com/Yuruh/encrypted-diary-web-app.git" --tags
-        - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
-
+  - stage: test
+    script:
+    - echo "Testing stage" && return 0
+  - stage: deploy
+    script:
+    - sudo apt install gawk
+    - echo $TRAVIS_COMMIT_MESSAGE
+    - export NEXT_TAG=$(./get_next_tag.sh "$TRAVIS_COMMIT_MESSAGE" $(git describe
+      --abbrev=0))
+    - echo "Next version = $NEXT_TAG"
+    - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
+    - docker login -u yuruh -p $DOCKER_TOKEN
+    - git tag -a $NEXT_TAG -m "$TRAVIS_COMMIT_MESSAGE"
+    - git push "https://$GITHUB_TOKEN@github.com/Yuruh/encrypted-diary-web-app.git"
+      --tags
+    - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
 stages:
-  - name: test
-  - name: deploy
-    if: branch = master AND type = push
+- name: test
+- name: deploy
+  if: branch = master AND type = push
+env:
+  global:
+  - secure: W3gFs+2fhviYEtbR4FKkSEzxwDuama5UnKJScHtPhYZxzpwxdyCyKY2dRD4GrEY05i2afDo6uVRHw5z10b33xuJwl1GOzhf7joQvxNO/t/w4bWTE6snHN06I9b2dSh2hFHhzEEwz5oYsdh/iXmvEfPt9xbY65lQJjr7/eDNnFWHWSGpAgeb317UoiS9ndptRrny2mPtf9FDtVCZJb5z/XU+VyyVHBUcPnaD4zugwkpKSX7KSXu6LVgnuntseV9UpnKkjH5ALQePwE9TdpfA+R7yc7InF6ZgfvmpoPBz3ZfKBLFzu5q2yfZjqK77MJuM5aKnjhVqd0REmbtohaSCfN3F5dafh+nXEgqlCimHvFr4mx82kVrm5k0DtK7uyojMPbie7YpA37eQ20srM7PlGBWqrG4FysQrJ7vLYT9CUYZnVqimetPIrL9JWZ8hN+Fm4sM+qR2OJ7dKwEZCJy5/CRm0Nc8V8mNM4Ull+TQPhkS+qz0OriMtmuFs3Nh2T7HRrdHyQWGXuDeP/Er2IZgYoxw2sowrIOnJNkV+vDNdLKu1NI+/mhIzMe56QNZu0RJF5tqGUDFPKkumgqWtcLqQ3ybqnTvBTyZIREMyNHtfYwav7sYoMTI8GfgWuLRMTO1utuXax2/jQ4Ro8Tov0b0moK4DGmfcaxXq20arDUjVOgH8=
+  - secure: igx0h6aZ1g2HYRVfAF4fjNYtuVEjvnGSA0QyLfrZ2vzlBmHdsZQQuNv4SmDvhW7O5p8a3xQ85u4dBjQKnSkFLCXP6Uf+tAsVl2tFldtwp9EjuGSwShCh7bJFxkMaXVy1acCjGy3iDtONkZwIlEgznfBB1fKWacc8Q/15XyGJ7EnbrMaFSzCvYSWK2qbThhFfoV7IImaA8WdcNg1hXsKz2iTivQjbGZjn9MgDudC1iNQp6AIg1kQXc6u7iNqVxVwoaOY5Obc5mY0GIWEIXMkboP9k72MbgLaRg1HxXrzDRGFZWFov1fl1obMYGIAKCI7H6j/4jdvHeARDLvHWdXY7wQ9rAWpR6SiirP205CBDk0DizFFqWMJhdu+FmD9Fz6W8x5lSYOiB7g+mVLx8m46SQI63Bz23FC8fp3PpeBHM8crjoX9x6fkc4nO1+TmF+abF0zTFgTaD2KXcouMMntR/UqPzuzY7ZTVbleXHaYfs+faTTL1ffMUYFSiBto9/ChLDS9nyiwxqVMjdYutCYgnetnp40YRnxe/6eV5zVF+6ZQKhZ/ndfm5eh7Asr+zBpbiTo0pWqCiX+QcKC07F+ZqFtcOG8439KNXDbFnW8Q1STaJ1gCkt3dluHlliHhIO9+HlnT21EvbBLBLWwLcItJ17sLHPzfEHPNTJNqObZvJEbmQ=
