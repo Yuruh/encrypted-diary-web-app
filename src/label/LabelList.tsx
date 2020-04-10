@@ -7,10 +7,10 @@ import {createStyles, Theme} from "@material-ui/core";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         label: {
-            color: "white",
+            color: "black",
             fontSize: 15,
             webkitTextStrokeWidth: "1px black", // Doesn't seem to be actually supported
-            textShadow: "-1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;",
+//            textShadow: "-1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;",
 
             //fontSize: "22px",
             //height: "50px",

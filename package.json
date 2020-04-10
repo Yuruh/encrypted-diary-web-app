@@ -19,6 +19,7 @@
     "codemirror": "^5.52.2",
     "crypto-js": "^4.0.0",
     "pbkdf2": "^3.0.17",
+    "randomcolor": "^0.5.4",
     "react": "^16.12.0",
     "react-codemirror2": "^7.1.0",
     "react-dom": "^16.12.0",
