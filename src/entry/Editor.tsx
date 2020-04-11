@@ -85,7 +85,7 @@ class Editor extends React.Component<IProps, IState> {
                 saveStatus: EntrySaveStatus.SAVING,
             });
             try {
-                await Api.editEntry(this.state.entry, this.state.entry.labels.map((elem) => elem.id));
+                await Api.editEntry(this.state.entry, this.props.entry.labels.map((elem) => elem.id));
                 this.setState({
                     saveStatus: EntrySaveStatus.SAVED,
                 });
@@ -120,11 +120,11 @@ class Editor extends React.Component<IProps, IState> {
 
     async addLabelToEntry(labels_id: number[]) {
         try {
-            await Api.editEntry(this.state.entry, labels_id);
+            const res = await Api.editEntry(this.state.entry, labels_id);
             this.setState({
                 saveStatus: EntrySaveStatus.SAVED,
             });
-            // todo once the api correctly returns populated labels call this.props.updateEntry(res.data.entry);
+            this.props.updateEntry(res.data.entry);
         } catch (e) {
             this.setState({
                 saveStatus: EntrySaveStatus.ERROR,

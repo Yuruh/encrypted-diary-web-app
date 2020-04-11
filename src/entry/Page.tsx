@@ -79,7 +79,7 @@ export default function Page() {
         return <CircularProgress/>
     }
 
-    let content;
+    let content: JSX.Element;
 
     if (display !== "edit") {
         content = <Box className={classes.root}>
@@ -102,7 +102,6 @@ export default function Page() {
     }
 
     return <div>
-        <Header/>
         {content}
     </div>
 }

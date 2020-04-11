@@ -15,7 +15,6 @@ import {Edit, Visibility} from "@material-ui/icons";
 import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
-import Typography from "@material-ui/core/Typography";
 import LabelList from "./label/LabelList";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -77,7 +76,6 @@ export default function EntryList() {
     }
 
     return <div>
-        <Header/>
         <Grid className={classes.grid} container spacing={3}>
             {entries.map((elem: Entry, i) => {
                 return <Grid item xs={12} sm={6} lg={3} key={i}>

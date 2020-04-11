@@ -1,13 +1,17 @@
 import React from "react";
-import {Button, createStyles, Theme} from "@material-ui/core";
+import {Button, createStyles, fade, Theme} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import AppBar from "@material-ui/core/AppBar";
-import {Link, useHistory} from "react-router-dom";
-import {Home} from "@material-ui/icons";
+import {useHistory} from "react-router-dom";
+import {Menu, Search} from "@material-ui/icons";
 import Api from "./Api";
+import InputBase from "@material-ui/core/InputBase";
+import AppDrawer, {DRAWER_WIDTH} from "./AppDrawer";
+import clsx from 'clsx';
+
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -15,32 +19,122 @@ const useStyles = makeStyles((theme: Theme) =>
             flexGrow: 1,
             marginBottom: "10px",
         },
+        appBar: {
+            zIndex: theme.zIndex.drawer + 1,
+            transition: theme.transitions.create(['width', 'margin'], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+        },
+        appBarShift: {
+            marginLeft: DRAWER_WIDTH,
+            width: `calc(100% - ${DRAWER_WIDTH}px)`,
+            transition: theme.transitions.create(['width', 'margin'], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+        },
         menuButton: {
             marginRight: theme.spacing(2),
         },
+        hide: {
+            display: 'none',
+        },
         title: {
-            flexGrow: 1,
+//            flexGrow: 1,
+        },
+        grow: {
+            flewGrow: 1,
+        },
+        search: {
+            position: 'relative',
+            borderRadius: theme.shape.borderRadius,
+            backgroundColor: fade(theme.palette.common.white, 0.15),
+            '&:hover': {
+                backgroundColor: fade(theme.palette.common.white, 0.25),
+            },
+            marginRight: theme.spacing(2),
+            marginLeft: 0,
+            width: '100%',
+            [theme.breakpoints.up('sm')]: {
+                marginLeft: theme.spacing(3),
+                width: 'auto',
+            },
+        },
+        searchIcon: {
+            padding: theme.spacing(0, 2),
+            height: '100%',
+            position: 'absolute',
+            pointerEvents: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        inputRoot: {
+            color: 'inherit',
+        },
+        inputInput: {
+            padding: theme.spacing(1, 1, 1, 0),
+            // vertical padding + font size from searchIcon
+            paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+            transition: theme.transitions.create('width'),
+            width: '100%',
+            [theme.breakpoints.up('md')]: {
+                width: '20ch',
+            },
         },
     }),
 );
 
-export default function Header() {
+// Taken from https://material-ui.com/components/app-bar/#app-bar-with-a-primary-search-field
+export default function Header(props: {
+    content: JSX.Element
+}) {
     const classes = useStyles({});
     const history = useHistory();
+    const [open, setOpen] = React.useState(false);
+
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
 
     function redirectHome() {
         history.push("/");
     }
 
     return <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="static" className={clsx(classes.appBar, {
+            [classes.appBarShift]: open,
+        })}>
             <Toolbar>
-                <IconButton onClick={redirectHome} className={classes.menuButton} edge="start" color="inherit" aria-label="menu">
-                    <Home/>
+                <IconButton onClick={handleDrawerOpen}
+                            className={clsx(classes.menuButton, {
+                                [classes.hide]: open,
+                            })}
+                            edge="start" color="inherit" aria-label="menu">
+                    <Menu/>
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
                     Encrypted diary
                 </Typography>
+                <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                        <Search/>
+                    </div>
+                    <InputBase
+                        placeholder="Search label, date, title…"
+                        classes={{
+                            root: classes.inputRoot,
+                            input: classes.inputInput,
+                        }}
+                        inputProps={{ 'aria-label': 'search' }}
+                    />
+                </div>
+                <div className={classes.grow}/>
                 <Button color="inherit" onClick={() => {
                     Api.encryptionKey = null;
                     Api.token = null;
@@ -48,5 +142,6 @@ export default function Header() {
                 }}>Logout</Button>
             </Toolbar>
         </AppBar>
+        <AppDrawer open={open} changeOpen={(value) => setOpen(value)} content={props.content}/>
     </div>
 }

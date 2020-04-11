@@ -16,6 +16,7 @@ import {blueGrey, indigo} from "@material-ui/core/colors";
 import {Register} from "./Register";
 import Page from "./entry/Page";
 import {Login} from "./Login";
+import Header from "./Header";
 
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -42,23 +43,24 @@ const App = () => {
   return (
       <Router>
           <ThemeProvider theme={theme}>
-              <div>
-                  {/* <Switch> looks through its children <Route>s and
+              <Header content={
+                  <div>
+                      {/* <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-                  <Switch>
-                      <Route path="/login">
-                          <div style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              flexDirection: "column",
-                          }}>
-                              <div style={{marginTop: 50}}>
-                                  <Login/>
+                      <Switch>
+                          <Route path="/login">
+                              <div style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  flexDirection: "column",
+                              }}>
+                                  <div style={{marginTop: 50}}>
+                                      <Login/>
+                                  </div>
                               </div>
-                          </div>
-                      </Route>
-                      <Route path="/register">
+                          </Route>
+                          <Route path="/register">
                               <div style={{
                                   display: "flex",
                                   justifyContent: "center",
@@ -69,11 +71,13 @@ const App = () => {
                                       <Register/>
                                   </div>
                               </div>
-                      </Route>
-                      <PrivateRoute component={Page} path="/entry/:id"/>
-                      <PrivateRoute component={EntryList} path="/"/>
-                  </Switch>
-              </div>
+                          </Route>
+                          <PrivateRoute component={Page} path="/entry/:id"/>
+                          <PrivateRoute component={EntryList} path="/"/>
+                      </Switch>
+                  </div>
+              }/>
+
           </ThemeProvider>
       </Router>
   );
