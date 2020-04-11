@@ -61,13 +61,13 @@ export default function Page() {
 
     function loadNextEntry() {
         id = String(nextEntryId);
-        history.push("/entry/" + String(nextEntryId) + location.search);
+        history.push("/entries/" + String(nextEntryId) + location.search);
         fetchData().catch(e => console.log(e));
     }
 
     function loadPrevEntry() {
         id = String(prevEntryId);
-        history.push("/entry/" + String(prevEntryId) + location.search);
+        history.push("/entries/" + String(prevEntryId) + location.search);
         fetchData().catch(e => console.log(e));
     }
 

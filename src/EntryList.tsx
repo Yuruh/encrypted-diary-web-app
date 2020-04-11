@@ -15,7 +15,7 @@ import {Edit, Visibility} from "@material-ui/icons";
 import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
-import LabelList from "./label/LabelList";
+import EntryLabelList from "./label/EntryLabelList";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -82,13 +82,13 @@ export default function EntryList() {
                     <Card elevation={3}>
                         <CardHeader title={new Date(elem.created_at).toLocaleDateString()} subheader={elem.title}/>
                         <CardContent>
-                            <LabelList labels={elem.labels}/>
+                            <EntryLabelList labels={elem.labels}/>
                         </CardContent>
                         <CardActions>
-                            <IconButton onClick={() => setRedirect("/entry/" + elem.id + "?display=edit")} aria-label="edit" className={classes.cardAction}>
+                            <IconButton onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit" className={classes.cardAction}>
                                 <Edit/>
                             </IconButton>
-                            <IconButton onClick={() => setRedirect("/entry/" + elem.id + "?display=view")} aria-label="view" className={classes.cardAction}>
+                            <IconButton onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view" className={classes.cardAction}>
                                 <Visibility/>
                             </IconButton>
                         </CardActions>
@@ -102,7 +102,7 @@ export default function EntryList() {
             entry.content = "Your entry content, in **markdown** format, client-side encrypted";
             try {
                 const res = await Api.addEntry(entry);
-                setRedirect("/entry/" + res.data.entry.id + "?display=edit")
+                setRedirect("/entries/" + res.data.entry.id + "?display=edit")
             } catch (e) {
                 // todo
             }

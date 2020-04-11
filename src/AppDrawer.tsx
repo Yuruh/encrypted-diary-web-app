@@ -7,10 +7,12 @@ import AppBar from "@material-ui/core/AppBar";
 import clsx from 'clsx';
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
-import {ChevronRight, ChevronLeft, Inbox, Mail} from "@material-ui/icons";
+import {ChevronRight, ChevronLeft, Inbox, Mail, Label, CalendarToday} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
+import {useHistory, useLocation} from "react-router-dom";
+import {cursorTo} from "readline";
 
 //Taken from https://material-ui.com/components/drawers/#mini-variant-drawer
 
@@ -67,6 +69,11 @@ export default function AppDrawer(props: {
     const classes = useStyles();
     const theme = useTheme();
 
+    const location = useLocation();
+    const history = useHistory();
+
+    const entriesPath = "/entries";
+    const labelsPath = "/labels";
 
     return (
         <div className={classes.root}>
@@ -91,21 +98,14 @@ export default function AppDrawer(props: {
                 </div>
                 <Divider />
                 <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <Inbox /> : <Mail />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <Inbox/> : <Mail/>}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
+                    <ListItem button selected={location.pathname.substr(0, entriesPath.length) === entriesPath} onClick={() => history.push(entriesPath)}>
+                        <ListItemIcon><CalendarToday/></ListItemIcon>
+                        <ListItemText primary={"Entries"} />
+                    </ListItem>
+                    <ListItem button selected={location.pathname.substr(0, labelsPath.length) === labelsPath} onClick={() => history.push(labelsPath)}>
+                        <ListItemIcon><Label/></ListItemIcon>
+                        <ListItemText primary={"Labels"} />
+                    </ListItem>
                 </List>
             </Drawer>
             <main className={classes.content}>

@@ -17,6 +17,7 @@ import {Register} from "./Register";
 import Page from "./entry/Page";
 import {Login} from "./Login";
 import Header from "./Header";
+import LabelList from "./label/LabelList";
 
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -72,8 +73,9 @@ const App = () => {
                                   </div>
                               </div>
                           </Route>
-                          <PrivateRoute component={Page} path="/entry/:id"/>
-                          <PrivateRoute component={EntryList} path="/"/>
+                          <PrivateRoute component={Page} path="/entries/:id"/>
+                          <PrivateRoute component={EntryList} path="/entries"/>
+                          <PrivateRoute component={LabelList} path="/labels"/>
                       </Switch>
                   </div>
               }/>

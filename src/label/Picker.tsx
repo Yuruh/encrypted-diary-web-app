@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {LabelChip} from "./LabelList";
+import {LabelChip} from "./EntryLabelList";
 
 // Theme-dependent styles
 const styles = (theme: Theme) => createStyles({
