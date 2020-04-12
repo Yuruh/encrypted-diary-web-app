@@ -44,10 +44,12 @@ const useStyles = makeStyles((theme: Theme) =>
 //            flexGrow: 1,
         },
         grow: {
-            flewGrow: 1,
+            flexGrow: 1,
         },
         search: {
             position: 'relative',
+            flexGrow: 1,
+            maxWidth: "400px",
             borderRadius: theme.shape.borderRadius,
             backgroundColor: fade(theme.palette.common.white, 0.15),
             '&:hover': {
@@ -72,16 +74,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         inputRoot: {
             color: 'inherit',
+            width: "100%"
         },
         inputInput: {
             padding: theme.spacing(1, 1, 1, 0),
             // vertical padding + font size from searchIcon
             paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-            transition: theme.transitions.create('width'),
+            //transition: theme.transitions.create('width'),
             width: '100%',
-            [theme.breakpoints.up('md')]: {
-                width: '20ch',
-            },
         },
     }),
 );
@@ -126,7 +126,7 @@ export default function Header(props: {
                         <Search/>
                     </div>
                     <InputBase
-                        placeholder="Search label, date, title…"
+                        placeholder="Search Entry by Label, Date, Title…"
                         classes={{
                             root: classes.inputRoot,
                             input: classes.inputInput,

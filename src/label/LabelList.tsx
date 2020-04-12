@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {createStyles, Theme} from "@material-ui/core";
+import {Box, createStyles, Theme} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Api from "../Api";
@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme: Theme) =>
         button: {
             margin: theme.spacing(1),
         },
+        arrow: {
+            fontSize: 40,
+        }
     }),
 );
 
@@ -44,32 +47,26 @@ export default function LabelList() {
         return <CircularProgress/>
     }
 
+    function onEdit(label: Label) {
+        const existingLabelIdx: number = labels.findIndex((elem: Label) => elem.id === label.id);
+        labels[existingLabelIdx] = {...label};
+        setLabels([...labels]);
+        setSelectedLabel(labels[existingLabelIdx])
+    }
 
+    function onDelete(labelId: number) {
+        setLabels(labels.filter((elem: Label) => elem.id !== labelId));
+        setSelectedLabel(null)
+    }
 
 
     return <div>
-        {selectedLabel !== null && <div style={{marginBottom: "20px"}}>
-            <Typography variant={"h4"} color={"primary"} gutterBottom={true}>
-                Label edition
-            </Typography>
-            <TextField value={selectedLabel?.name}
-                       onChange={(event) => setSelectedLabel({...selectedLabel, name: event.target.value})}/>
-            <input type="color" name="color"
-                   value={selectedLabel?.color} onChange={(event) => setSelectedLabel({...selectedLabel, color: event.target.value})}/>
-            <br/>
-            <br/>
-            <span>Preview:  <LabelChip color={selectedLabel?.color} label={selectedLabel?.name}/></span>
-            <br/>
-            <br/>
-            <Button className={classes.button} variant={"contained"} color={"primary"} startIcon={<Save/>}>Confirm changes</Button>
-            <Button className={classes.button} variant={"contained"} color={"secondary"} startIcon={<Delete/>}>Delete label</Button>
-            <br/>
-            <br/>
-            <Divider/>
-        </div>}
-        <div>
-            <Typography variant={"h4"} color={"primary"} gutterBottom={true}>
+        <div style={{marginBottom: "20px"}}>
+            <Typography variant={"h4"} color={"primary"}>
                 My Labels
+            </Typography>
+            <Typography variant={"subtitle1"} color={"secondary"} gutterBottom={true}>
+                Click to edit
             </Typography>
             <Grid container spacing={1}>
                 {labels.map((elem: Label, i) => {
@@ -79,5 +76,59 @@ export default function LabelList() {
                 })}
             </Grid>
         </div>
+        {selectedLabel !== null && <LabelEditor selectedLabel={selectedLabel} onDeleteSuccess={onDelete} onEditSuccess={onEdit}/>}
+    </div>
+}
+
+function LabelEditor(props: {
+    selectedLabel: Label,
+    onEditSuccess: (label: Label) => void;
+    onDeleteSuccess: (labelId: number) => void;
+}) {
+    const classes = useStyles({});
+
+    const [label, setLabel] = React.useState<Label>(props.selectedLabel);
+    if (props.selectedLabel.id != label.id) {
+        setLabel(props.selectedLabel);
+    }
+
+    return <div>
+        <Typography variant={"h4"} color={"primary"} gutterBottom={true}>
+            Label edition
+        </Typography>
+        <TextField value={label.name}
+                   onChange={(event) => setLabel({...label, name: event.target.value})}/>
+        <input type="color" name="color"
+               value={label.color} onChange={(event) => setLabel({...label, color: event.target.value})}/>
+        <br/>
+        <br/>
+        <Box display={"flex"} alignItems={"center"}>
+            <LabelChip color={props.selectedLabel.color} label={props.selectedLabel.name}/>
+            <span className={classes.arrow}>&rarr;</span>
+            <LabelChip color={label.color} label={label.name}/>
+        </Box>
+        <br/>
+        <br/>
+        <Button className={classes.button} variant={"contained"} color={"primary"} startIcon={<Save/>}
+                onClick={async () => {
+                    try {
+                        const res = await Api.editLabel(label);
+                        props.onEditSuccess(res.data.label);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }}>Confirm changes</Button>
+        <Button className={classes.button} variant={"contained"} color={"secondary"} startIcon={<Delete/>}
+                onClick={async () => {
+                    try {
+                        await Api.deleteLabel(label);
+                        props.onDeleteSuccess(label.id);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }}>Delete label</Button>
+        <br/>
+        <br/>
+        <Divider/>
     </div>
 }

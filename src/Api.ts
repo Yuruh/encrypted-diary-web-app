@@ -94,6 +94,14 @@ export default class Api {
         return this.axiosInstance.post("/labels", label);
     }
 
+    static async editLabel(label: Label) {
+        return this.axiosInstance.put("/labels/" + label.id, label);
+    }
+
+    static async deleteLabel(label: Label) {
+        return this.axiosInstance.delete("/labels/" + label.id);
+    }
+
     static async getEntry(entryId: number | string) {
         if (!this.encryptionKey) {
             throw new Error("encryption key undefined");
