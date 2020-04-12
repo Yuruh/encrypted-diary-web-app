@@ -88,7 +88,7 @@ export default function Page() {
                     <NavigateNext className={classes.prevIcon}/>
                 </IconButton>
             </Hidden>
-            <div style={{maxWidth: 1000, width: 1000}}>
+            <div style={{maxWidth: 1000, width: "100%"}}>
                 <Viewer entry={entry}/>
             </div>
             <Hidden xsDown={true}>

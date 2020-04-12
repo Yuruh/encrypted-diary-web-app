@@ -80,12 +80,13 @@ export default class Api {
         });
     }
 
-    static async getLabels(name: string = "", limit: number = 5, page: number = 1) {
+    static async getLabels(name: string = "", excluded_ids: number[], limit: number = 5, page: number = 1) {
         return this.axiosInstance.get("/labels", {
             params: {
                 name,
                 limit,
-                page
+                page,
+                excluded_ids: JSON.stringify(excluded_ids)
             }
         });
     }

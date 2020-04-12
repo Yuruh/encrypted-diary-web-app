@@ -34,7 +34,7 @@ export default function LabelList() {
 
     const fetchData = async() => {
         setFetching(true);
-        const result = await Api.getLabels("", Number.MAX_SAFE_INTEGER, 1);
+        const result = await Api.getLabels("", [], Number.MAX_SAFE_INTEGER, 1);
         setLabels(result.data.labels);
         setFetching(false);
     };

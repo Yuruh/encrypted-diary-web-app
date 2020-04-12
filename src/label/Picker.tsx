@@ -13,6 +13,11 @@ const styles = (theme: Theme) => createStyles({
     root: {
 
     },
+    option: {
+        '&[data-focus="true"]': {
+            backgroundColor: "#bdbdbd",
+        },
+    }
 });
 
 interface IProps extends WithStyles<typeof styles> {
@@ -42,7 +47,6 @@ class Picker extends React.Component<IProps, IState> {
             open: false,
             offeredLabels: []
         };
-        this.keyPress = this.keyPress.bind(this);
         this.onChangeLabel = this.onChangeLabel.bind(this);
         this.triggerAutocompletion = this.triggerAutocompletion.bind(this);
         this.onOptionsChange = this.onOptionsChange.bind(this);
@@ -62,7 +66,7 @@ class Picker extends React.Component<IProps, IState> {
                 loading: true
             });
             try {
-                const res = await Api.getLabels(this.state.newLabelName, 6);
+                const res = await Api.getLabels(this.state.newLabelName, this.state.labels.map((elem) => elem.id),6);
                 this.setState({
                     offeredLabels: res.data.labels
                 });
@@ -75,32 +79,14 @@ class Picker extends React.Component<IProps, IState> {
         }, TIME_BEFORE_REQUEST_MS);
     }
 
-    async keyPress(e: any) {
-        if (e.keyCode === 13) {
-            const label: Label = new Label();
-            label.name = this.state.newLabelName;
-            try {
-                const res = await Api.addLabel(label);
-
-                this.setState({
-                    newLabelName: ""
-                });
-                await this.props.addLabelToEntry(res.data.label.id);
-            } catch (e) {
-                console.log(e);
-            }
-        }
-    }
-
     onChangeLabel(event: any) {
-        this.triggerAutocompletion();
         this.setState({
             newLabelName: event.target.value
-        })
+        });
+        this.triggerAutocompletion();
     }
 
     async onOptionsChange(event: React.ChangeEvent<{}>, value: Array<Label | string>) {
-        console.log("NEW VALUE ", value);
         // If the last element is a string instead of a label, it means it was just created
         if (value.length > 0 && typeof value[value.length - 1] === "string") {
 
@@ -126,16 +112,12 @@ class Picker extends React.Component<IProps, IState> {
                 }
             }
         }
-        this.setState({
-            labels: value as Label[]
-        });
         try {
-/*            const res = await Api.addLabel(label);
-
-            this.setState({
-                newLabelName: ""
-            });*/
             await this.props.addLabelToEntry((value as Label[]).map((elem: Label) => elem.id));
+            this.setState({
+                labels: value as Label[]
+            });
+            this.triggerAutocompletion();
         } catch (e) {
             console.log(e);
         }
@@ -144,6 +126,9 @@ class Picker extends React.Component<IProps, IState> {
     // https://material-ui.com/components/autocomplete/
     render() {
         return <Autocomplete
+            classes={{
+                option: this.props.classes.option
+            }}
             multiple
             freeSolo
             id="label-picker"
@@ -158,11 +143,27 @@ class Picker extends React.Component<IProps, IState> {
             onChange={this.onOptionsChange}
             value={this.state.labels}
             getOptionSelected={(option, value) => {
-                return option.id === value.id
+                /*
+                    We don't want the component to display already selected
+                    It messes up the selection
+                    So we'll prevent offering labels already in list (server side)
+                    And we'll prevent adding an already existing
+                 */
+                return false//option.id === value.id
             }}
             getOptionLabel={(option) => option.name}
             options={this.state.offeredLabels}
-            filterOptions={((options, state) => options)} // We don't want the component to filter, as it is done server side
+            filterOptions={((options, state) => {
+                const base: Label[] = [];
+                /*if (state.inputValue !== '') {
+                    const label: Label = new Label();
+                    label.name = state.inputValue;
+                    label.color ="#FFFFFF"
+                    base.push(label);
+                }*/
+
+                return base.concat(options);
+            })} // We don't want the component to filter, as it is done server side
             loading={this.state.loading}
             renderOption={(option: Label, {inputValue}) => {
                 return (

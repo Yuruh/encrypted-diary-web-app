@@ -151,18 +151,18 @@ class Editor extends React.Component<IProps, IState> {
                     <Visibility/>
                 </IconButton>
             </div>
-            <div style={{margin: 10}}>
-            <TextField label={"Title"} fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
-                       inputProps={{
-                           style: {
-                               fontSize: 30,
-                               textAlign: "center",
-                           }
-                       }}
-            />
+            <div style={{margin: "10px 0px 10px 0px"}}>
+                <TextField label={"Title"} fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
+                           inputProps={{
+                               style: {
+                                   fontSize: 30,
+                                   textAlign: "center",
+                               }
+                           }}
+                />
             </div>
-            <div style={{margin: 10}}>
-            <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
+            <div style={{margin: "10px 0px 10px 0px"}}>
+                <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
             </div>
             <Grid container spacing={0} className={this.props.classes.root}>
                 <Grid item xs={12} sm={6} lg={6}>

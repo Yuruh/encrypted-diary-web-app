@@ -85,10 +85,10 @@ export default function EntryList() {
                             <EntryLabelList labels={elem.labels}/>
                         </CardContent>
                         <CardActions>
-                            <IconButton onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit" className={classes.cardAction}>
+                            <IconButton color={"primary"} onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit" className={classes.cardAction}>
                                 <Edit/>
                             </IconButton>
-                            <IconButton onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view" className={classes.cardAction}>
+                            <IconButton color={"primary"} onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view" className={classes.cardAction}>
                                 <Visibility/>
                             </IconButton>
                         </CardActions>

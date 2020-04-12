@@ -10,8 +10,6 @@ import {Menu, Search} from "@material-ui/icons";
 import Api from "./Api";
 import InputBase from "@material-ui/core/InputBase";
 import AppDrawer, {DRAWER_WIDTH} from "./AppDrawer";
-import clsx from 'clsx';
-
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -26,22 +24,8 @@ const useStyles = makeStyles((theme: Theme) =>
                 duration: theme.transitions.duration.leavingScreen,
             }),
         },
-        appBarShift: {
-            marginLeft: DRAWER_WIDTH,
-            width: `calc(100% - ${DRAWER_WIDTH}px)`,
-            transition: theme.transitions.create(['width', 'margin'], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        },
         menuButton: {
             marginRight: theme.spacing(2),
-        },
-        hide: {
-            display: 'none',
-        },
-        title: {
-//            flexGrow: 1,
         },
         grow: {
             flexGrow: 1,
@@ -94,12 +78,8 @@ export default function Header(props: {
     const history = useHistory();
     const [open, setOpen] = React.useState(false);
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
+    const handleDrawerChange = () => {
+        setOpen(!open);
     };
 
     function redirectHome() {
@@ -107,18 +87,14 @@ export default function Header(props: {
     }
 
     return <div className={classes.root}>
-        <AppBar position="static" className={clsx(classes.appBar, {
-            [classes.appBarShift]: open,
-        })}>
+        <AppBar position="static" className={classes.appBar}>
             <Toolbar>
-                <IconButton onClick={handleDrawerOpen}
-                            className={clsx(classes.menuButton, {
-                                [classes.hide]: open,
-                            })}
+                <IconButton onClick={handleDrawerChange}
+                            className={classes.menuButton}
                             edge="start" color="inherit" aria-label="menu">
                     <Menu/>
                 </IconButton>
-                <Typography variant="h6" className={classes.title}>
+                <Typography variant="h6">
                     Encrypted diary
                 </Typography>
                 <div className={classes.search}>
