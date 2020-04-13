@@ -80,18 +80,27 @@ export default class Api {
         });
     }
 
-    static async getLabels(name: string = "", limit: number = 5, page: number = 1) {
+    static async getLabels(name: string = "", excluded_ids: number[], limit: number = 5, page: number = 1) {
         return this.axiosInstance.get("/labels", {
             params: {
                 name,
                 limit,
-                page
+                page,
+                excluded_ids: JSON.stringify(excluded_ids)
             }
         });
     }
 
     static async addLabel(label: Label) {
         return this.axiosInstance.post("/labels", label);
+    }
+
+    static async editLabel(label: Label) {
+        return this.axiosInstance.put("/labels/" + label.id, label);
+    }
+
+    static async deleteLabel(label: Label) {
+        return this.axiosInstance.delete("/labels/" + label.id);
     }
 
     static async getEntry(entryId: number | string) {

@@ -85,7 +85,7 @@ class Editor extends React.Component<IProps, IState> {
                 saveStatus: EntrySaveStatus.SAVING,
             });
             try {
-                await Api.editEntry(this.state.entry, this.state.entry.labels.map((elem) => elem.id));
+                await Api.editEntry(this.state.entry, this.props.entry.labels.map((elem) => elem.id));
                 this.setState({
                     saveStatus: EntrySaveStatus.SAVED,
                 });
@@ -120,11 +120,11 @@ class Editor extends React.Component<IProps, IState> {
 
     async addLabelToEntry(labels_id: number[]) {
         try {
-            await Api.editEntry(this.state.entry, labels_id);
+            const res = await Api.editEntry(this.state.entry, labels_id);
             this.setState({
                 saveStatus: EntrySaveStatus.SAVED,
             });
-            // todo once the api correctly returns populated labels call this.props.updateEntry(res.data.entry);
+            this.props.updateEntry(res.data.entry);
         } catch (e) {
             this.setState({
                 saveStatus: EntrySaveStatus.ERROR,
@@ -151,18 +151,18 @@ class Editor extends React.Component<IProps, IState> {
                     <Visibility/>
                 </IconButton>
             </div>
-            <div style={{margin: 10}}>
-            <TextField label={"Title"} fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
-                       inputProps={{
-                           style: {
-                               fontSize: 30,
-                               textAlign: "center",
-                           }
-                       }}
-            />
+            <div style={{margin: "10px 0px 10px 0px"}}>
+                <TextField label={"Title"} fullWidth value={this.state.entry.title} onChange={this.changeEntryTitle} variant={"outlined"} className={this.props.classes.title}
+                           inputProps={{
+                               style: {
+                                   fontSize: 30,
+                                   textAlign: "center",
+                               }
+                           }}
+                />
             </div>
-            <div style={{margin: 10}}>
-            <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
+            <div style={{margin: "10px 0px 10px 0px"}}>
+                <Picker addLabelToEntry={this.addLabelToEntry} labels={this.state.entry.labels}/>
             </div>
             <Grid container spacing={0} className={this.props.classes.root}>
                 <Grid item xs={12} sm={6} lg={6}>

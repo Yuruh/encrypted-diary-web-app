@@ -61,13 +61,13 @@ export default function Page() {
 
     function loadNextEntry() {
         id = String(nextEntryId);
-        history.push("/entry/" + String(nextEntryId) + location.search);
+        history.push("/entries/" + String(nextEntryId) + location.search);
         fetchData().catch(e => console.log(e));
     }
 
     function loadPrevEntry() {
         id = String(prevEntryId);
-        history.push("/entry/" + String(prevEntryId) + location.search);
+        history.push("/entries/" + String(prevEntryId) + location.search);
         fetchData().catch(e => console.log(e));
     }
 
@@ -79,7 +79,7 @@ export default function Page() {
         return <CircularProgress/>
     }
 
-    let content;
+    let content: JSX.Element;
 
     if (display !== "edit") {
         content = <Box className={classes.root}>
@@ -88,7 +88,7 @@ export default function Page() {
                     <NavigateNext className={classes.prevIcon}/>
                 </IconButton>
             </Hidden>
-            <div style={{maxWidth: 1000, width: 1000}}>
+            <div style={{maxWidth: 1000, width: "100%"}}>
                 <Viewer entry={entry}/>
             </div>
             <Hidden xsDown={true}>
@@ -102,7 +102,6 @@ export default function Page() {
     }
 
     return <div>
-        <Header/>
         {content}
     </div>
 }

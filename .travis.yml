@@ -8,23 +8,23 @@ jobs:
   - stage: test
     script:
     - echo "Testing stage" && return 0
-  - stage: deploy
-    script:
-    - sudo apt install gawk
-    - echo $TRAVIS_COMMIT_MESSAGE
-    - export NEXT_TAG=$(./get_next_tag.sh "$TRAVIS_COMMIT_MESSAGE" $(git describe
-      --abbrev=0))
-    - echo "Next version = $NEXT_TAG"
-    - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
-    - docker login -u yuruh -p $DOCKER_TOKEN
-    - git tag -a $NEXT_TAG -m "$TRAVIS_COMMIT_MESSAGE"
-    - git push "https://$GITHUB_TOKEN@github.com/Yuruh/encrypted-diary-web-app.git"
-      --tags
-    - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
+ # - stage: deploy
+ #   script:
+ #   - sudo apt install gawk
+ #   - echo $TRAVIS_COMMIT_MESSAGE
+ #   - export NEXT_TAG=$(./get_next_tag.sh "$TRAVIS_COMMIT_MESSAGE" $(git describe
+ #     --abbrev=0))
+ #   - echo "Next version = $NEXT_TAG"
+ #   - docker build -t yuruh/encrypted-diary-web-app:$NEXT_TAG .
+ #   - docker login -u yuruh -p $DOCKER_TOKEN
+ #   - git tag -a $NEXT_TAG -m "$TRAVIS_COMMIT_MESSAGE"
+ #   - git push "https://$GITHUB_TOKEN@github.com/Yuruh/encrypted-diary-web-app.git"
+ #     --tags
+ #   - docker push yuruh/encrypted-diary-web-app:$NEXT_TAG
 stages:
 - name: test
-- name: deploy
-  if: branch = master AND type = push
+#- name: deploy
+#  if: branch = master AND type = push
 env:
   global:
   - secure: W3gFs+2fhviYEtbR4FKkSEzxwDuama5UnKJScHtPhYZxzpwxdyCyKY2dRD4GrEY05i2afDo6uVRHw5z10b33xuJwl1GOzhf7joQvxNO/t/w4bWTE6snHN06I9b2dSh2hFHhzEEwz5oYsdh/iXmvEfPt9xbY65lQJjr7/eDNnFWHWSGpAgeb317UoiS9ndptRrny2mPtf9FDtVCZJb5z/XU+VyyVHBUcPnaD4zugwkpKSX7KSXu6LVgnuntseV9UpnKkjH5ALQePwE9TdpfA+R7yc7InF6ZgfvmpoPBz3ZfKBLFzu5q2yfZjqK77MJuM5aKnjhVqd0REmbtohaSCfN3F5dafh+nXEgqlCimHvFr4mx82kVrm5k0DtK7uyojMPbie7YpA37eQ20srM7PlGBWqrG4FysQrJ7vLYT9CUYZnVqimetPIrL9JWZ8hN+Fm4sM+qR2OJ7dKwEZCJy5/CRm0Nc8V8mNM4Ull+TQPhkS+qz0OriMtmuFs3Nh2T7HRrdHyQWGXuDeP/Er2IZgYoxw2sowrIOnJNkV+vDNdLKu1NI+/mhIzMe56QNZu0RJF5tqGUDFPKkumgqWtcLqQ3ybqnTvBTyZIREMyNHtfYwav7sYoMTI8GfgWuLRMTO1utuXax2/jQ4Ro8Tov0b0moK4DGmfcaxXq20arDUjVOgH8=
