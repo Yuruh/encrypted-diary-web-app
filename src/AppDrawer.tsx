@@ -8,7 +8,7 @@ import {ChevronRight, ChevronLeft, Label, CalendarToday} from "@material-ui/icon
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import {useHistory, useLocation} from "react-router-dom";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+
 //Taken from https://material-ui.com/components/drawers/#mini-variant-drawer
 
 export const DRAWER_WIDTH = 240;

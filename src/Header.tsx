@@ -5,13 +5,11 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import AppBar from "@material-ui/core/AppBar";
-import {useHistory} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {Menu, Search} from "@material-ui/icons";
 import Api from "./Api";
 import InputBase from "@material-ui/core/InputBase";
 import AppDrawer from "./AppDrawer";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import useTheme from "@material-ui/core/styles/useTheme";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -99,7 +97,10 @@ export default function Header(props: {
                             edge="start" color="inherit" aria-label="menu">
                     <Menu/>
                 </IconButton>
-                <Typography variant="h6">
+                <Link to="/">
+                    <img src={"/logo512.png"} alt={"logo"} width={40} height={40}/>
+                </Link>
+                <Typography variant="h6" style={{marginLeft: 10}}>
                     Encrypted diary
                 </Typography>
                 {loggedIn && <div className={classes.search}>

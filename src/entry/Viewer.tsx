@@ -10,6 +10,8 @@ import CardContent from "@material-ui/core/CardContent";
 import {Edit} from "@material-ui/icons";
 import {useHistory, useLocation} from "react-router-dom";
 import EntryLabelList from "../label/EntryLabelList";
+import moment from "moment";
+import {upperCaseFirstLetter} from "../EntryList";
 const ReactMarkdown = require('react-markdown');
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -39,8 +41,12 @@ export default function Viewer(props: {
     const location = useLocation();
     const history = useHistory();
 
+    let date = moment(props.entry.created_at).format("dddd D MMMM YYYY ");
+    date = upperCaseFirstLetter(date);
+
+
     return <Card elevation={2} className={classes.preview}>
-        <CardHeader title={new Date(props.entry.created_at).toLocaleDateString()}
+        <CardHeader title={date}
                     subheader={props.entry.title}
                     action={<IconButton color={"primary"} onClick={() => {history.push(location.pathname + "?display=edit")}}>
                         <Edit/>
