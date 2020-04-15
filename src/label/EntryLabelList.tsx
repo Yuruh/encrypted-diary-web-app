@@ -47,8 +47,6 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
 export default function EntryLabelList(props: {
     labels: Label[]
 }) {
-    const classes = useStyles();
-
     return <Grid container spacing={1}>{props.labels.map((elem: Label, i) => {
         return <Grid item key={i}><LabelChip
             label={elem.name}

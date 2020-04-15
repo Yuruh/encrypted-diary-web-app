@@ -6,7 +6,6 @@ import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
 import React from "react";
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import {CardMedia} from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
 import {Link, Redirect} from "react-router-dom";
 import Api from "./Api";
@@ -36,30 +35,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const specials: string = "~!@#$%^&*()-_+={}[]|\\/:;'<>,.?\"€";
-
-function validatePwd(pwd: string): boolean {
-    if (!pwd || pwd.length === 0) {
-        return true
-    }
-    let number: boolean = false;
-    let upper: boolean = false;
-    let special: boolean = false;
-
-    for (const c of pwd) {
-        if (c >= '0' && c <= '9') {
-            number = true;
-        }
-        if (c >= 'A' && c <= 'Z') {
-            upper = true;
-        }
-        if (specials.includes(c)) {
-            special = true;
-        }
-    }
-    return number && upper && special;
-}
-
 export function Login() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
@@ -82,7 +57,6 @@ export function Login() {
             console.log(e);
             // todo
         }
-
     }
 
     if (redirect) {

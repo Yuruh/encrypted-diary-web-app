@@ -1,14 +1,11 @@
 import axios from "axios";
 
-import CryptoJS, {WordArray} from "crypto-js";
+import CryptoJS from "crypto-js";
 import {Entry} from "./models/Entry";
 import {Label} from "./models/Label";
 const pbkdf2 = require('pbkdf2');
 
-
 // Code goes here
-const keySize = 256;
-const iterations = 100;
 
 // Could be improved, need to understand iv (initialisation vector, and to parsing of keys)
 function generateEncryptionKey(password: string): string {
@@ -36,33 +33,6 @@ function decrypt (encryptedMessage: string, key: string) {
 
 //https://github.com/crypto-browserify/pbkdf2
 //https://nodejs.org/api/crypto.html#crypto_crypto_pbkdf2_password_salt_iterations_keylen_digest_callback
-function taast() {
-    const keyA = generateEncryptionKey("pwd");
-    const eazr = encrypt("message", keyA);
-    const keyB = generateEncryptionKey("pwd");
-    const result = decrypt(eazr, keyB);
-    console.log(result);
-
-/*    console.log("pwd", password);
-    const derivedKey: string = pbkdf2.pbkdf2Sync(password, 'salt', 10000, 32, 'sha512').toString()
-    console.log("key", derivedKey);
-    const testMessage = "CECI EST UN MESSAGE DE TEST";
-    const encoded: string = encrypt(testMessage, derivedKey);
-    console.log("encoded msg", encoded);
-    const decoded: string = decrypt(encoded, derivedKey);
-    console.log("decoded msg", decoded);
-
-
-
-    const tast = CryptoJS.AES.encrypt(testMessage, derivedKey).toString();
-    console.log("tast = ", tast)
-
-
-    const otherDerived = pbkdf2.pbkdf2Sync(password, 'salt', 10000, 32, 'sha512').toString()
-    console.log(CryptoJS.AES.decrypt(tast, otherDerived).toString(CryptoJS.enc.Utf8))
-
-    return derivedKey*/
-}
 
 export default class Api {
 

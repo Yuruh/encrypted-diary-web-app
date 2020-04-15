@@ -5,7 +5,6 @@ import {
     useLocation,
     useHistory
 } from "react-router-dom";
-import Header from "../Header";
 import "codemirror";
 import Editor from "./Editor";
 import {NavigateNext} from "@material-ui/icons";

@@ -95,7 +95,7 @@ class Picker extends React.Component<IProps, IState> {
             const existingIdx = this.state.offeredLabels.findIndex((elem: Label) => elem.name.toLowerCase() ===
                 (value[value.length - 1] as string).toLowerCase()
             );
-            if (existingIdx != -1) {
+            if (existingIdx !== -1) {
                 value[value.length - 1] = this.state.offeredLabels[existingIdx];
             } else {
                 const label: Label = new Label();

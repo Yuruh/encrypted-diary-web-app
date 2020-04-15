@@ -2,18 +2,13 @@ import React from "react"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, Theme, Drawer, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import useTheme from "@material-ui/core/styles/useTheme";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
 import clsx from 'clsx';
-import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
-import {ChevronRight, ChevronLeft, Inbox, Mail, Label, CalendarToday} from "@material-ui/icons";
+import {ChevronRight, ChevronLeft, Label, CalendarToday} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
 import {useHistory, useLocation} from "react-router-dom";
-import {cursorTo} from "readline";
-
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 //Taken from https://material-ui.com/components/drawers/#mini-variant-drawer
 
 export const DRAWER_WIDTH = 240;
@@ -29,6 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
             whiteSpace: 'nowrap',
         },
         drawerOpen: {
+            backgroundColor: "#EEEEEE",
             width: DRAWER_WIDTH,
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
@@ -36,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
             }),
         },
         drawerClose: {
+            backgroundColor: "#EEEEEE",
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
@@ -72,12 +69,12 @@ export default function AppDrawer(props: {
     const location = useLocation();
     const history = useHistory();
 
+
     const entriesPath = "/entries";
     const labelsPath = "/labels";
 
     return (
         <div className={classes.root}>
-            <CssBaseline />
             <Drawer
                 variant="permanent"
                 className={clsx(classes.drawer, {
@@ -96,7 +93,7 @@ export default function AppDrawer(props: {
                         {theme.direction === 'rtl' ? <ChevronRight/> : <ChevronLeft/>}
                     </IconButton>
                 </div>
-                <Divider />
+                <Divider/>
                 <List>
                     <ListItem button selected={location.pathname.substr(0, entriesPath.length) === entriesPath} onClick={() => history.push(entriesPath)}>
                         <ListItemIcon><CalendarToday/></ListItemIcon>

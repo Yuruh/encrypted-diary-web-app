@@ -25,12 +25,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 export default function LabelList() {
-    const classes = useStyles({});
+//    const classes = useStyles({});
 
     const [selectedLabel, setSelectedLabel] = React.useState<Label | null>(null);
     const [labels, setLabels] = React.useState<Label[]>([]);
     const [fetching, setFetching] = React.useState(false);
-    const [redirect, setRedirect] = React.useState("");
+  //  const [redirect, setRedirect] = React.useState("");
 
     const fetchData = async() => {
         setFetching(true);
@@ -88,7 +88,7 @@ function LabelEditor(props: {
     const classes = useStyles({});
 
     const [label, setLabel] = React.useState<Label>(props.selectedLabel);
-    if (props.selectedLabel.id != label.id) {
+    if (props.selectedLabel.id !== label.id) {
         setLabel(props.selectedLabel);
     }
 

@@ -76,6 +76,8 @@ const App = () => {
                           <PrivateRoute component={Page} path="/entries/:id"/>
                           <PrivateRoute component={EntryList} path="/entries"/>
                           <PrivateRoute component={LabelList} path="/labels"/>
+                          <PrivateRoute component={EntryList} path="/"/>
+                          <Redirect to='/entries' />
                       </Switch>
                   </div>
               }/>

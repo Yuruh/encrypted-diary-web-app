@@ -9,7 +9,9 @@ import {useHistory} from "react-router-dom";
 import {Menu, Search} from "@material-ui/icons";
 import Api from "./Api";
 import InputBase from "@material-ui/core/InputBase";
-import AppDrawer, {DRAWER_WIDTH} from "./AppDrawer";
+import AppDrawer from "./AppDrawer";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import useTheme from "@material-ui/core/styles/useTheme";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -76,7 +78,10 @@ export default function Header(props: {
 }) {
     const classes = useStyles({});
     const history = useHistory();
+
     const [open, setOpen] = React.useState(false);
+
+    const loggedIn = Api.token !== "" && Api.token !== null;
 
     const handleDrawerChange = () => {
         setOpen(!open);
@@ -97,7 +102,7 @@ export default function Header(props: {
                 <Typography variant="h6">
                     Encrypted diary
                 </Typography>
-                <div className={classes.search}>
+                {loggedIn && <div className={classes.search}>
                     <div className={classes.searchIcon}>
                         <Search/>
                     </div>
@@ -109,15 +114,21 @@ export default function Header(props: {
                         }}
                         inputProps={{ 'aria-label': 'search' }}
                     />
-                </div>
+                </div>}
                 <div className={classes.grow}/>
+                {loggedIn &&
                 <Button color="inherit" onClick={() => {
                     Api.encryptionKey = null;
                     Api.token = null;
-                    redirectHome()
-                }}>Logout</Button>
+                    if (process.env.NODE_ENV === "development") {
+                        localStorage.clear();
+                    }
+                    console.log(Api.token)
+                    redirectHome();
+                }}>Logout</Button>}
             </Toolbar>
         </AppBar>
-        <AppDrawer open={open} changeOpen={(value) => setOpen(value)} content={props.content}/>
+        {loggedIn ? <AppDrawer open={open} changeOpen={(value) => setOpen(value)} content={props.content}/>
+            : <div>{props.content}</div>}
     </div>
 }
