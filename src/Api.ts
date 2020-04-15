@@ -65,8 +65,12 @@ export default class Api {
         return this.axiosInstance.post("/labels", label);
     }
 
-    static async editLabel(label: Label) {
-        return this.axiosInstance.put("/labels/" + label.id, label);
+    static async editLabel(label: Label, avatarData: string) {
+        const formData = new FormData();
+        formData.append("avatar", avatarData);
+        formData.append("json", JSON.stringify(label));
+
+        return this.axiosInstance.put("/labels/" + label.id, formData);
     }
 
     static async deleteLabel(label: Label) {

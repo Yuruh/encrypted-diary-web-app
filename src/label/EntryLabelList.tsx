@@ -4,19 +4,36 @@ import Chip, {ChipProps} from "@material-ui/core/Chip";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, Theme} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+import Avatar from "@material-ui/core/Avatar";
+
+const avatarThemeSize = 5;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         label: {
-            color: "black",
-            fontSize: 15,
-            webkitTextStrokeWidth: "1px black", // Doesn't seem to be actually supported
+//            color: "black",
+            fontSize: 16,
+ //           webkitTextStrokeWidth: "1px black", // Doesn't seem to be actually supported
 //            textShadow: "-1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;",
 
             //fontSize: "22px",
-            //height: "50px",
+            height: theme.spacing(avatarThemeSize + 1),
             //borderRadius: "25px",
-            backgroundColor: (props: any) => props.color
+   //         backgroundColor: (props: any) => props.color
+        },
+        avatar: {
+            backgroundColor: (props: any) => props.color,
+            width: theme.spacing(7),
+            height: theme.spacing(7),
+        },
+        root: {
+            '& $avatar': {
+                marginLeft: 5,
+                marginRight: -6,
+                width: theme.spacing(avatarThemeSize),
+                height: theme.spacing(avatarThemeSize),
+                fontSize: 16
+            },
         },
         container: {
             margin: 3
@@ -25,7 +42,12 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface ILabelChipProps {
-    color: string
+    color: string,
+    avatarUrl?: string
+}
+
+export function addImageIfGodWillsIt(): boolean {
+    return Math.random() > 0.7
 }
 
 // Takes as parameters custom labels and all chip props except those custom declared
@@ -33,10 +55,17 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
     const classes = useStyles(props);
 
     // We separate color from the props
-    const {color, ...other} = props;
+    const {color, avatarUrl, ...other} = props;
 
     return <Chip
         variant={"outlined"}
+        classes={{
+            avatar: classes.avatar,
+            root: classes.root
+        }}
+        avatar={<Avatar src={avatarUrl}>
+            {(other.label as string || "")[0].toUpperCase()}
+        </Avatar>}
         className={classes.label}
         {...other}
 
@@ -51,6 +80,7 @@ export default function EntryLabelList(props: {
         return <Grid item key={i}><LabelChip
             label={elem.name}
             color={elem.color}
+            avatarUrl={elem.avatar_url}
         /></Grid>
     })
     }</Grid>

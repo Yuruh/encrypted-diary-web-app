@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {Edit, Visibility} from "@material-ui/icons";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {useHistory} from "react-router-dom";
-import EntryLabelList from "./label/EntryLabelList";
+import EntryLabelList, {addImageIfGodWillsIt} from "./label/EntryLabelList";
 import {DRAWER_WIDTH} from "./AppDrawer";
 import "./dateHelper"
 import moment from "moment";
@@ -24,6 +24,7 @@ import useTheme from "@material-ui/core/styles/useTheme";
 import InfiniteScroll from 'react-infinite-scroller';
 import {Pagination} from "./models/Pagination";
 import { BoxCenter } from "./BoxCenter";
+import EntryListItem from "./entry/EntryListItem";
 
 moment.locale(navigator.language);
 
@@ -80,6 +81,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         elemBar: {
             backgroundColor: "rgba(0, 0, 0, 0.7)",
+            height: "50px",
             textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.4), 1px -1px 1px rgba(0, 0, 0, 0.4), -1px 1px 1px rgba(0, 0, 0, 0.4), 1px 1px 1px rgba(0, 0, 0, 0.4);",
         },
         elemIcon: {
@@ -94,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         elemImageContainer: {
             height: "100%",
-            flexBasis: "100%",
+            flexBasis: "70%",
 //            flexShrink: 0
         },
         elemImage: {
@@ -113,7 +115,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-interface IEntriesByMonth {
+export interface IEntriesByMonth {
     year: string
     month: string
     entries: Entry[]
@@ -170,6 +172,19 @@ export function upperCaseFirstLetter(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+function RenderDivider(props: {monthly: IEntriesByMonth, nbColsInGrid: number}) {
+    return <GridListTile key="Subheader" cols={props.nbColsInGrid} style={{ height: 'auto'}}>
+        <Divider/>
+        <br/>
+        <Typography className={"divider"}
+                    color="textPrimary"
+                    display="block"
+                    variant="subtitle1">
+            {upperCaseFirstLetter(props.monthly.month + " " + props.monthly.year)}
+        </Typography>
+    </GridListTile>
+}
+
 export default function EntryList() {
     const classes = useStyles({});
     const history = useHistory();
@@ -220,65 +235,70 @@ export default function EntryList() {
     }
 
     return <React.Fragment>
-    <InfiniteScroll
-        pageStart={1}
-        loadMore={loadMoreEntries}
-        hasMore={pagination.has_next_page}
-        loader={<BoxCenter key={"progress"}><CircularProgress/></BoxCenter>}
-    >
-        <div className={classes.root}>
-            <GridList cellHeight={200} cols={nbColsInGrid} spacing={20}>
-                {monthlyEntries.map((monthly: IEntriesByMonth) => {
-                    return [
-                        <GridListTile key="Subheader" cols={nbColsInGrid} style={{ height: 'auto'}}>
-                            <Divider/>
-                            <br/>
-                            <Typography className={"divider"}
-                                        color="textPrimary"
-                                        display="block"
-                                        variant="subtitle1">
-                                {upperCaseFirstLetter(monthly.month + " " + monthly.year)}
-                            </Typography>
-                        </GridListTile>,
-                        monthly.entries.map((elem: Entry, i) => {
-                            let date = moment(elem.created_at).format("dddd D MMMM YYYY ");
-                            date = upperCaseFirstLetter(date);
-                            let colSpan = 1;
-                            if (i % 7 === 0 && nbColsInGrid >= 2) {
-                                colSpan = 2
-                            }
-                            return <GridListTile key={i} cols={colSpan}>
-                                <Box display={"flex"} style={{backgroundColor: "white", height: "100%"}}>
-                                    {i % 7 === 0 && <div className={classes.elemImageContainer}><img
-                                        className={classes.elemImage}
-                                        src={"https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4"}
-                                        alt={"toto"}
-                                    /></div>}
-                                    <div className={classes.elemContainer}>
-                                        <EntryLabelList labels={elem.labels}/>
-                                    </div>
-                                </Box>
-                                <GridListTileBar
-                                    title={date}
-                                    subtitle={elem.title}
-                                    className={classes.elemBar}
-                                    actionIcon={
-                                        <React.Fragment>
-                                            <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit">
-                                                <Edit/>
-                                            </IconButton>
-                                            <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view">
-                                                <Visibility/>
-                                            </IconButton>
-                                        </React.Fragment>
-                                    }
-                                />
-                            </GridListTile>
-                        })]
-                })}
-            </GridList>
+        <InfiniteScroll
+            pageStart={1}
+            loadMore={loadMoreEntries}
+            hasMore={pagination.has_next_page}
+            loader={<BoxCenter key={"progress"}><CircularProgress/></BoxCenter>}
+        >
+            <div className={classes.root}>
+                <GridList cellHeight={200} cols={nbColsInGrid} spacing={20}>
+                    {/*monthlyEntries.map((monthly: IEntriesByMonth, i) => {
+                        return <EntryListItem monthly={monthly} key={i}/>;
+                    })*/}
+                    {monthlyEntries.map((monthly: IEntriesByMonth, i) => {
+                        return [
+                            <GridListTile key="Subheader" cols={nbColsInGrid} style={{ height: 'auto'}}>
+                                <Divider/>
+                                <br/>
+                                <Typography className={"divider"}
+                                            color="textPrimary"
+                                            display="block"
+                                            variant="subtitle1">
+                                    {upperCaseFirstLetter(monthly.month + " " + monthly.year)}
+                                </Typography>
+                            </GridListTile>,
+                            monthly.entries.map((elem: Entry, i) => {
+                                let date = moment(elem.created_at).format("dddd D MMMM YYYY ");
+                                date = upperCaseFirstLetter(date);
 
-            {/*
+                                const godWillsIt: boolean = addImageIfGodWillsIt();
+                                let colSpan = 1;
+                                if (godWillsIt && nbColsInGrid >= 2) {
+                                    colSpan = 2
+                                }
+                                return <GridListTile key={i} cols={colSpan}>
+                                    <Box display={"flex"} style={{backgroundColor: "white", height: "100%"}}>
+                                        {godWillsIt && <div className={classes.elemImageContainer}><img
+                                            className={classes.elemImage}
+                                            src={"https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4"}
+                                            alt={"toto"}
+                                        /></div>}
+                                        <div className={classes.elemContainer}>
+                                            {elem.labels.length > 0 ? <EntryLabelList labels={elem.labels}/> : <p>a pa dlabel</p>}
+                                        </div>
+                                    </Box>
+                                    <GridListTileBar
+                                        title={date}
+                                        subtitle={elem.title}
+                                        className={classes.elemBar}
+                                        actionIcon={
+                                            <React.Fragment>
+                                                <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit">
+                                                    <Edit/>
+                                                </IconButton>
+                                                <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view">
+                                                    <Visibility/>
+                                                </IconButton>
+                                            </React.Fragment>
+                                        }
+                                    />
+                                </GridListTile>
+                            })]
+                    })}
+                </GridList>
+
+                {/*
         <Grid className={classes.content} container spacing={3}>
             {entries.map((elem: Entry, i) => {
                 let date = moment(elem.created_at).format("dddd D MMMM YYYY ");
@@ -302,7 +322,7 @@ export default function EntryList() {
             })}
         </Grid>
        */}
-            {/*<Hidden smDown={true}>
+                {/*<Hidden smDown={true}>
             <Drawer className={classes.drawer} classes={{paper: classes.drawerSurface}} anchor={"right"} open={true} variant={"permanent"}>
                 <div className={classes.toolbar}/>
                 <Divider />

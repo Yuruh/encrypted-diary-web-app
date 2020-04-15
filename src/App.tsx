@@ -38,6 +38,27 @@ const theme = createMuiTheme({
         primary: indigo,
         secondary: blueGrey
     },
+
+/*   This is an example as to how to override global property
+ overrides: {
+        MuiChip: {
+            label: {
+                color: "blue",
+                paddingLeft: 27
+            },
+            root: {
+                '& $avatar': {
+                    marginLeft: 5,
+                    marginRight: -6,
+                    width: 240,
+                    height: 240,
+                },
+            },
+            avatar: {
+                width: "100px"
+            }
+        }
+    }*/
 } as any);
 
 const App = () => {

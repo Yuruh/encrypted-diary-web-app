@@ -168,21 +168,14 @@ class Picker extends React.Component<IProps, IState> {
             renderOption={(option: Label, {inputValue}) => {
                 return (
                     <React.Fragment>
-                        <span style={{
-                            marginRight: 5,
-                            height: 20,
-                            width: 20,
-                            border: "1px solid black",
-                            backgroundColor: option.color
-                        }}/>
-                        {option.name}
+                        <LabelChip color={option.color} label={option.name} avatarUrl={option.avatar_url}/>
                     </React.Fragment>
                 )
             }}
             renderTags={(value: Label[], getTagProps: any) =>
                 value.map((option: Label, index: number) => {
                     return (
-                        <LabelChip key={index} onDelete={getTagProps({ index }).onDelete} color={option.color} label={option.name} style={{marginLeft: 3}} />
+                        <LabelChip avatarUrl={option.avatar_url} key={index} onDelete={getTagProps({ index }).onDelete} color={option.color} label={option.name} style={{marginLeft: 3}} />
                     )})
             }
 

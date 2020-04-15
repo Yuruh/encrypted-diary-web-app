@@ -6,4 +6,5 @@ export class Label extends DatabaseModel {
     color: string = randomColor({
         luminosity: 'light',
     });
+    avatar_url: string = ""
 }
