@@ -47,7 +47,7 @@ export default function LabelList() {
     }, []);
 
     if (fetching) {
-        return <CircularProgress/>
+        return <span>Fetching data and decrypting images ...<CircularProgress/></span>
     }
 
     function onEdit(label: Label) {
@@ -96,7 +96,6 @@ function LabelEditor(props: {
     if (props.selectedLabel.id !== label.id) {
         setLabel(props.selectedLabel);
     }
-
 
     return <div>
         <Typography variant={"h4"} color={"primary"} gutterBottom={true}>

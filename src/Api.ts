@@ -51,7 +51,7 @@ export default class Api {
     }
 
     static async getLabels(name: string = "", excluded_ids: number[], limit: number = 5, page: number = 1) {
-        return this.axiosInstance.get("/labels", {
+        const res = await this.axiosInstance.get("/labels", {
             params: {
                 name,
                 limit,
@@ -59,6 +59,24 @@ export default class Api {
                 excluded_ids: JSON.stringify(excluded_ids)
             }
         });
+        /*
+            Necessary to decrypt data
+            Should be sped up with async
+            Keeping the image smalls speed up encryption / decryption
+
+            Other problems, it makes load time very slow (while it decrypts image)
+            I could find a way to report back when the decryption is done
+         */
+        for (const label of res.data.labels as Label[]) {
+            if (label.avatar_url != "") {
+                if (!this.encryptionKey) {
+                    throw new Error("encryption key undefined");
+                }
+                const avatarContentResp = await axios.get(label.avatar_url);
+                label.avatar_url = decrypt(avatarContentResp.data, this.encryptionKey)
+            }
+        }
+        return res
     }
 
     static async addLabel(label: Label) {
@@ -67,10 +85,26 @@ export default class Api {
 
     static async editLabel(label: Label, avatarData: string) {
         const formData = new FormData();
-        formData.append("avatar", avatarData);
+        if (avatarData && avatarData.length > 0) {
+            if (!this.encryptionKey) {
+                throw new Error("encryption key undefined");
+            }
+            const file: File = new File([encrypt(avatarData, this.encryptionKey)], "avatar");
+            formData.append("avatar", file);
+        }
         formData.append("json", JSON.stringify(label));
 
-        return this.axiosInstance.put("/labels/" + label.id, formData);
+        const res = await this.axiosInstance.put("/labels/" + label.id, formData);
+
+        if (res.data.label.avatar_url != "") {
+            if (!this.encryptionKey) {
+                throw new Error("encryption key undefined");
+            }
+            const avatarContentResp = await axios.get(res.data.label.avatar_url);
+            res.data.label.avatar_url = decrypt(avatarContentResp.data, this.encryptionKey)
+        }
+
+        return res;
     }
 
     static async deleteLabel(label: Label) {

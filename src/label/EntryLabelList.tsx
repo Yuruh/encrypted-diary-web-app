@@ -57,6 +57,8 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
     // We separate color from the props
     const {color, avatarUrl, ...other} = props;
 
+    const avatarValue = other && other.label && (other.label as string).length > 0 ? (other.label as string)[0].toUpperCase() : ""
+
     return <Chip
         variant={"outlined"}
         classes={{
@@ -64,7 +66,7 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
             root: classes.root
         }}
         avatar={<Avatar src={avatarUrl}>
-            {(other.label as string || "")[0].toUpperCase()}
+            {avatarValue}
         </Avatar>}
         className={classes.label}
         {...other}
