@@ -1,17 +1,35 @@
 import React, {ChangeEvent, Component, useRef} from 'react';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
+import Api, {decrypt, encrypt} from "../Api";
+import {Skeleton} from "@material-ui/lab";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import {createStyles, Theme} from "@material-ui/core";
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        cropper: {
+            height: 400,
+            width: '100%',
+            maxWidth: 1000
+        },
+    }),
+);
+
 
 export default function ImageCropper(props: {
     updateDataUrl: (dataUrl: string) => void
 }) {
     function crop() {
         try {
+            // Calling this every time we crop might cause the perf problem
             props.updateDataUrl(cropper.current.cropper.getCroppedCanvas().toDataURL())
         } catch (e) {
             console.log(e);
         }
     }
+
+    const classes = useStyles();
 
     const [file, setFile] = React.useState();
 
@@ -19,8 +37,6 @@ export default function ImageCropper(props: {
     const fileInput: any = useRef();
 
     function onInputFileChange(e: ChangeEvent<HTMLInputElement>) {
-        console.log(e.target);
-        console.log(fileInput);
         const file: File = fileInput.current.files[0];
         if (!file) {
             return;
@@ -40,14 +56,21 @@ export default function ImageCropper(props: {
 
     return <div>
         <input type={"file"} ref={fileInput} onChange={onInputFileChange}/>
-        <Cropper
-        ref={cropper}
-        src={file || 'https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4'}
-        style={{height: 400, width: '100%'}}
-        // Cropper.js options
-        aspectRatio={1}
+        {file ?
+            <Cropper
+                ref={cropper}
+                src={file || ""}
+                className={classes.cropper}
+                aspectRatio={1}
+                viewMode={0}
 //        guides={false}
-        crop={crop} />
+                crop={crop} /> :
+            <Skeleton className={classes.cropper} variant="rect"/>}
+        {cropper && cropper.current && cropper.current.cropper && cropper.current.cropper.getCroppedCanvas() && <div>
+            <p>Size before encryption in bytes: <strong>{cropper.current.cropper.getCroppedCanvas().toDataURL().length}</strong></p>
+
+            {/*<p>Size after encryption in bytes : <strong>{encrypt(cropper.current.cropper.getCroppedCanvas().toDataURL(), Api.encryptionKey as string).length}</strong></p>*/}
+        </div>}
     </div>
 }
 

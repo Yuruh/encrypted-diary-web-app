@@ -19,17 +19,30 @@ function generateEncryptionKey(password: string): string {
   //  return key.toString();
 }
 
-function encrypt (msg: string, key: string) {
+export function encrypt (msg: string, key: string) {
     const encrypted = CryptoJS.AES.encrypt(msg, key);
 
     return encrypted.toString();
 }
 
-function decrypt (encryptedMessage: string, key: string) {
+export function decrypt (encryptedMessage: string, key: string) {
     const decrypted = CryptoJS.AES.decrypt(encryptedMessage, key);
 
     return decrypted.toString(CryptoJS.enc.Utf8);
 }
+
+async function decryptLabelAvatar(label: Label) {
+    if (label.avatar_url !== "") {
+        if (!Api.encryptionKey) {
+            throw new Error("encryption key undefined");
+        }
+        const avatarContentResp = await axios.get(label.avatar_url);
+        label.avatar_url = decrypt(avatarContentResp.data, Api.encryptionKey)
+    }
+
+}
+
+// video about aes https://www.youtube.com/watch?v=O4xNJsjtN6E
 
 //https://github.com/crypto-browserify/pbkdf2
 //https://nodejs.org/api/crypto.html#crypto_crypto_pbkdf2_password_salt_iterations_keylen_digest_callback
@@ -67,17 +80,15 @@ export default class Api {
             Other problems, it makes load time very slow (while it decrypts image)
             I could find a way to report back when the decryption is done
          */
+        const promises = [];
         for (const label of res.data.labels as Label[]) {
-            if (label.avatar_url != "") {
-                if (!this.encryptionKey) {
-                    throw new Error("encryption key undefined");
-                }
-                const avatarContentResp = await axios.get(label.avatar_url);
-                label.avatar_url = decrypt(avatarContentResp.data, this.encryptionKey)
-            }
+            promises.push(decryptLabelAvatar(label));
         }
+        await Promise.all(promises);
         return res
     }
+
+
 
     static async addLabel(label: Label) {
         return this.axiosInstance.post("/labels", label);
@@ -96,7 +107,7 @@ export default class Api {
 
         const res = await this.axiosInstance.put("/labels/" + label.id, formData);
 
-        if (res.data.label.avatar_url != "") {
+        if (res.data.label.avatar_url !== "") {
             if (!this.encryptionKey) {
                 throw new Error("encryption key undefined");
             }
@@ -117,16 +128,29 @@ export default class Api {
         }
         const response = await this.axiosInstance.get("/entries/" + entryId);
         response.data.entry.content = decrypt(response.data.entry.content, this.encryptionKey);
+        const promises = [];
+        for (const label of response.data.entry.labels as Label[]) {
+            promises.push(decryptLabelAvatar(label));
+        }
+        await Promise.all(promises);
         return response
     }
 
-    static getEntries(limit?: number, page?: number) {
-        return this.axiosInstance.get("/entries", {
+    static async getEntries(limit?: number, page?: number) {
+        const res = await this.axiosInstance.get("/entries", {
             params: {
                 limit,
                 page,
             }
-        })
+        });
+        const promises = [];
+        for (const entry of res.data.entries) {
+            for (const label of entry.labels as Label[]) {
+                promises.push(decryptLabelAvatar(label));
+            }
+        }
+        await Promise.all(promises);
+        return res
     }
 
     static addEntry(entry: Entry) {

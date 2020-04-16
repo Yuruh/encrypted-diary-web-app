@@ -47,7 +47,7 @@ interface ILabelChipProps {
 }
 
 export function addImageIfGodWillsIt(): boolean {
-    return Math.random() > 0.7
+        return Math.random() > 0.97
 }
 
 // Takes as parameters custom labels and all chip props except those custom declared
