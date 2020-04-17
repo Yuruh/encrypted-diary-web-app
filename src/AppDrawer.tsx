@@ -8,7 +8,6 @@ import {ChevronRight, ChevronLeft, Label, CalendarToday} from "@material-ui/icon
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import {useHistory, useLocation} from "react-router-dom";
-
 //Taken from https://material-ui.com/components/drawers/#mini-variant-drawer
 
 export const DRAWER_WIDTH = 240;
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
             whiteSpace: 'nowrap',
         },
         drawerOpen: {
-            backgroundColor: "#EEEEEE",
+            backgroundColor: "rgba(255, 255, 255, 1)",
             width: DRAWER_WIDTH,
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
@@ -32,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
             }),
         },
         drawerClose: {
-            backgroundColor: "#EEEEEE",
+            backgroundColor: "rgba(255, 255, 255, 0)",
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,

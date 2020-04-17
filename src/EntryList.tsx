@@ -24,6 +24,7 @@ import useTheme from "@material-ui/core/styles/useTheme";
 import InfiniteScroll from 'react-infinite-scroller';
 import {Pagination} from "./models/Pagination";
 import { BoxCenter } from "./BoxCenter";
+import { shadows } from '@material-ui/system';
 import EntryListItem from "./entry/EntryListItem";
 
 moment.locale(navigator.language);
@@ -79,10 +80,34 @@ const useStyles = makeStyles((theme: Theme) =>
         dividerFullWidth: {
             margin: `5px 0 0 ${theme.spacing(2)}px`,
         },
+        tile: {
+            shadows: 3,
+            borderRadius: "15px",
+            '&:hover': {
+                '& $elemBar': {
+                    transition: theme.transitions.create("all", {
+                        easing: theme.transitions.easing.sharp,
+                        duration: theme.transitions.duration.enteringScreen,
+                    }),
+//                    background:
+  //                      'linear-gradient(to top, rgba(0,0,0,1) 0%, ' +
+    //                                    'rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 100%)',
+    //                backgroundColor: "red",
+                    filter: "blur(0)",
+                    height: "50px",
+                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                }
+            },
+        },
         elemBar: {
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
+
+//            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            //visibility: "hidden",
             height: "50px",
             textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.4), 1px -1px 1px rgba(0, 0, 0, 0.4), -1px 1px 1px rgba(0, 0, 0, 0.4), 1px 1px 1px rgba(0, 0, 0, 0.4);",
+            background:
+                'linear-gradient(to top, rgba(0,0,0,0.5) 0%, ' +
+                'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
         },
         elemIcon: {
             color: "white",
@@ -201,16 +226,16 @@ export default function EntryList() {
     }
 
     const [entries, setEntries] = React.useState<Entry[]>([]);
-//    const [fetching, setFetching] = React.useState(false);
+    const [fetching, setFetching] = React.useState(false);
     const [redirect, setRedirect] = React.useState("");
     const [pagination, setPagination] = React.useState<Pagination>(new Pagination());
 
     const fetchData = async(page: number) => {
-//        setFetching(true);
+        setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page);
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
-  //      setFetching(false);
+        setFetching(false);
     };
 
     useEffect(() => {
@@ -226,14 +251,14 @@ export default function EntryList() {
     const monthlyEntries: IEntriesByMonth[] = parseEntriesMonth(entries);
 
     // or use https://material-ui.com/components/skeleton/
-/*    if (fetching) {
+    if (fetching && entries.length === 0) {
         return <CircularProgress/>
-    }*/
+    }
 
     function loadMoreEntries(page: number) {
         fetchData(page).catch((err) => console.log(err));
     }
-
+    // Faire apparaitre menu sur un hover ?
     return <React.Fragment>
         <InfiniteScroll
             pageStart={1}
@@ -242,7 +267,7 @@ export default function EntryList() {
             loader={<BoxCenter key={"progress"}><CircularProgress/></BoxCenter>}
         >
             <div className={classes.root}>
-                <GridList cellHeight={200} cols={nbColsInGrid} spacing={20}>
+                <GridList cellHeight={200} cols={nbColsInGrid} spacing={10}>
                     {/*monthlyEntries.map((monthly: IEntriesByMonth, i) => {
                         return <EntryListItem monthly={monthly} key={i}/>;
                     })*/}
@@ -267,7 +292,8 @@ export default function EntryList() {
                                 if (godWillsIt && nbColsInGrid >= 2) {
                                     colSpan = 2
                                 }
-                                return <GridListTile key={i} cols={colSpan}>
+                                return <GridListTile key={i} cols={colSpan} /*className={classes.tile}*/
+                                classes={{tile: classes.tile}}>
                                     <Box display={"flex"} style={{backgroundColor: "white", height: "100%"}}>
                                         {godWillsIt && <div className={classes.elemImageContainer}><img
                                             className={classes.elemImage}
@@ -275,7 +301,11 @@ export default function EntryList() {
                                             alt={"toto"}
                                         /></div>}
                                         <div className={classes.elemContainer}>
-                                            {elem.labels.length > 0 ? <EntryLabelList labels={elem.labels}/> : <p>a pa dlabel</p>}
+                                            {elem.labels.length > 0 ? <EntryLabelList labels={elem.labels}/> : <BoxCenter style={{height: "80%"}}>
+                                                <Typography variant="h5">
+                                                    {elem.title}
+                                                </Typography>
+                                            </BoxCenter>}
                                         </div>
                                     </Box>
                                     <GridListTileBar

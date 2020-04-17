@@ -32,7 +32,7 @@ export function decrypt (encryptedMessage: string, key: string) {
 }
 
 async function decryptLabelAvatar(label: Label) {
-    if (label.avatar_url !== "") {
+    if (label.has_avatar && label.avatar_url !== "") {
         if (!Api.encryptionKey) {
             throw new Error("encryption key undefined");
         }

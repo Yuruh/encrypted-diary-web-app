@@ -20,14 +20,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ImageCropper(props: {
     updateDataUrl: (dataUrl: string) => void
 }) {
-    function crop() {
-        try {
-            // Calling this every time we crop might cause the perf problem
-            props.updateDataUrl(cropper.current.cropper.getCroppedCanvas().toDataURL())
-        } catch (e) {
-            console.log(e);
-        }
-    }
 
     const classes = useStyles();
 
@@ -46,12 +38,12 @@ export default function ImageCropper(props: {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = function () {
-            //me.modelvalue = reader.result;
             setFile(reader.result);
         };
         reader.onerror = function (error) {
             console.log('Error: ', error);
         };
+
     }
 
     return <div>
@@ -63,15 +55,24 @@ export default function ImageCropper(props: {
                 className={classes.cropper}
                 aspectRatio={1}
                 viewMode={0}
-//        guides={false}
-                crop={crop} /> :
+                cropend={onCropEnd}/> :
             <Skeleton className={classes.cropper} variant="rect"/>}
         {cropper && cropper.current && cropper.current.cropper && cropper.current.cropper.getCroppedCanvas() && <div>
             <p>Size before encryption in bytes: <strong>{cropper.current.cropper.getCroppedCanvas().toDataURL().length}</strong></p>
 
             {/*<p>Size after encryption in bytes : <strong>{encrypt(cropper.current.cropper.getCroppedCanvas().toDataURL(), Api.encryptionKey as string).length}</strong></p>*/}
         </div>}
-    </div>
+    </div>;
+
+    function onCropEnd() {
+        try {
+            if (cropper && cropper.current && cropper.current.cropper) {
+                props.updateDataUrl(cropper.current.cropper.getCroppedCanvas().toDataURL())
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 }
 
 /*
