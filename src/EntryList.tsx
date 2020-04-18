@@ -24,6 +24,7 @@ import useTheme from "@material-ui/core/styles/useTheme";
 import InfiniteScroll from 'react-infinite-scroller';
 import {Pagination} from "./models/Pagination";
 import { BoxCenter } from "./BoxCenter";
+import {TileContent} from "./entry/EntryListTile";
 
 moment.locale(navigator.language);
 
@@ -110,36 +111,6 @@ const useStyles = makeStyles((theme: Theme) =>
             color: "white",
             marginLeft: 'auto'
         },
-        elemContainer: {
-            padding: 5,
-            height: "100%",
-            position: "relative",
-//            flexBasis: "100%",
-        },
-        elemBackground: {
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            backgroundImage: "url('https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4')",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            //backdropFilter: "blur(3px)",
-            filter: "blur(5px)",
-        },
-        elemImageContainer: {
-            height: "100%",
-            flexBasis: "70%",
-//            flexShrink: 0
-        },
-        elemImage: {
-            marginLeft: "auto",
-            marginRight: "auto",
-            maxWidth: "100%", // 50% with labels, 100% without ?
-            width: "auto",
-            height: "auto",
-            objectFit: "cover",
-        },
         divider: {
             //color: "white",
             //backgroundColor: theme.palette.primary.main
@@ -158,6 +129,7 @@ export interface IEntriesByMonth {
 // We assume it is received from newest to oldest
 // Should it be done server side ?
 function parseEntriesMonth(entries: Entry[]) {
+    entries = entries.sort((a: Entry, b: Entry) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     const ret: IEntriesByMonth[] = [];
     let currentMonth = "";
     let currentYear = "";
@@ -239,17 +211,18 @@ export default function EntryList() {
     const [pagination, setPagination] = React.useState<Pagination>(new Pagination());
 
     const fetchData = async(page: number) => {
+        console.log("fetching data");
         setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page);
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
+        console.log("finished fetching data");
     };
 
     useEffect(() => {
         fetchData(1).catch(e => console.log(e));
     }, []);
-
 
 
     if (redirect !== "") {
@@ -260,13 +233,20 @@ export default function EntryList() {
 
     // or use https://material-ui.com/components/skeleton/
     if (fetching && entries.length === 0) {
-        return <CircularProgress/>
+        return <BoxCenter><CircularProgress/></BoxCenter>
     }
 
-    function loadMoreEntries(page: number) {
-        fetchData(page).catch((err) => console.log(err));
+    async function loadMoreEntries(page: number) {
+        // We set has_next_page to false while we retrieve data so infinite scroller does not trigger
+        setPagination({...pagination, has_next_page: false});
+        try {
+            await fetchData(page);
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
-    // Faire apparaitre menu sur un hover ?
+
     return <React.Fragment>
         <InfiniteScroll
             pageStart={1}
@@ -276,9 +256,6 @@ export default function EntryList() {
         >
             <div className={classes.root}>
                 <GridList cellHeight={200} cols={nbColsInGrid} spacing={10}>
-                    {/*monthlyEntries.map((monthly: IEntriesByMonth, i) => {
-                        return <EntryListItem monthly={monthly} key={i}/>;
-                    })*/}
                     {monthlyEntries.map((monthly: IEntriesByMonth, i) => {
                         return [
                             <GridListTile key="Subheader" cols={nbColsInGrid} style={{ height: 'auto'}}>
@@ -339,29 +316,4 @@ export default function EntryList() {
         </Fab>
 
     </React.Fragment>
-}
-
-function TileContent(props: {elem: Entry}) {
-    const classes = useStyles({});
-    const godWillsIt: boolean = addImageIfGodWillsIt();
-
-    return <Box display={"flex"} style={{
-        backgroundColor: "white",
-        height: "100%" ,
-    }}>
-
-        {godWillsIt && <div className={classes.elemImageContainer}><img
-            className={classes.elemImage}
-            src={"https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4"}
-            alt={"toto"}
-        /></div>}
-        <div className={classes.elemBackground}/>
-        <div className={classes.elemContainer}>
-            {props.elem.labels.length > 0 ? <EntryLabelList labels={props.elem.labels}/> : <BoxCenter style={{height: "80%"}}>
-                <Typography variant="h5">
-                    {props.elem.title}
-                </Typography>
-            </BoxCenter>}
-        </div>
-    </Box>
 }

@@ -53,7 +53,7 @@ interface ILabelChipProps {
 
 export function addImageIfGodWillsIt(): boolean {
     return false;
-//        return Math.random() > 0.97
+//        return Math.random() > 0.7
 }
 
 // Takes as parameters custom labels and all chip props except those custom declared
@@ -63,7 +63,7 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
     // We separate color from the props
     const {color, avatarUrl, ...other} = props;
 
-    const avatarValue = other && other.label && (other.label as string).length > 0 ? (other.label as string)[0].toUpperCase() : ""
+    const avatarValue = other && other.label && (other.label as string).length > 0 ? (other.label as string)[0].toUpperCase() : "";
 
     return <Chip
         variant={"outlined"}

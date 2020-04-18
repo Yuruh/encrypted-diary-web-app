@@ -6,6 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, Theme} from "@material-ui/core";
+import {Label} from "../models/Label";
 
 const useStyles = makeStyles((theme: Theme) =>
         createStyles({
@@ -13,22 +14,18 @@ const useStyles = makeStyles((theme: Theme) =>
                 position: "absolute",
                 width: "100%",
                 height: "100%",
-                backgroundImage: "url('https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4')",
+                backgroundImage: (props: any) => "url(" + props.url + ")" || "rgb(255, 255, 255)",
+//                backgroundImage: "url('https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4')",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
                 //backdropFilter: "blur(3px)",
-                filter: "blur(5px)",
-            },
-            elemIcon: {
-                color: "white",
-                marginLeft: 'auto'
+                filter: "blur(6px)",
             },
             container: {
-                backgroundColor: "white",
                 padding: 5,
                 height: "100%",
-                flexBasis: "100%",
+                position: "relative",
             },
             imageContainer: {
                 height: "100%",
@@ -47,8 +44,17 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export function TileContent(props: {elem: Entry}) {
-    const classes = useStyles({});
     const godWillsIt: boolean = addImageIfGodWillsIt();
+    let url = null;
+
+    const firstLabelWithUrl: Label | undefined = props.elem.labels.find((elem: Label) => elem.avatar_url != "");
+
+    if (firstLabelWithUrl) {
+        url = firstLabelWithUrl.avatar_url;
+    }
+    const styleProps = { url: url };
+
+    const classes = useStyles(styleProps);
 
     return <Box display={"flex"} style={{
         backgroundColor: "white",
@@ -62,7 +68,7 @@ export function TileContent(props: {elem: Entry}) {
         /></div>}
         <div className={classes.background}/>
         <div className={classes.container}>
-            {props.elem.labels.length > 0 ? <EntryLabelList labels={props.elem.labels}/> : <BoxCenter style={{height: "80%"}}>
+            {props.elem.labels.length > 0 ? <EntryLabelList labels={props.elem.labels}/> : <BoxCenter style={{height: "80%", width:"100%"}}>
                 <Typography variant="h5">
                     {props.elem.title}
                 </Typography>
