@@ -24,11 +24,8 @@ import useTheme from "@material-ui/core/styles/useTheme";
 import InfiniteScroll from 'react-infinite-scroller';
 import {Pagination} from "./models/Pagination";
 import { BoxCenter } from "./BoxCenter";
-import { shadows } from '@material-ui/system';
-import EntryListItem from "./entry/EntryListItem";
 
 moment.locale(navigator.language);
-
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -114,10 +111,21 @@ const useStyles = makeStyles((theme: Theme) =>
             marginLeft: 'auto'
         },
         elemContainer: {
-            backgroundColor: "white",
             padding: 5,
             height: "100%",
-            flexBasis: "100%",
+            position: "relative",
+//            flexBasis: "100%",
+        },
+        elemBackground: {
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4')",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            //backdropFilter: "blur(3px)",
+            filter: "blur(5px)",
         },
         elemImageContainer: {
             height: "100%",
@@ -294,20 +302,7 @@ export default function EntryList() {
                                 }
                                 return <GridListTile key={i} cols={colSpan} /*className={classes.tile}*/
                                 classes={{tile: classes.tile}}>
-                                    <Box display={"flex"} style={{backgroundColor: "white", height: "100%"}}>
-                                        {godWillsIt && <div className={classes.elemImageContainer}><img
-                                            className={classes.elemImage}
-                                            src={"https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4"}
-                                            alt={"toto"}
-                                        /></div>}
-                                        <div className={classes.elemContainer}>
-                                            {elem.labels.length > 0 ? <EntryLabelList labels={elem.labels}/> : <BoxCenter style={{height: "80%"}}>
-                                                <Typography variant="h5">
-                                                    {elem.title}
-                                                </Typography>
-                                            </BoxCenter>}
-                                        </div>
-                                    </Box>
+                                    <TileContent elem={elem}/>
                                     <GridListTileBar
                                         title={date}
                                         subtitle={elem.title}
@@ -327,40 +322,6 @@ export default function EntryList() {
                             })]
                     })}
                 </GridList>
-
-                {/*
-        <Grid className={classes.content} container spacing={3}>
-            {entries.map((elem: Entry, i) => {
-                let date = moment(elem.created_at).format("dddd D MMMM YYYY ");
-                date = date.charAt(0).toUpperCase() + date.slice(1);
-                return <Grid item xs={12} sm={12} lg={12} key={i}>
-                    <Card elevation={3}>
-                        <CardHeader title={date} subheader={elem.title}/>
-                        <CardContent>
-                            <EntryLabelList labels={elem.labels}/>
-                        </CardContent>
-                        <CardActions>
-                            <IconButton color={"primary"} onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit" className={classes.cardAction}>
-                                <Edit/>
-                            </IconButton>
-                            <IconButton color={"primary"} onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view" className={classes.cardAction}>
-                                <Visibility/>
-                            </IconButton>
-                        </CardActions>
-                    </Card>
-                </Grid>
-            })}
-        </Grid>
-       */}
-                {/*<Hidden smDown={true}>
-            <Drawer className={classes.drawer} classes={{paper: classes.drawerSurface}} anchor={"right"} open={true} variant={"permanent"}>
-                <div className={classes.toolbar}/>
-                <Divider />
-                <div>
-                    <i>PLACEHOLDER for search components</i>
-                </div>
-            </Drawer>
-        </Hidden>*/}
         </div>
     </InfiniteScroll>
         <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={async () => {
@@ -378,4 +339,29 @@ export default function EntryList() {
         </Fab>
 
     </React.Fragment>
+}
+
+function TileContent(props: {elem: Entry}) {
+    const classes = useStyles({});
+    const godWillsIt: boolean = addImageIfGodWillsIt();
+
+    return <Box display={"flex"} style={{
+        backgroundColor: "white",
+        height: "100%" ,
+    }}>
+
+        {godWillsIt && <div className={classes.elemImageContainer}><img
+            className={classes.elemImage}
+            src={"https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4"}
+            alt={"toto"}
+        /></div>}
+        <div className={classes.elemBackground}/>
+        <div className={classes.elemContainer}>
+            {props.elem.labels.length > 0 ? <EntryLabelList labels={props.elem.labels}/> : <BoxCenter style={{height: "80%"}}>
+                <Typography variant="h5">
+                    {props.elem.title}
+                </Typography>
+            </BoxCenter>}
+        </div>
+    </Box>
 }

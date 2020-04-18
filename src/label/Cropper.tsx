@@ -24,6 +24,7 @@ export default function ImageCropper(props: {
     const classes = useStyles();
 
     const [file, setFile] = React.useState();
+    const [dataUrl, setDataUrl] = React.useState("");
 
     const cropper: any = useRef();
     const fileInput: any = useRef();
@@ -46,6 +47,10 @@ export default function ImageCropper(props: {
 
     }
 
+    //avant 3529890
+    //après 352071
+    //après 91651
+
     return <div>
         <input type={"file"} ref={fileInput} onChange={onInputFileChange}/>
         {file ?
@@ -57,17 +62,16 @@ export default function ImageCropper(props: {
                 viewMode={0}
                 cropend={onCropEnd}/> :
             <Skeleton className={classes.cropper} variant="rect"/>}
-        {cropper && cropper.current && cropper.current.cropper && cropper.current.cropper.getCroppedCanvas() && <div>
-            <p>Size before encryption in bytes: <strong>{cropper.current.cropper.getCroppedCanvas().toDataURL().length}</strong></p>
-
-            {/*<p>Size after encryption in bytes : <strong>{encrypt(cropper.current.cropper.getCroppedCanvas().toDataURL(), Api.encryptionKey as string).length}</strong></p>*/}
-        </div>}
+        <p>Size before encryption in bytes: <strong>{dataUrl.length}</strong></p>
+        {/*        <p>Size afterr encryption in bytes: <strong>{encrypt(dataUrl, Api.encryptionKey as string).length}</strong></p>*/}
     </div>;
 
     function onCropEnd() {
         try {
             if (cropper && cropper.current && cropper.current.cropper) {
-                props.updateDataUrl(cropper.current.cropper.getCroppedCanvas().toDataURL())
+                const url = cropper.current.cropper.getCroppedCanvas().toDataURL("image/jpeg",0.2);
+                setDataUrl(url);
+                props.updateDataUrl(url)
             }
         } catch (e) {
             console.log(e);

@@ -103,7 +103,9 @@ export default class Api {
             const file: File = new File([encrypt(avatarData, this.encryptionKey)], "avatar");
             formData.append("avatar", file);
         }
-        formData.append("json", JSON.stringify(label));
+        const cpy = {...label};
+        cpy.avatar_url = "";
+        formData.append("json", JSON.stringify(cpy));
 
         const res = await this.axiosInstance.put("/labels/" + label.id, formData);
 

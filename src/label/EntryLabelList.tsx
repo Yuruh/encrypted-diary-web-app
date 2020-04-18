@@ -22,9 +22,10 @@ const useStyles = makeStyles((theme: Theme) =>
    //         backgroundColor: (props: any) => props.color
         },
         avatar: {
-            backgroundColor: (props: any) => props.color,
+            backgroundColor: (props: any) => props.color || "white",
             width: theme.spacing(7),
             height: theme.spacing(7),
+//            position: "relative",
         },
         root: {
             '& $avatar': {
@@ -32,8 +33,12 @@ const useStyles = makeStyles((theme: Theme) =>
                 marginRight: -6,
                 width: theme.spacing(avatarThemeSize),
                 height: theme.spacing(avatarThemeSize),
-                fontSize: 16
+                fontSize: 16,
+                backgroundColor: "white"
             },
+        },
+        outlined: {
+            backgroundColor: "rgba(255, 255, 255, 0.8)"
         },
         container: {
             margin: 3
@@ -47,7 +52,8 @@ interface ILabelChipProps {
 }
 
 export function addImageIfGodWillsIt(): boolean {
-        return Math.random() > 0.97
+    return false;
+//        return Math.random() > 0.97
 }
 
 // Takes as parameters custom labels and all chip props except those custom declared
@@ -63,7 +69,8 @@ export function LabelChip(props: ILabelChipProps & Omit<ChipProps, keyof ILabelC
         variant={"outlined"}
         classes={{
             avatar: classes.avatar,
-            root: classes.root
+            root: classes.root,
+            outlined: classes.outlined,
         }}
         avatar={<Avatar src={avatarUrl}>
             {avatarValue}
