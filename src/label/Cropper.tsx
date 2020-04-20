@@ -1,7 +1,6 @@
-import React, {ChangeEvent, Component, useRef} from 'react';
+import React, {ChangeEvent, useRef} from 'react';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import Api, {decrypt, encrypt} from "../Api";
 import {Skeleton} from "@material-ui/lab";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, Theme} from "@material-ui/core";

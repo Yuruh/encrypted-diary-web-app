@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {Edit, Visibility} from "@material-ui/icons";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {useHistory} from "react-router-dom";
-import EntryLabelList, {addImageIfGodWillsIt} from "./label/EntryLabelList";
+import {addImageIfGodWillsIt} from "./label/EntryLabelList";
 import {DRAWER_WIDTH} from "./AppDrawer";
 import "./dateHelper"
 import moment from "moment";
@@ -18,7 +18,6 @@ import GridListTile from "@material-ui/core/GridListTile";
 import GridListTileBar from "@material-ui/core/GridListTileBar";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import Box from "@material-ui/core/Box";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import useTheme from "@material-ui/core/styles/useTheme";
 import InfiniteScroll from 'react-infinite-scroller';
@@ -93,7 +92,7 @@ const useStyles = makeStyles((theme: Theme) =>
     //                backgroundColor: "red",
                     filter: "blur(0)",
                     height: "50px",
-                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
                 }
             },
         },
@@ -102,10 +101,9 @@ const useStyles = makeStyles((theme: Theme) =>
 //            backgroundColor: "rgba(0, 0, 0, 0.7)",
             //visibility: "hidden",
             height: "50px",
-            textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.4), 1px -1px 1px rgba(0, 0, 0, 0.4), -1px 1px 1px rgba(0, 0, 0, 0.4), 1px 1px 1px rgba(0, 0, 0, 0.4);",
+            textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.6), 1px -1px 1px rgba(0, 0, 0, 0.6), -1px 1px 1px rgba(0, 0, 0, 0.6), 1px 1px 1px rgba(0, 0, 0, 0.6);",
             background:
-                'linear-gradient(to top, rgba(0,0,0,0.5) 0%, ' +
-                'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+                'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)',
         },
         elemIcon: {
             color: "white",
@@ -177,7 +175,7 @@ export function upperCaseFirstLetter(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function RenderDivider(props: {monthly: IEntriesByMonth, nbColsInGrid: number}) {
+/*function RenderDivider(props: {monthly: IEntriesByMonth, nbColsInGrid: number}) {
     return <GridListTile key="Subheader" cols={props.nbColsInGrid} style={{ height: 'auto'}}>
         <Divider/>
         <br/>
@@ -188,7 +186,7 @@ function RenderDivider(props: {monthly: IEntriesByMonth, nbColsInGrid: number}) 
             {upperCaseFirstLetter(props.monthly.month + " " + props.monthly.year)}
         </Typography>
     </GridListTile>
-}
+}*/
 
 export default function EntryList() {
     const classes = useStyles({});
@@ -211,13 +209,11 @@ export default function EntryList() {
     const [pagination, setPagination] = React.useState<Pagination>(new Pagination());
 
     const fetchData = async(page: number) => {
-        console.log("fetching data");
         setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page);
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
-        console.log("finished fetching data");
     };
 
     useEffect(() => {
@@ -255,7 +251,7 @@ export default function EntryList() {
             loader={<BoxCenter key={"progress"}><CircularProgress/></BoxCenter>}
         >
             <div className={classes.root}>
-                <GridList cellHeight={200} cols={nbColsInGrid} spacing={10}>
+                <GridList cellHeight={200} cols={nbColsInGrid} spacing={30}>
                     {monthlyEntries.map((monthly: IEntriesByMonth, i) => {
                         return [
                             <GridListTile key="Subheader" cols={nbColsInGrid} style={{ height: 'auto'}}>
@@ -285,14 +281,14 @@ export default function EntryList() {
                                         subtitle={elem.title}
                                         className={classes.elemBar}
                                         actionIcon={
-                                            <React.Fragment>
+                                            <BoxCenter>
                                                 <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit">
                                                     <Edit/>
                                                 </IconButton>
                                                 <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view">
                                                     <Visibility/>
                                                 </IconButton>
-                                            </React.Fragment>
+                                            </BoxCenter>
                                         }
                                     />
                                 </GridListTile>

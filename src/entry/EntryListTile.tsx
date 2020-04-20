@@ -14,13 +14,13 @@ const useStyles = makeStyles((theme: Theme) =>
                 position: "absolute",
                 width: "100%",
                 height: "100%",
-                backgroundImage: (props: any) => "url(" + props.url + ")" || "rgb(255, 255, 255)",
+                backgroundImage: (props: any) => "url(" + props.url + ")",// || "rgb(255, 255, 255)",
 //                backgroundImage: "url('https://avatars2.githubusercontent.com/u/13162326?s=460&u=44e0f40c4b6442d8d0932ceaa1da7d072db4b847&v=4')",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
                 //backdropFilter: "blur(3px)",
-                filter: "blur(6px)",
+                filter: "blur(6px) grayscale(0.8)",
             },
             container: {
                 padding: 5,
@@ -47,7 +47,7 @@ export function TileContent(props: {elem: Entry}) {
     const godWillsIt: boolean = addImageIfGodWillsIt();
     let url = null;
 
-    const firstLabelWithUrl: Label | undefined = props.elem.labels.find((elem: Label) => elem.avatar_url != "");
+    const firstLabelWithUrl: Label | undefined = props.elem.labels.find((elem: Label) => elem.avatar_url !== "");
 
     if (firstLabelWithUrl) {
         url = firstLabelWithUrl.avatar_url;
