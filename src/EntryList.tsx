@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {createStyles, Theme} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {Entry} from "./models/Entry";
-import Api from "./Api";
+import Api, {decryptLabelAvatar} from "./Api";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
 import IconButton from "@material-ui/core/IconButton";
@@ -24,6 +24,10 @@ import InfiniteScroll from 'react-infinite-scroller';
 import {Pagination} from "./models/Pagination";
 import { BoxCenter } from "./BoxCenter";
 import {TileContent} from "./entry/EntryListTile";
+import Tooltip from "@material-ui/core/Tooltip";
+import {Label} from "./models/Label";
+import {addDecryptedLabel, State} from "./redux/reducers/root";
+import {useDispatch, useSelector} from "react-redux";
 
 moment.locale(navigator.language);
 
@@ -103,7 +107,7 @@ const useStyles = makeStyles((theme: Theme) =>
             height: "50px",
             textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.6), 1px -1px 1px rgba(0, 0, 0, 0.6), -1px 1px 1px rgba(0, 0, 0, 0.6), 1px 1px 1px rgba(0, 0, 0, 0.6);",
             background:
-                'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)',
+                'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%)',
         },
         elemIcon: {
             color: "white",
@@ -196,7 +200,7 @@ export default function EntryList() {
     const downMd = useMediaQuery(theme.breakpoints.down('md'));
     const elemsPerPage = 10;
 
-    let nbColsInGrid = 5;
+    let nbColsInGrid = 4;
     if (downSm) {
         nbColsInGrid = 2;
     } else if (downMd) {
@@ -207,10 +211,36 @@ export default function EntryList() {
     const [fetching, setFetching] = React.useState(false);
     const [redirect, setRedirect] = React.useState("");
     const [pagination, setPagination] = React.useState<Pagination>(new Pagination());
+    const decryptedLabels = useSelector((state: State) => state.decryptedLabels);
+    const dispatch = useDispatch();
 
     const fetchData = async(page: number) => {
         setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page);
+
+
+        // DUPLICATED CODE FROM LABEL_LIST
+
+        const promises = [];
+        for (const entry of result.data.entries) {
+
+            for (const label of entry.labels as Label[]) {
+                const existing = decryptedLabels.find((elem) => elem.id === label.id);
+                if (existing) {
+                    label.avatar_url = existing.decryptedImage
+                } else {
+                    promises.push(decryptLabelAvatar(label));
+                }
+            }
+            const decrypted: Label[] = await Promise.all(promises);
+
+            for (const label of decrypted) {
+                dispatch(addDecryptedLabel({id: label.id, decryptedImage: label.avatar_url}));
+            }
+        }
+
+
+
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
@@ -282,12 +312,16 @@ export default function EntryList() {
                                         className={classes.elemBar}
                                         actionIcon={
                                             <BoxCenter>
-                                                <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit">
-                                                    <Edit/>
-                                                </IconButton>
-                                                <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view">
-                                                    <Visibility/>
-                                                </IconButton>
+                                                <Tooltip title={"Edit Entry"}>
+                                                    <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=edit")} aria-label="edit">
+                                                        <Edit/>
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={"View Entry"}>
+                                                    <IconButton className={classes.elemIcon} onClick={() => setRedirect("/entries/" + elem.id + "?display=view")} aria-label="view">
+                                                        <Visibility/>
+                                                    </IconButton>
+                                                </Tooltip>
                                             </BoxCenter>
                                         }
                                     />
