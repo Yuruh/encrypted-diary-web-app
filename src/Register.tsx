@@ -20,10 +20,15 @@ const useStyles = makeStyles((theme: Theme) =>
             width: "100%",
             marginTop: "5px",
         }, media: {
-            height: 140,
         },
         button: {
             width: "100%"
+        },
+        image: {
+            padding: 30,
+            margin: "auto",
+            height: "auto",
+            width: "60%"
         },
         action: {
             flexDirection: "column",
@@ -90,7 +95,7 @@ export function Register() {
     }
 
     return <Card className={classes.root} elevation={5}>
-        <CardMedia component={"img"} image={"/diary.jpg"} title={"diary"}/>
+        <CardMedia className={classes.image} component={"img"} image={"/logo512.png"} title={"diary"}/>
         <CardHeader title={"Encrypted Diary"} subheader={"So your private thoughts stay private"}/>
         <CardContent>
             <TextField className={classes.field} required label="Email" type="email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>

@@ -38,6 +38,13 @@ const theme = createMuiTheme({
         primary: indigo,
         secondary: blueGrey
     },
+    overrides: {
+        MuiTooltip: {
+            tooltip: {
+                fontSize: "0.8rem"
+            }
+        }
+    }
 
 /*   This is an example as to how to override global property
  overrides: {

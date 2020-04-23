@@ -196,7 +196,7 @@ export default function EntryList() {
     const downMd = useMediaQuery(theme.breakpoints.down('md'));
     const elemsPerPage = 10;
 
-    let nbColsInGrid = 5;
+    let nbColsInGrid = 4;
     if (downSm) {
         nbColsInGrid = 2;
     } else if (downMd) {

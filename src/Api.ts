@@ -180,10 +180,11 @@ export default class Api {
         return this.axiosInstance.delete("/entries/" + entryId)
     }
 
-    static async login(email: string, pwd: string) {
+    static async login(email: string, pwd: string, timeMs: number) {
         const response = await this.axiosInstance.post("/login", {
             email,
-            password: pwd
+            password: pwd,
+            session_duration_ms: timeMs
         });
         this.token = response.data.token;
         this.axiosInstance.defaults.headers.Authorization = "Bearer " + this.token;
