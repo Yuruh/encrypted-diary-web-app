@@ -31,7 +31,7 @@ export function decrypt (encryptedMessage: string, key: string) {
     return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
-export async function decryptLabelAvatar(label: Label) {
+export async function decryptLabelAvatar(label: Label): Promise<Label> {
     if (label.has_avatar && label.avatar_url !== "") {
         if (!Api.encryptionKey) {
             throw new Error("encryption key undefined");
@@ -64,7 +64,7 @@ export default class Api {
     }
 
     static async getLabels(name: string = "", excluded_ids: number[], limit: number = 5, page: number = 1) {
-        const res = await this.axiosInstance.get("/labels", {
+        return await this.axiosInstance.get("/labels", {
             params: {
                 name,
                 limit,
@@ -72,14 +72,6 @@ export default class Api {
                 excluded_ids: JSON.stringify(excluded_ids)
             }
         });
-
-/*          we try to dit it outside so we can use redux
-const promises = [];
-        for (const label of res.data.labels as Label[]) {
-            promises.push(decryptLabelAvatar(label));
-        }
-        await Promise.all(promises);*/
-        return res
     }
 
 
@@ -133,13 +125,12 @@ const promises = [];
     }
 
     static async getEntries(limit?: number, page?: number) {
-        const res = await this.axiosInstance.get("/entries", {
+        return await this.axiosInstance.get("/entries", {
             params: {
                 limit,
                 page,
             }
         });
-        return res
     }
 
     static addEntry(entry: Entry) {
