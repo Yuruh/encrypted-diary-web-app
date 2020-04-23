@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 width: theme.spacing(avatarThemeSize),
                 height: theme.spacing(avatarThemeSize),
                 fontSize: 16,
-                backgroundColor: "white"
+                backgroundColor: (props: any) => props.color
             },
         },
         outlined: {

@@ -31,7 +31,7 @@ export function decrypt (encryptedMessage: string, key: string) {
     return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
-async function decryptLabelAvatar(label: Label) {
+export async function decryptLabelAvatar(label: Label) {
     if (label.has_avatar && label.avatar_url !== "") {
         if (!Api.encryptionKey) {
             throw new Error("encryption key undefined");
@@ -39,7 +39,7 @@ async function decryptLabelAvatar(label: Label) {
         const avatarContentResp = await axios.get(label.avatar_url);
         label.avatar_url = decrypt(avatarContentResp.data, Api.encryptionKey)
     }
-
+    return label
 }
 
 // video about aes https://www.youtube.com/watch?v=O4xNJsjtN6E
@@ -72,19 +72,13 @@ export default class Api {
                 excluded_ids: JSON.stringify(excluded_ids)
             }
         });
-        /*
-            Necessary to decrypt data
-            Should be sped up with async
-            Keeping the image smalls speed up encryption / decryption
 
-            Other problems, it makes load time very slow (while it decrypts image)
-            I could find a way to report back when the decryption is done
-         */
-        const promises = [];
+/*          we try to dit it outside so we can use redux
+const promises = [];
         for (const label of res.data.labels as Label[]) {
             promises.push(decryptLabelAvatar(label));
         }
-        await Promise.all(promises);
+        await Promise.all(promises);*/
         return res
     }
 
@@ -145,13 +139,6 @@ export default class Api {
                 page,
             }
         });
-        const promises = [];
-        for (const entry of res.data.entries) {
-            for (const label of entry.labels as Label[]) {
-                promises.push(decryptLabelAvatar(label));
-            }
-        }
-        await Promise.all(promises);
         return res
     }
 

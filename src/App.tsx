@@ -19,6 +19,9 @@ import {Login} from "./Login";
 import Header from "./Header";
 import LabelList from "./label/LabelList";
 
+// use this so goland does know what's happening
+// function mapStateToProps(state: TypeOfYourRootStore, props: TypeOfYourComponentsProps) {}
+
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => {
@@ -45,27 +48,6 @@ const theme = createMuiTheme({
             }
         }
     }
-
-/*   This is an example as to how to override global property
- overrides: {
-        MuiChip: {
-            label: {
-                color: "blue",
-                paddingLeft: 27
-            },
-            root: {
-                '& $avatar': {
-                    marginLeft: 5,
-                    marginRight: -6,
-                    width: 240,
-                    height: 240,
-                },
-            },
-            avatar: {
-                width: "100px"
-            }
-        }
-    }*/
 } as any);
 
 const App = () => {

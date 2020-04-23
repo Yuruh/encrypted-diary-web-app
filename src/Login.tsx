@@ -19,6 +19,8 @@ import IconButton from "@material-ui/core/IconButton";
 import VirtualKeyboard from "./login/VirtualKeyboard";
 import Tooltip from "@material-ui/core/Tooltip";
 import Collapse from "@material-ui/core/Collapse";
+import {useDispatch, useSelector} from "react-redux";
+import {EXAMPLE_ACTION, State} from "./redux/reducers/root";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -80,11 +82,6 @@ export function Login() {
             await login();
         }
     }
-
-    const anchorOrigin = {
-        vertical: 'top',
-        horizontal: 'left',
-    };
 
     return <Card className={classes.root} elevation={5}>
         <CardHeader title={"Encrypted Diary"} subheader={"Log in"}/>

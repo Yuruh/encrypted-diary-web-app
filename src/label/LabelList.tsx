@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {Box, createStyles, Theme} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Api from "../Api";
+import Api, {decryptLabelAvatar} from "../Api";
 import {Label} from "../models/Label";
 import {LabelChip} from "./EntryLabelList";
 import Grid from "@material-ui/core/Grid";
@@ -12,6 +12,8 @@ import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import {Delete, Save} from "@material-ui/icons";
 import ImageCropper from "./Cropper";
+import {useDispatch, useSelector} from "react-redux";
+import {addDecryptedLabel, EXAMPLE_ACTION, State} from "../redux/reducers/root";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -33,11 +35,31 @@ export default function LabelList() {
     const [selectedLabel, setSelectedLabel] = React.useState<Label | null>(null);
     const [labels, setLabels] = React.useState<Label[]>([]);
     const [fetching, setFetching] = React.useState(false);
-  //  const [redirect, setRedirect] = React.useState("");
+
+    const decryptedLabels = useSelector((state: State) => state.decryptedLabels);
+    const dispatch = useDispatch();
 
     const fetchData = async() => {
         setFetching(true);
         const result = await Api.getLabels("", [], Number.MAX_SAFE_INTEGER, 1);
+
+        // This logic should be in a reducer. Use redux thunks middleware for async actions
+
+        // For each label avatar url, we check if it is already saved globally.
+        const promises = [];
+        for (const label of result.data.labels as Label[]) {
+            const existing = decryptedLabels.find((elem) => elem.id === label.id);
+            if (existing) {
+                label.avatar_url = existing.decryptedImage
+            } else {
+                promises.push(decryptLabelAvatar(label));
+            }
+        }
+        const decrypted: Label[] = await Promise.all(promises);
+
+        for (const label of decrypted) {
+            dispatch(addDecryptedLabel({id: label.id, decryptedImage: label.avatar_url}));
+        }
         setLabels(result.data.labels);
         setFetching(false);
     };
