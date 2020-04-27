@@ -1,9 +1,13 @@
 export const EXAMPLE_ACTION = "EXAMPLE_ACTION";
 export const ADD_DECRYPTED_LABEL = "ADD_DECRYPTED_LABEL";
+export const LOGIN = "LOGIN";
+export const LOGOUT = "LOGOUT";
 
+// todo organize with combineReducers
 export class State {
     content: string = "toto";
-    decryptedLabels: DecryptedImage[] = []
+    decryptedLabels: DecryptedImage[] = [];
+    redirectToLogout: boolean = false;
 }
 const initialState: State = new State();
 
@@ -25,13 +29,33 @@ interface AddLabelAction {
     decrypted: DecryptedImage;
 }
 
-type ActionType = AddLabelAction | ExampleAction;
+interface LogoutAction {
+    type: typeof LOGOUT;
+}
+
+interface LoginAction {
+    type: typeof LOGIN;
+}
+
+type ActionType = AddLabelAction | ExampleAction | LoginAction | LogoutAction;
 
 // Action creator
 export function addDecryptedLabel(payload: DecryptedImage): ActionType {
     return {
         type: ADD_DECRYPTED_LABEL,
         decrypted: payload
+    }
+}
+
+export function login(): ActionType {
+    return {
+        type: LOGIN
+    }
+}
+
+export function logout(): ActionType {
+    return {
+        type: LOGOUT
     }
 }
 
@@ -55,6 +79,16 @@ export function rootReducer(
             return {
                 ...state,
                 decryptedLabels: [...state.decryptedLabels, action.decrypted]
+            };
+        case LOGOUT:
+            return {
+                ...state,
+                redirectToLogout: true
+            };
+        case LOGIN:
+            return {
+                ...state,
+                redirectToLogout: false
             };
         default:
             return state

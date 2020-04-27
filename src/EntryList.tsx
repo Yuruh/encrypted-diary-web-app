@@ -26,8 +26,9 @@ import { BoxCenter } from "./BoxCenter";
 import {TileContent} from "./entry/EntryListTile";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Label} from "./models/Label";
-import {addDecryptedLabel, State} from "./redux/reducers/root";
+import {addDecryptedLabel, logout, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
+import Button from "@material-ui/core/Button";
 
 moment.locale(navigator.language);
 

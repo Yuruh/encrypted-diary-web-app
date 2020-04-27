@@ -118,15 +118,19 @@ export default function Header(props: {
                 </div>}
                 <div className={classes.grow}/>
                 {loggedIn &&
-                <Button color="inherit" onClick={() => {
-                    Api.encryptionKey = null;
-                    Api.token = null;
-                    if (process.env.NODE_ENV === "development") {
-                        localStorage.clear();
-                    }
-                    console.log(Api.token)
-                    redirectHome();
-                }}>Logout</Button>}
+                    <React.Fragment>
+                        <Link to="/account">
+                            <Button>Account</Button>
+                        </Link>
+                        <Button color="inherit" onClick={() => {
+                            Api.encryptionKey = null;
+                            Api.token = null;
+                            if (process.env.NODE_ENV === "development") {
+                                localStorage.clear();
+                            }
+                            redirectHome();
+                        }}>Logout</Button>
+                    </React.Fragment>}
             </Toolbar>
         </AppBar>
         {loggedIn ? <AppDrawer open={open} changeOpen={(value) => setOpen(value)} content={props.content}/>

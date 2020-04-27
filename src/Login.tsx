@@ -21,6 +21,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Collapse from "@material-ui/core/Collapse";
 import {useDispatch, useSelector} from "react-redux";
 import {EXAMPLE_ACTION, State} from "./redux/reducers/root";
+import {login as actionLogin} from "./redux/reducers/root";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -54,6 +55,7 @@ export function Login() {
     const [redirect, setRedirect] = React.useState<boolean>(false);
     const [duration, setDuration] = React.useState<number>(1000 * 60 * 30); // 30 minutes
     const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false); // 30 minutes
+    const dispatch = useDispatch();
 
     function onChangeEmail(event: any) {
         setEmail(event.target.value)
@@ -66,6 +68,7 @@ export function Login() {
     async function login() {
         try {
             await Api.login(email, password, duration);
+            dispatch(actionLogin());
             setRedirect(true)
         } catch (e) {
             console.log(e);
