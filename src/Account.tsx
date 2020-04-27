@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from "react"
+import React, {Ref, useEffect, useState} from "react"
 import {User} from "./models/User";
 import Api from "./Api";
 import {Typography} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import {Multipart} from "./utils/mutlipart";
 import TextField from "@material-ui/core/TextField";
 
 export default function Account() {
@@ -56,50 +55,59 @@ export default function Account() {
 function EnterOTP (funcProps: {
     token: string
 }) {
-    const [passcode, setPasscode] = React.useState("      ");
     // cannot use loop for react hooks
-    const case1 = React.useRef();
-    const case2 = React.useRef();
+    const case0: any = React.useRef();
+    const case1: any = React.useRef();
+    const case2: any = React.useRef();
+    const case3: any = React.useRef();
+    const case4: any = React.useRef();
+    const case5: any = React.useRef();
+
+    const button: any = React.useRef();
 
     for (let i = 0; i < 6; i++) {
     }
 
-    function Case(props: {
+    const Case = React.forwardRef((props: {
         idx: number
-        ref?: any
+        //ref?: any
         nextCaseRef?: any
-    }) {
-        return <TextField ref={props.ref} variant={"outlined"} style={{width: 50}} value={passcode[props.idx]} onChange={(e) => {
+    }, ref: Ref<HTMLDivElement>) => {
+
+
+  //      const [character, setCharacter] = React.useState("0");
+
+
+        return <TextField inputRef={ref} inputProps={{maxLength: 1}} variant={"outlined"} style={{width: 50}} /*value={character}*/ onChange={(e) => {
             let value = e.target.value;
-            console.log(e.target);
             if (value.length > 0) {
-                const charac = value[value.length - 1];
-
-                setPasscode(passcode.substr(0, props.idx) + charac + passcode.substr(props.idx + 1))
-
                 if (props.nextCaseRef) {
-                    console.log(props.nextCaseRef)
+                    props.nextCaseRef.current.value = "";
                     props.nextCaseRef.current.focus();
                 }
             }
         }}/>
-    }
+    });
+
     async function go() {
         try {
-            await Api.validateOTP(passcode, funcProps.token)
+            const code = case0.current.value + case1.current.value + case2.current.value +
+                case3.current.value + case4.current.value + case5.current.value;
+            console.log(code);
+            await Api.validateOTP(code, funcProps.token)
         } catch (e) {
             console.log(e)
         }
     }
     // faut faire des forwards refs, je continuerai plus tard
     return <div>
-        <Case idx={0} ref={case1} nextCaseRef={case2}/>
-        <Case idx={1} ref={case2}/>
-        <Case idx={2}/>
-        <Case idxeer={3}/>
-        <Case idx={4}/>
-        <Case idx={5}/>
+        <Case idx={0} ref={case0} nextCaseRef={case1}/>
+        <Case idx={1} ref={case1} nextCaseRef={case2}/>
+        <Case idx={2} ref={case2} nextCaseRef={case3}/>
+        <Case idx={3} ref={case3} nextCaseRef={case4}/>
+        <Case idx={4} ref={case4} nextCaseRef={case5}/>
+        <Case idx={5} ref={case5}  nextCaseRef={button}/>
         <br/>
-        <Button onClick={go}>FEU !</Button>
+        <Button ref={button} onClick={go}>Finalize 2FA Registration with OTP</Button>
     </div>
 }
