@@ -39,21 +39,42 @@ export default function Account() {
 
 
     return <div>
-        <Typography variant={"h3"}>
-            {user.email}
+        <Typography variant={"h2"} color={"primary"} gutterBottom={true}>
+            Settings for <strong>{user.email}</strong>
         </Typography>
         <div>
-            <Button onClick={startOTPRegistration} disabled={user.has_registered_otp}>Enable Two Factors Authentication</Button>
+            {user.has_registered_otp ? <p>2FA With OTP ok</p> : (token == "" && <Button onClick={startOTPRegistration} disabled={user.has_registered_otp}>Enable Two Factors Authentication</Button>)}
             {token != "" && <div>
+                <Typography variant={"h3"}>
+                    Two Factors Authentication Registration
+                </Typography>
+                <Typography variant={"subtitle2"} gutterBottom={true}>
+                    With Time-based One-time Password Algorithm (TOTP)
+                </Typography>
+                <Typography variant={"h5"}>
+                    Step 1.
+                </Typography>
+                <Typography variant={"body1"}>
+                    Scan this qr code with a TOTP compliant application. (e.g. Google Authenticator, LastPass Authenticator, ...)
+                </Typography>
                 <img src={qrSrc} alt={"qr-code"}/>
-                <EnterOTP token={token}/>
+                <Typography variant={"h5"}>
+                    Step 2.
+                </Typography>
+                <Typography variant={"body1"}>
+                    Enter the code on your app to finalize the registration
+                </Typography>
+                <EnterOTP token={token} onValid={() => {
+                    fetchData().catch();
+                }}/>
             </div>}
         </div>
     </div>
 }
 
-function EnterOTP (funcProps: {
+export function EnterOTP (funcProps: {
     token: string
+    onValid: () => void
 }) {
     // cannot use loop for react hooks
     const case0: any = React.useRef();
@@ -62,11 +83,9 @@ function EnterOTP (funcProps: {
     const case3: any = React.useRef();
     const case4: any = React.useRef();
     const case5: any = React.useRef();
-
     const button: any = React.useRef();
 
-    for (let i = 0; i < 6; i++) {
-    }
+    const [codeError, setCodeError] = React.useState("");
 
     const Case = React.forwardRef((props: {
         idx: number
@@ -74,11 +93,12 @@ function EnterOTP (funcProps: {
         nextCaseRef?: any
     }, ref: Ref<HTMLDivElement>) => {
 
-
-  //      const [character, setCharacter] = React.useState("0");
-
-
-        return <TextField inputRef={ref} inputProps={{maxLength: 1}} variant={"outlined"} style={{width: 50}} /*value={character}*/ onChange={(e) => {
+        // Uncontrolled, we use ref to retrieve the value
+        return <TextField inputRef={ref} inputProps={{
+            maxLength: 1,
+            pattern: "[0-9]*",
+  //          inputMode: "numeric"
+        }} variant={"outlined"} style={{width: 50, textAlign: "center"}} onChange={(e) => {
             let value = e.target.value;
             if (value.length > 0) {
                 if (props.nextCaseRef) {
@@ -90,13 +110,15 @@ function EnterOTP (funcProps: {
     });
 
     async function go() {
+        setCodeError("");
         try {
             const code = case0.current.value + case1.current.value + case2.current.value +
                 case3.current.value + case4.current.value + case5.current.value;
-            console.log(code);
             await Api.validateOTP(code, funcProps.token)
+            funcProps.onValid(); // todo send token from validateOTP
         } catch (e) {
-            console.log(e)
+            // todo check its 400 and handle other error codes
+            setCodeError("Invalid Code");
         }
     }
     // faut faire des forwards refs, je continuerai plus tard
@@ -108,6 +130,7 @@ function EnterOTP (funcProps: {
         <Case idx={4} ref={case4} nextCaseRef={case5}/>
         <Case idx={5} ref={case5}  nextCaseRef={button}/>
         <br/>
-        <Button ref={button} onClick={go}>Finalize 2FA Registration with OTP</Button>
+        <Button ref={button} onClick={go} variant={"outlined"} color={"primary"}>Validate Code</Button>
+        {codeError != "" && <Typography color={"error"} variant={"body2"}>{codeError}</Typography>}
     </div>
 }

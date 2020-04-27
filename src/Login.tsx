@@ -22,6 +22,7 @@ import Collapse from "@material-ui/core/Collapse";
 import {useDispatch, useSelector} from "react-redux";
 import {EXAMPLE_ACTION, State} from "./redux/reducers/root";
 import {login as actionLogin} from "./redux/reducers/root";
+import {EnterOTP} from "./Account";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -54,7 +55,10 @@ export function Login() {
     const [password, setPassword] = React.useState('');
     const [redirect, setRedirect] = React.useState<boolean>(false);
     const [duration, setDuration] = React.useState<number>(1000 * 60 * 30); // 30 minutes
-    const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false); // 30 minutes
+    const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false);
+
+    const [TFAToken, setTFAToken] = React.useState("");
+
     const dispatch = useDispatch();
 
     function onChangeEmail(event: any) {
@@ -67,9 +71,14 @@ export function Login() {
 
     async function login() {
         try {
-            await Api.login(email, password, duration);
-            dispatch(actionLogin());
-            setRedirect(true)
+            const res = await Api.login(email, password, duration);
+            // TFA is required
+            if (res.data.two_factors_methods.length > 0) {
+                setTFAToken(res.data.token);
+            } else {
+                dispatch(actionLogin());
+                setRedirect(true)
+            }
         } catch (e) {
             console.log(e);
             // todo
@@ -133,7 +142,13 @@ export function Login() {
             </FormControl>
         </CardContent>
         <CardActions className={classes.action}>
-            <Button className={classes.button} variant={"contained"} color={"primary"} onClick={login}>Log in</Button>
+            {TFAToken === "" ?
+                <Button className={classes.button} variant={"contained"} color={"primary"} onClick={login}>Log
+                    in</Button> :
+                <EnterOTP token={TFAToken} onValid={() => {
+
+                }}/>
+            }
             <Divider className={classes.divider}/>
             <Link to={"/register"}>Register here</Link>
         </CardActions>

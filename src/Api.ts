@@ -188,6 +188,7 @@ export default class Api {
             localStorage.setItem("token", String(this.token));
             localStorage.setItem("key", String(this.encryptionKey));
         }
+        return response
     }
 
     static async getApiKeys() {
