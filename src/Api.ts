@@ -191,6 +191,17 @@ export default class Api {
         return response
     }
 
+    //Should be in reducer
+    static onLogin(token: string) {
+        this.token = token;
+        this.axiosInstance.defaults.headers.Authorization = "Bearer " + this.token;
+
+        if (process.env.NODE_ENV === "development") {
+            localStorage.setItem("token", String(this.token));
+            localStorage.setItem("key", String(this.encryptionKey));
+        }
+    }
+
     static async getApiKeys() {
         return this.axiosInstance.get("/connectors");
     }

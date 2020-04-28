@@ -4,6 +4,8 @@ import Api from "./Api";
 import {Typography} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import Container from "@material-ui/core/Container";
+import {BoxCenter} from "./BoxCenter";
 
 export default function Account() {
     const [user, setUser] = useState(new User());
@@ -74,7 +76,7 @@ export default function Account() {
 
 export function EnterOTP (funcProps: {
     token: string
-    onValid: () => void
+    onValid: (token: string) => void
 }) {
     // cannot use loop for react hooks
     const case0: any = React.useRef();
@@ -114,15 +116,20 @@ export function EnterOTP (funcProps: {
         try {
             const code = case0.current.value + case1.current.value + case2.current.value +
                 case3.current.value + case4.current.value + case5.current.value;
-            await Api.validateOTP(code, funcProps.token)
-            funcProps.onValid(); // todo send token from validateOTP
+            const res = await Api.validateOTP(code, funcProps.token);
+            funcProps.onValid(res.data.token); // todo send token from validateOTP
         } catch (e) {
             // todo check its 400 and handle other error codes
             setCodeError("Invalid Code");
         }
     }
-    // faut faire des forwards refs, je continuerai plus tard
     return <div>
+        <Typography variant="h5" color={"primary"}>
+            Two-Factor Authentication requested
+        </Typography>
+        <Typography variant={"subtitle1"} gutterBottom color={"secondary"}>
+            Enter Passcode from your TOTP authenticator
+        </Typography>
         <Case idx={0} ref={case0} nextCaseRef={case1}/>
         <Case idx={1} ref={case1} nextCaseRef={case2}/>
         <Case idx={2} ref={case2} nextCaseRef={case3}/>
@@ -130,7 +137,8 @@ export function EnterOTP (funcProps: {
         <Case idx={4} ref={case4} nextCaseRef={case5}/>
         <Case idx={5} ref={case5}  nextCaseRef={button}/>
         <br/>
-        <Button ref={button} onClick={go} variant={"outlined"} color={"primary"}>Validate Code</Button>
-        {codeError != "" && <Typography color={"error"} variant={"body2"}>{codeError}</Typography>}
+        <br/>
+        <Button style={{marginLeft: "auto", marginRight: "auto"}} ref={button} onClick={go} variant={"outlined"} color={"primary"}>Validate Code</Button>
+        {codeError !== "" && <Typography color={"error"} variant={"body2"}>{codeError}</Typography>}
     </div>
 }

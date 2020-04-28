@@ -145,8 +145,10 @@ export function Login() {
             {TFAToken === "" ?
                 <Button className={classes.button} variant={"contained"} color={"primary"} onClick={login}>Log
                     in</Button> :
-                <EnterOTP token={TFAToken} onValid={() => {
-
+                <EnterOTP token={TFAToken} onValid={(accessToken) => {
+                    Api.onLogin(accessToken);
+                    dispatch(actionLogin());
+                    setRedirect(true)
                 }}/>
             }
             <Divider className={classes.divider}/>
