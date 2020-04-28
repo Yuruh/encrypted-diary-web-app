@@ -49,6 +49,14 @@ const theme = createMuiTheme({
             tooltip: {
                 fontSize: "0.8rem"
             }
+        },
+        MuiGridListTileBar: {
+            title: {
+                fontSize: "1.2rem"
+            },
+            subtitle: {
+                fontSize: "1rem"
+            }
         }
     }
 } as any);

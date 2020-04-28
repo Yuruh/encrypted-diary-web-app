@@ -16,6 +16,7 @@ import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
+import {BoxCenter} from "../BoxCenter";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -75,7 +76,7 @@ export default function Page() {
     }, []);
 
     if (fetching) {
-        return <CircularProgress/>
+        return <BoxCenter><CircularProgress/></BoxCenter>
     }
 
     let content: JSX.Element;

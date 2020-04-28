@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme: Theme) =>
             overflowX: 'hidden',
         },
         root: {
-            display: 'flex',
+//            display: 'flex',
         },
         toolbar: {
             display: 'flex',
@@ -95,20 +95,20 @@ const useStyles = makeStyles((theme: Theme) =>
   //                      'linear-gradient(to top, rgba(0,0,0,1) 0%, ' +
     //                                    'rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 100%)',
     //                backgroundColor: "red",
-                    filter: "blur(0)",
-                    height: "50px",
-                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    //                height: "50px",
+                    backgroundColor: "rgba(0, 0, 0, 0.9)",
+                    visibility: "visible",
                 }
             },
         },
         elemBar: {
 
 //            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            //visibility: "hidden",
-            height: "50px",
+            visibility: "hidden",
+            height: "60px",
             textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.6), 1px -1px 1px rgba(0, 0, 0, 0.6), -1px 1px 1px rgba(0, 0, 0, 0.6), 1px 1px 1px rgba(0, 0, 0, 0.6);",
-            background:
-                'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%)',
+//            background:
+  //              'linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)',
         },
         elemIcon: {
             color: "white",
@@ -274,13 +274,12 @@ export default function EntryList() {
         }
     }
 
+    // I'll do the infinite scroll loader myself
     return <React.Fragment>
         <InfiniteScroll
             pageStart={1}
             loadMore={loadMoreEntries}
-            hasMore={pagination.has_next_page}
-            loader={<BoxCenter key={"progress"}><CircularProgress/></BoxCenter>}
-        >
+            hasMore={pagination.has_next_page}>
             <div className={classes.root}>
                 <GridList cellHeight={200} cols={nbColsInGrid} spacing={30}>
                     {monthlyEntries.map((monthly: IEntriesByMonth, i) => {
@@ -330,8 +329,9 @@ export default function EntryList() {
                             })]
                     })}
                 </GridList>
-        </div>
-    </InfiniteScroll>
+                {pagination.has_next_page && <BoxCenter style={{width: '100%', marginTop: 30}}><CircularProgress/></BoxCenter>}
+            </div>
+        </InfiniteScroll>
         <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={async () => {
             const entry: Entry = new Entry();
             entry.title = "Diary Entry";

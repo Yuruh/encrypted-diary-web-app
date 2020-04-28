@@ -54,7 +54,7 @@ export enum EntrySaveStatus {
     ERROR = "An error occurred"
 }
 
-const TIME_BEFORE_SAVE_MS = 3000;
+const TIME_BEFORE_SAVE_MS = 2000;
 
 class Editor extends React.Component<IProps, IState> {
     timeout: NodeJS.Timeout | null = null;
