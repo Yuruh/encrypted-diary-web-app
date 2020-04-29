@@ -6,12 +6,16 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
 import {BoxCenter} from "./BoxCenter";
+import {axiosError} from "./redux/reducers/root";
+import {useDispatch} from "react-redux";
+import HttpErrorHandler from "./utils/HttpErrorHandler";
 
 export default function Account() {
     const [user, setUser] = useState(new User());
     const [fetching, setFetching] = React.useState(false);
     const [qrSrc, setQrSrc] = React.useState("");
     const [token, setToken] = React.useState("");
+    const dispatch = useDispatch();
 
     const fetchData = async() => {
         setFetching(true);
@@ -25,18 +29,18 @@ export default function Account() {
             const res = await Api.requestOTPRegistration();
             setQrSrc(URL.createObjectURL(res.data))
         } catch (e) {
-            console.log(e);
+            dispatch(axiosError(e));
         }
         try {
             const res = await Api.request2FAToken();
             setToken(res.data.token)
         } catch (e) {
-            console.log(e)
+            dispatch(axiosError(e));
         }
     }
 
     useEffect(() => {
-        fetchData().catch(e => console.log(e));
+        fetchData().catch(e => dispatch(axiosError(e)));
     }, []);
 
 
@@ -86,6 +90,7 @@ export function EnterOTP (funcProps: {
     const case4: any = React.useRef();
     const case5: any = React.useRef();
     const button: any = React.useRef();
+    const dispatch = useDispatch();
 
     const [codeError, setCodeError] = React.useState("");
 
@@ -119,8 +124,9 @@ export function EnterOTP (funcProps: {
             const res = await Api.validateOTP(code, funcProps.token);
             funcProps.onValid(res.data.token); // todo send token from validateOTP
         } catch (e) {
-            // todo check its 400 and handle other error codes
-            setCodeError("Invalid Code");
+            const errorHandler: HttpErrorHandler = new HttpErrorHandler();
+            errorHandler.actions.set(400, () => setCodeError("Invalid Code"));
+            dispatch(axiosError(e, errorHandler));
         }
     }
     return <div>

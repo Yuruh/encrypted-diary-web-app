@@ -53,7 +53,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
+/*
+todo snackbar from context
 
+<Snackbar open={error !== undefined} autoHideDuration={6000} onClose={onClose}>
+    <Alert onClose={onClose} severity="error">
+        {msg}
+    </Alert>
+</Snackbar>*/
 export function Login() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');

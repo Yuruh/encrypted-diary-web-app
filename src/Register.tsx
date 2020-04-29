@@ -10,6 +10,8 @@ import {CardMedia} from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
 import {Link, Redirect} from "react-router-dom";
 import Api from "./Api";
+import {useDispatch} from "react-redux";
+import {axiosError} from "./redux/reducers/root";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -71,6 +73,8 @@ export function Register() {
     const [password, setPassword] = React.useState('');
     const [redirect, setRedirect] = React.useState<boolean>(false);
 
+    const dispatch = useDispatch();
+
     function onChangeEmail(event: any) {
         setEmail(event.target.value)
     }
@@ -84,7 +88,7 @@ export function Register() {
             await Api.register(email, password);
             setRedirect(true)
         } catch (e) {
-
+            dispatch(axiosError(e, undefined));
         }
     }
 

@@ -13,7 +13,7 @@ import Button from "@material-ui/core/Button";
 import {Delete, Save} from "@material-ui/icons";
 import ImageCropper from "./Cropper";
 import {useDispatch, useSelector} from "react-redux";
-import {addDecryptedLabel, EXAMPLE_ACTION, State} from "../redux/reducers/root";
+import {addDecryptedLabel, axiosError, EXAMPLE_ACTION, State} from "../redux/reducers/root";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -65,7 +65,7 @@ export default function LabelList() {
     };
 
     useEffect(() => {
-        fetchData().catch(e => console.log(e));
+        fetchData().catch((e) => dispatch(axiosError(e)));
     }, []);
 
     if (fetching) {
@@ -114,6 +114,7 @@ function LabelEditor(props: {
 
     const [label, setLabel] = React.useState<Label>(props.selectedLabel);
     const [avatarUrl, setAvatarUrl] = React.useState<string>("");
+    const dispatch = useDispatch();
 
     if (props.selectedLabel.id !== label.id) {
         setLabel(props.selectedLabel);
@@ -143,7 +144,7 @@ function LabelEditor(props: {
                         const res = await Api.editLabel(label, avatarUrl);
                         props.onEditSuccess(res.data.label);
                     } catch (e) {
-                        console.log(e);
+                        dispatch(axiosError(e));
                     }
                 }}>Confirm changes</Button>
         <Button className={classes.button} variant={"contained"} color={"secondary"} startIcon={<Delete/>}
@@ -152,7 +153,7 @@ function LabelEditor(props: {
                         await Api.deleteLabel(label);
                         props.onDeleteSuccess(label.id);
                     } catch (e) {
-                        console.log(e);
+                        dispatch(axiosError(e));
                     }
                 }}>Delete label</Button>
         <br/>

@@ -64,7 +64,7 @@ const theme = createMuiTheme({
 } as any);
 
 // c'est con en fait, ça sert à rien
-const UnAuthorizeCatcher : React.FunctionComponent<{}> = (props) => {
+/*const UnAuthorizeCatcher : React.FunctionComponent<{}> = (props) => {
     const unAuthorized = useSelector((state: State) => state.redirectToLogout);
     const history = useHistory();
     const dispatch = useDispatch();
@@ -76,13 +76,12 @@ const UnAuthorizeCatcher : React.FunctionComponent<{}> = (props) => {
     }
 
     return <React.Fragment/>
-};
+};*/
 
 const App = () => {
   return (
       <Router>
           <ThemeProvider theme={theme}>
-              <UnAuthorizeCatcher/>
               <AxiosErrorHandler/>
               <Header content={
                       <div>

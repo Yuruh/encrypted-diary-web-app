@@ -26,7 +26,7 @@ import { BoxCenter } from "./BoxCenter";
 import {TileContent} from "./entry/EntryListTile";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Label} from "./models/Label";
-import {addDecryptedLabel, logout, State} from "./redux/reducers/root";
+import {addDecryptedLabel, axiosError, logout, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
 import Button from "@material-ui/core/Button";
 
@@ -248,7 +248,7 @@ export default function EntryList() {
     };
 
     useEffect(() => {
-        fetchData(1).catch(e => console.log(e));
+        fetchData(1).catch(e => dispatch(axiosError(e)));
     }, []);
 
 
@@ -270,7 +270,7 @@ export default function EntryList() {
             await fetchData(page);
         }
         catch (err) {
-            console.log(err);
+            dispatch(axiosError(err))
         }
     }
 
@@ -340,7 +340,7 @@ export default function EntryList() {
                 const res = await Api.addEntry(entry);
                 setRedirect("/entries/" + res.data.entry.id + "?display=edit")
             } catch (e) {
-                // todo
+                dispatch(axiosError(e))
             }
         }}>
             <AddIcon/>
