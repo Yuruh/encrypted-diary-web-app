@@ -111,9 +111,10 @@ export function Login() {
     return <Card className={classes.root} elevation={5}>
         <CardHeader title={"Encrypted Diary"} subheader={"Log in"}/>
         <CardContent>
-            <TextField className={classes.field} type={"email"} onKeyDown={keyPress} label="Email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
+            <TextField disabled={TFAToken !== ""} className={classes.field} type={"email"} onKeyDown={keyPress} label="Email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
             <TextField className={classes.field}
                        value={password}
+                       disabled={TFAToken !== ""}
                        onKeyDown={keyPress}
                        onChange={onChangePassword}
                        variant="outlined"
@@ -129,7 +130,7 @@ export function Login() {
                            </InputAdornment>
                        }}
             />
-            <Collapse in={openKeyboard}>
+            <Collapse in={openKeyboard && TFAToken === ""}>
                 <VirtualKeyboard
                     onKeyPress={(button: string) => setPassword(password + button)}
                     onBackSpace={() => {
@@ -145,6 +146,7 @@ export function Login() {
                 <Select
                     label={"Session Duration"}
                     value={duration}
+                    disabled={TFAToken !== ""}
                     onChange={(event: ChangeEvent<{value: unknown}>) => setDuration(event.target.value as number)}
                 >
                     <MenuItem value={1000 * 60 * 10}>10 minutes</MenuItem>

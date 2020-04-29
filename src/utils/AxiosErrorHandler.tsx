@@ -74,7 +74,7 @@ export default function AxiosErrorHandler() {
     }
 
     return <Snackbar open={error !== undefined} autoHideDuration={6000} onClose={onClose}>
-        <Alert onClose={onClose} severity="error">
+        <Alert onClose={onClose} severity="error" variant={"outlined"}>
             {msg}
         </Alert>
     </Snackbar>

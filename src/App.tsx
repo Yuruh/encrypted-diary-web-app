@@ -59,6 +59,20 @@ const theme = createMuiTheme({
             subtitle: {
                 fontSize: "1rem"
             }
+        },
+        MuiSnackbar: {
+            root: {
+                width: "100%",
+            }
+        },
+        MuiAlert: {
+            root: {
+                fontSize: "1.3rem",
+//                maxWidth: "600px",
+ //               flexGrow: 1,
+                justifyContent: "center",
+                alignItems: "center"
+            },
         }
     }
 } as any);
