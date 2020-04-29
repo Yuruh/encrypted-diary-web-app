@@ -77,26 +77,3 @@ export default function ImageCropper(props: {
         }
     }
 }
-
-/*
-const cropper = React.createRef(null);
-
-class Demo extends Component {
-    _crop(){
-        // image in dataUrl
-        console.log(this.refs.cropper.getCroppedCanvas().toDataURL());
-    }
-
-    render() {
-        return (
-            <Cropper
-                ref={cropper}
-                src='http://fengyuanchen.github.io/cropper/img/picture.jpg'
-                style={{height: 400, width: '100%'}}
-                // Cropper.js options
-                aspectRatio={16 / 9}
-                guides={false}
-                crop={this._crop.bind(this)} />
-        );
-    }
-}*/

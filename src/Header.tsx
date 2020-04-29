@@ -86,7 +86,12 @@ export default function Header(props: {
     };
 
     function redirectHome() {
-        history.push("/");
+        Api.encryptionKey = null;
+        Api.token = null;
+        if (process.env.NODE_ENV === "development") {
+            localStorage.clear();
+        }
+        history.push("/login?ctx=logged-out");
     }
 
     return <div className={classes.root}>
@@ -122,14 +127,7 @@ export default function Header(props: {
                         <Link to="/account">
                             <Button>Account</Button>
                         </Link>
-                        <Button color="inherit" onClick={() => {
-                            Api.encryptionKey = null;
-                            Api.token = null;
-                            if (process.env.NODE_ENV === "development") {
-                                localStorage.clear();
-                            }
-                            redirectHome();
-                        }}>Logout</Button>
+                        <Button color="inherit" onClick={redirectHome}>Logout</Button>
                     </React.Fragment>}
             </Toolbar>
         </AppBar>

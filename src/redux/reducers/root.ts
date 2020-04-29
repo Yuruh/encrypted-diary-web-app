@@ -1,24 +1,29 @@
+import {AxiosError} from "axios";
+import HttpErrorHandler from "../../utils/HttpErrorHandler";
+
 export const EXAMPLE_ACTION = "EXAMPLE_ACTION";
 export const ADD_DECRYPTED_LABEL = "ADD_DECRYPTED_LABEL";
 export const LOGIN = "LOGIN";
 export const LOGOUT = "LOGOUT";
+export const AXIOS_ERROR = "AXIOS_ERROR";
 
 // todo organize with combineReducers
 export class State {
     content: string = "toto";
     decryptedLabels: DecryptedImage[] = [];
     redirectToLogout: boolean = false;
+    axiosError?: AxiosError;
+    httpErrorHandler: HttpErrorHandler = new HttpErrorHandler()
 }
 const initialState: State = new State();
 
-//We use this instead of a map as it is not advised in redux (https://github.com/reduxjs/redux/issues/1499)
-
+//We use an array of object instead of a map as it is not advised in redux (https://github.com/reduxjs/redux/issues/1499)
 class DecryptedImage {
     id: number = 0;
     decryptedImage: string = ""
 }
 
-// Actions
+// Action types
 interface ExampleAction {
     type: typeof EXAMPLE_ACTION;
     payload: string
@@ -37,13 +42,32 @@ interface LoginAction {
     type: typeof LOGIN;
 }
 
-type ActionType = AddLabelAction | ExampleAction | LoginAction | LogoutAction;
+interface AxiosErrorAction {
+    type: typeof AXIOS_ERROR
+    payload: {
+        axiosError?: AxiosError
+        // This will override default http handler, it must be set to normal after error is handled
+        httpErrorHandler?: HttpErrorHandler
+    }
+}
 
-// Action creator
+type ActionType = AddLabelAction | ExampleAction | LoginAction | LogoutAction | AxiosErrorAction;
+
+// Action creators
 export function addDecryptedLabel(payload: DecryptedImage): ActionType {
     return {
         type: ADD_DECRYPTED_LABEL,
         decrypted: payload
+    }
+}
+
+export function axiosError(err?: AxiosError, handler?: HttpErrorHandler): ActionType {
+    return {
+        type: AXIOS_ERROR,
+        payload: {
+            axiosError: err,
+            httpErrorHandler: handler
+        }
     }
 }
 
@@ -89,6 +113,12 @@ export function rootReducer(
             return {
                 ...state,
                 redirectToLogout: false
+            };
+        case AXIOS_ERROR:
+            return {
+                ...state,
+                axiosError: action.payload.axiosError,
+                httpErrorHandler: action.payload.httpErrorHandler || state.httpErrorHandler,
             };
         default:
             return state

@@ -16,6 +16,9 @@ import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
+import {BoxCenter} from "../BoxCenter";
+import {useDispatch} from "react-redux";
+import {axiosError} from "../redux/reducers/root";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -48,6 +51,7 @@ export default function Page() {
     const [nextEntryId, setNextEntryId] = React.useState<number | undefined>(undefined);
     const [prevEntryId, setPrevEntryId] = React.useState<number | undefined>(undefined);
 
+    const dispatch = useDispatch();
 
     const fetchData = async() => {
         setFetching(true);
@@ -61,21 +65,21 @@ export default function Page() {
     function loadNextEntry() {
         id = String(nextEntryId);
         history.push("/entries/" + String(nextEntryId) + location.search);
-        fetchData().catch(e => console.log(e));
+        fetchData().catch(e => dispatch(axiosError(e)));
     }
 
     function loadPrevEntry() {
         id = String(prevEntryId);
         history.push("/entries/" + String(prevEntryId) + location.search);
-        fetchData().catch(e => console.log(e));
+        fetchData().catch(e => dispatch(axiosError(e)));
     }
 
     useEffect(() => {
-        fetchData().catch(e => console.log(e));
+        fetchData().catch(e => dispatch(axiosError(e)));
     }, []);
 
     if (fetching) {
-        return <CircularProgress/>
+        return <BoxCenter><CircularProgress/></BoxCenter>
     }
 
     let content: JSX.Element;

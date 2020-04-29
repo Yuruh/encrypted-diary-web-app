@@ -11,6 +11,9 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import SaveDisplay from "./SaveDisplay";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import Picker from "../label/Picker";
+import {AxiosError} from "axios";
+import {axiosError} from "../redux/reducers/root";
+import {connect} from "react-redux";
 
 const ReactMarkdown = require('react-markdown');
 require('codemirror/mode/markdown/markdown');
@@ -39,6 +42,7 @@ const styles = (theme: Theme) => createStyles({
 interface IProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
     entry: Entry
     updateEntry: (entry: Entry) => void
+    handleError: (e: AxiosError) => void
 }
 
 interface IState {
@@ -54,7 +58,7 @@ export enum EntrySaveStatus {
     ERROR = "An error occurred"
 }
 
-const TIME_BEFORE_SAVE_MS = 3000;
+const TIME_BEFORE_SAVE_MS = 2000;
 
 class Editor extends React.Component<IProps, IState> {
     timeout: NodeJS.Timeout | null = null;
@@ -94,6 +98,7 @@ class Editor extends React.Component<IProps, IState> {
                 this.setState({
                     saveStatus: EntrySaveStatus.ERROR,
                 });
+                this.props.handleError(e);
             }
         }, TIME_BEFORE_SAVE_MS);
     }
@@ -129,6 +134,7 @@ class Editor extends React.Component<IProps, IState> {
             this.setState({
                 saveStatus: EntrySaveStatus.ERROR,
             });
+            this.props.handleError(e);
         }
     }
 
@@ -185,4 +191,10 @@ class Editor extends React.Component<IProps, IState> {
     }
 }
 
-export default withRouter(withStyles(styles)(Editor));
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        handleError: (error: AxiosError) => dispatch(axiosError(error))
+    }
+};
+
+export default withRouter(withStyles(styles)(connect(null, mapDispatchToProps)(Editor)));

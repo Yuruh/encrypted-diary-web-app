@@ -7,6 +7,9 @@ import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {LabelChip} from "./EntryLabelList";
+import {axiosError} from "../redux/reducers/root";
+import {connect} from "react-redux";
+import {AxiosError} from "axios";
 
 // Theme-dependent styles
 const styles = (theme: Theme) => createStyles({
@@ -23,6 +26,7 @@ const styles = (theme: Theme) => createStyles({
 interface IProps extends WithStyles<typeof styles> {
     addLabelToEntry: (ids: number[]) => Promise<void>
     labels: Label[]
+    handleError: (error: AxiosError) => void;
 }
 
 interface IState {
@@ -71,7 +75,7 @@ class Picker extends React.Component<IProps, IState> {
                     offeredLabels: res.data.labels
                 });
             } catch (e) {
-                console.log(e)
+                this.props.handleError(e);
             }
             this.setState({
                 loading: false
@@ -100,6 +104,7 @@ class Picker extends React.Component<IProps, IState> {
             } else {
                 const label: Label = new Label();
                 label.name = value[value.length - 1] as string;
+
                 try {
                     const res = await Api.addLabel(label);
 
@@ -108,7 +113,7 @@ class Picker extends React.Component<IProps, IState> {
                     });
                     value[value.length - 1] = res.data.label;
                 } catch (e) {
-                    console.log(e);
+                    this.props.handleError(e);
                 }
             }
         }
@@ -119,7 +124,7 @@ class Picker extends React.Component<IProps, IState> {
             });
             this.triggerAutocompletion();
         } catch (e) {
-            console.log(e);
+            this.props.handleError(e);
         }
     }
 
@@ -154,7 +159,8 @@ class Picker extends React.Component<IProps, IState> {
             getOptionLabel={(option) => option.name}
             options={this.state.offeredLabels}
             filterOptions={((options, state) => {
-                const base: Label[] = [];
+                return options;
+//                const base: Label[] = [];
                 /*if (state.inputValue !== '') {
                     const label: Label = new Label();
                     label.name = state.inputValue;
@@ -162,7 +168,7 @@ class Picker extends React.Component<IProps, IState> {
                     base.push(label);
                 }*/
 
-                return base.concat(options);
+  //              return base.concat(options);
             })} // We don't want the component to filter, as it is done server side
             loading={this.state.loading}
             renderOption={(option: Label, {inputValue}) => {
@@ -203,4 +209,10 @@ class Picker extends React.Component<IProps, IState> {
     }
 }
 
-export default withStyles(styles)(Picker);
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        handleError: (error: AxiosError) => dispatch(axiosError(error))
+    }
+};
+
+export default withStyles(styles)(connect(null, mapDispatchToProps)(Picker));

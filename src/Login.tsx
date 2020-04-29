@@ -20,9 +20,14 @@ import VirtualKeyboard from "./login/VirtualKeyboard";
 import Tooltip from "@material-ui/core/Tooltip";
 import Collapse from "@material-ui/core/Collapse";
 import {useDispatch, useSelector} from "react-redux";
-import {EXAMPLE_ACTION, State} from "./redux/reducers/root";
+import {axiosError, EXAMPLE_ACTION, State} from "./redux/reducers/root";
 import {login as actionLogin} from "./redux/reducers/root";
 import {EnterOTP} from "./Account";
+import {AxiosError} from "axios";
+import Snackbar from "@material-ui/core/Snackbar";
+import {Alert} from "@material-ui/lab";
+import HttpErrorHandler from "./utils/HttpErrorHandler";
+import AxiosErrorHandler from "./utils/AxiosErrorHandler";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -48,7 +53,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
+/*
+todo snackbar from context
 
+<Snackbar open={error !== undefined} autoHideDuration={6000} onClose={onClose}>
+    <Alert onClose={onClose} severity="error">
+        {msg}
+    </Alert>
+</Snackbar>*/
 export function Login() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
@@ -56,8 +68,10 @@ export function Login() {
     const [redirect, setRedirect] = React.useState<boolean>(false);
     const [duration, setDuration] = React.useState<number>(1000 * 60 * 30); // 30 minutes
     const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false);
-
     const [TFAToken, setTFAToken] = React.useState("");
+
+    const errorHandler = new HttpErrorHandler();
+    errorHandler.messages.set(404, "User not found");
 
     const dispatch = useDispatch();
 
@@ -73,15 +87,14 @@ export function Login() {
         try {
             const res = await Api.login(email, password, duration);
             // TFA is required
-            if (res.data.two_factors_methods.length > 0) {
+            if (res.data.two_factors_methods && res.data.two_factors_methods.length > 0) {
                 setTFAToken(res.data.token);
             } else {
                 dispatch(actionLogin());
                 setRedirect(true)
             }
         } catch (e) {
-            console.log(e);
-            // todo
+            dispatch(axiosError(e, errorHandler));
         }
     }
 
@@ -98,9 +111,10 @@ export function Login() {
     return <Card className={classes.root} elevation={5}>
         <CardHeader title={"Encrypted Diary"} subheader={"Log in"}/>
         <CardContent>
-            <TextField className={classes.field} type={"email"} onKeyDown={keyPress} label="Email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
+            <TextField disabled={TFAToken !== ""} className={classes.field} type={"email"} onKeyDown={keyPress} label="Email" variant="outlined" placeholder="awesome@mail.com" value={email} onChange={onChangeEmail}/>
             <TextField className={classes.field}
                        value={password}
+                       disabled={TFAToken !== ""}
                        onKeyDown={keyPress}
                        onChange={onChangePassword}
                        variant="outlined"
@@ -116,7 +130,7 @@ export function Login() {
                            </InputAdornment>
                        }}
             />
-            <Collapse in={openKeyboard}>
+            <Collapse in={openKeyboard && TFAToken === ""}>
                 <VirtualKeyboard
                     onKeyPress={(button: string) => setPassword(password + button)}
                     onBackSpace={() => {
@@ -132,6 +146,7 @@ export function Login() {
                 <Select
                     label={"Session Duration"}
                     value={duration}
+                    disabled={TFAToken !== ""}
                     onChange={(event: ChangeEvent<{value: unknown}>) => setDuration(event.target.value as number)}
                 >
                     <MenuItem value={1000 * 60 * 10}>10 minutes</MenuItem>

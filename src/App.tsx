@@ -19,8 +19,10 @@ import {Login} from "./Login";
 import Header from "./Header";
 import LabelList from "./label/LabelList";
 import {useDispatch, useSelector} from "react-redux";
-import {login, State} from "./redux/reducers/root";
+import {axiosError, login, State} from "./redux/reducers/root";
 import Account from "./Account";
+import AxiosErrorHandler from "./utils/AxiosErrorHandler";
+import Card from "@material-ui/core/Card";
 
 // use this so goland does know what's happening
 // function mapStateToProps(state: TypeOfYourRootStore, props: TypeOfYourComponentsProps) {}
@@ -49,12 +51,34 @@ const theme = createMuiTheme({
             tooltip: {
                 fontSize: "0.8rem"
             }
+        },
+        MuiGridListTileBar: {
+            title: {
+                fontSize: "1.2rem"
+            },
+            subtitle: {
+                fontSize: "1rem"
+            }
+        },
+        MuiSnackbar: {
+            root: {
+                width: "100%",
+            }
+        },
+        MuiAlert: {
+            root: {
+                fontSize: "1.3rem",
+//                maxWidth: "600px",
+ //               flexGrow: 1,
+                justifyContent: "center",
+                alignItems: "center"
+            },
         }
     }
 } as any);
 
 // c'est con en fait, ça sert à rien
-const UnAuthorizeCatcher : React.FunctionComponent<{}> = (props) => {
+/*const UnAuthorizeCatcher : React.FunctionComponent<{}> = (props) => {
     const unAuthorized = useSelector((state: State) => state.redirectToLogout);
     const history = useHistory();
     const dispatch = useDispatch();
@@ -66,14 +90,33 @@ const UnAuthorizeCatcher : React.FunctionComponent<{}> = (props) => {
     }
 
     return <React.Fragment/>
-};
+};*/
+
+
+// every 2 minutes we check that the user is still logged in (by checking that a /me does not return 401), otherwise we log him out
+function EndSession() {
+    const dispatch = useDispatch();
+
+    setInterval(async () => {
+        try {
+            // To prevent redirection when the user's not logged in (on pages register, about, etc)
+            if (Api.encryptionKey !== null) {
+                await Api.getAccountInfos()
+            }
+        } catch (e) {
+            dispatch(axiosError(e))
+        }
+    }, 1000 * 60 * 2);
+    return <React.Fragment/>
+}
 
 const App = () => {
   return (
       <Router>
           <ThemeProvider theme={theme}>
-              <UnAuthorizeCatcher/>
-                  <Header content={
+              <AxiosErrorHandler/>
+              <EndSession/>
+              <Header content={
                       <div>
                           {/* <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}

@@ -201,8 +201,4 @@ export default class Api {
             localStorage.setItem("key", String(this.encryptionKey));
         }
     }
-
-    static async getApiKeys() {
-        return this.axiosInstance.get("/connectors");
-    }
 }

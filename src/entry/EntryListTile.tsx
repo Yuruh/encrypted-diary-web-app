@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
-                filter: "blur(6px) grayscale(0.8) opacity(0.7)",
+                filter: "blur(7px) grayscale(1) opacity(0.7)",
             },
             container: {
                 padding: 5,
