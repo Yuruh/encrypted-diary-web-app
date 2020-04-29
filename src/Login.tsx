@@ -20,7 +20,7 @@ import VirtualKeyboard from "./login/VirtualKeyboard";
 import Tooltip from "@material-ui/core/Tooltip";
 import Collapse from "@material-ui/core/Collapse";
 import {useDispatch, useSelector} from "react-redux";
-import {EXAMPLE_ACTION, State} from "./redux/reducers/root";
+import {axiosError, EXAMPLE_ACTION, State} from "./redux/reducers/root";
 import {login as actionLogin} from "./redux/reducers/root";
 import {EnterOTP} from "./Account";
 import {AxiosError} from "axios";
@@ -63,10 +63,6 @@ export function Login() {
     const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false);
     const [TFAToken, setTFAToken] = React.useState("");
 
-    /*
-        This is an exemple on how to handle  http errors:
-     */
-    const [axiosError, setAxiosError] = React.useState<AxiosError | null>(null);
     const errorHandler = new HttpErrorHandler();
     errorHandler.messages.set(404, "User not found");
 
@@ -84,16 +80,14 @@ export function Login() {
         try {
             const res = await Api.login(email, password, duration);
             // TFA is required
-            if (res.data.two_factors_methods.length > 0) {
+            if (res.data.two_factors_methods && res.data.two_factors_methods.length > 0) {
                 setTFAToken(res.data.token);
             } else {
                 dispatch(actionLogin());
                 setRedirect(true)
             }
         } catch (e) {
-            setAxiosError(e);
-//            console.log(e);
-            // todo
+            dispatch(axiosError(e, errorHandler));
         }
     }
 
@@ -166,6 +160,5 @@ export function Login() {
             <Divider className={classes.divider}/>
             <Link to={"/register"}>Register here</Link>
         </CardActions>
-        {axiosError && <AxiosErrorHandler error={axiosError} onAlertClose={() => setAxiosError(null)} errorHandler={errorHandler}/>}
     </Card>;
 }

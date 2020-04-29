@@ -19,8 +19,10 @@ import {Login} from "./Login";
 import Header from "./Header";
 import LabelList from "./label/LabelList";
 import {useDispatch, useSelector} from "react-redux";
-import {login, State} from "./redux/reducers/root";
+import {axiosError, login, State} from "./redux/reducers/root";
 import Account from "./Account";
+import AxiosErrorHandler from "./utils/AxiosErrorHandler";
+import Card from "@material-ui/core/Card";
 
 // use this so goland does know what's happening
 // function mapStateToProps(state: TypeOfYourRootStore, props: TypeOfYourComponentsProps) {}
@@ -81,7 +83,8 @@ const App = () => {
       <Router>
           <ThemeProvider theme={theme}>
               <UnAuthorizeCatcher/>
-                  <Header content={
+              <AxiosErrorHandler/>
+              <Header content={
                       <div>
                           {/* <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
