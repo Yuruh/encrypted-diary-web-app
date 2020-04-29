@@ -23,6 +23,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {EXAMPLE_ACTION, State} from "./redux/reducers/root";
 import {login as actionLogin} from "./redux/reducers/root";
 import {EnterOTP} from "./Account";
+import {AxiosError} from "axios";
+import Snackbar from "@material-ui/core/Snackbar";
+import {Alert} from "@material-ui/lab";
+import HttpErrorHandler from "./utils/HttpErrorHandler";
+import AxiosErrorHandler from "./utils/AxiosErrorHandler";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -56,8 +61,14 @@ export function Login() {
     const [redirect, setRedirect] = React.useState<boolean>(false);
     const [duration, setDuration] = React.useState<number>(1000 * 60 * 30); // 30 minutes
     const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false);
-
     const [TFAToken, setTFAToken] = React.useState("");
+
+    /*
+        This is an exemple on how to handle  http errors:
+     */
+    const [axiosError, setAxiosError] = React.useState<AxiosError | null>(null);
+    const errorHandler = new HttpErrorHandler();
+    errorHandler.messages.set(404, "User not found");
 
     const dispatch = useDispatch();
 
@@ -80,7 +91,8 @@ export function Login() {
                 setRedirect(true)
             }
         } catch (e) {
-            console.log(e);
+            setAxiosError(e);
+//            console.log(e);
             // todo
         }
     }
@@ -154,5 +166,6 @@ export function Login() {
             <Divider className={classes.divider}/>
             <Link to={"/register"}>Register here</Link>
         </CardActions>
+        {axiosError && <AxiosErrorHandler error={axiosError} onAlertClose={() => setAxiosError(null)} errorHandler={errorHandler}/>}
     </Card>;
 }
