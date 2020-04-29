@@ -92,11 +92,30 @@ const theme = createMuiTheme({
     return <React.Fragment/>
 };*/
 
+
+// every 2 minutes we check that the user is still logged in (by checking that a /me does not return 401), otherwise we log him out
+function EndSession() {
+    const dispatch = useDispatch();
+
+    setInterval(async () => {
+        try {
+            // To prevent redirection when the user's not logged in (on pages register, about, etc)
+            if (Api.encryptionKey !== null) {
+                await Api.getAccountInfos()
+            }
+        } catch (e) {
+            dispatch(axiosError(e))
+        }
+    }, 1000 * 60 * 2);
+    return <React.Fragment/>
+}
+
 const App = () => {
   return (
       <Router>
           <ThemeProvider theme={theme}>
               <AxiosErrorHandler/>
+              <EndSession/>
               <Header content={
                       <div>
                           {/* <Switch> looks through its children <Route>s and

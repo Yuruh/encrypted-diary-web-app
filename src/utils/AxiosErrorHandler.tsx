@@ -21,6 +21,7 @@ export default function AxiosErrorHandler() {
     const dispatch = useDispatch();
     const history = useHistory();
 
+    // Whenever we catch a 401, we disconnect the user and clear the encryption key
     handler.actions.set(401, () => {
         Api.encryptionKey = null;
         Api.token = null;
@@ -29,6 +30,12 @@ export default function AxiosErrorHandler() {
         }
         history.push("/login?ctx=expired")
     });
+
+
+
+
+
+
     if (!error) {
         return <React.Fragment/>
     }
