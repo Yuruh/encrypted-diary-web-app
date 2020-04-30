@@ -5,7 +5,7 @@ import TextField from "@material-ui/core/TextField";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
 import React, {ChangeEvent} from "react";
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Divider from "@material-ui/core/Divider";
 import {Link, Redirect} from "react-router-dom";
 import Api from "./Api";
@@ -24,8 +24,11 @@ import {axiosError} from "./redux/reducers/root";
 import {login as actionLogin} from "./redux/reducers/root";
 import {EnterOTP} from "./Account";
 import HttpErrorHandler from "./utils/HttpErrorHandler";
+import Snackbar from "@material-ui/core/Snackbar";
+import {Alert} from "@material-ui/lab";
+import {useQuery} from "./entry/Page";
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
     createStyles({
         root: {
             maxWidth: 545,
@@ -49,14 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
-/*
-todo snackbar from context
 
-<Snackbar open={error !== undefined} autoHideDuration={6000} onClose={onClose}>
-    <Alert onClose={onClose} severity="error">
-        {msg}
-    </Alert>
-</Snackbar>*/
 export function Login() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
@@ -65,7 +61,16 @@ export function Login() {
     const [duration, setDuration] = React.useState<number>(1000 * 60 * 30); // 30 minutes
     const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false);
     const [TFAToken, setTFAToken] = React.useState("");
+    const query = useQuery();
 
+    let ctx: string | null = query.get("ctx");
+    if (ctx === "logged-out") {
+        ctx = "Logged Out"
+    } else if (ctx === "expired") {
+        ctx = "Session Expired"
+    } else {
+        ctx = null
+    }
     const errorHandler = new HttpErrorHandler();
     errorHandler.messages.set(404, "User not found");
 
@@ -151,6 +156,11 @@ export function Login() {
                     <MenuItem value={1000 * 60 * 60}>1 hour</MenuItem>
                 </Select>
             </FormControl>
+            <Snackbar open={ctx !== null && ctx !== ""}>
+                <Alert severity="info">
+                    {ctx}
+                </Alert>
+            </Snackbar>
         </CardContent>
         <CardActions className={classes.action}>
             {TFAToken === "" ?

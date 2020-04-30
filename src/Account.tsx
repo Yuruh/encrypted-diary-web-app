@@ -121,7 +121,7 @@ export function EnterOTP (funcProps: {
             const code = case0.current.value + case1.current.value + case2.current.value +
                 case3.current.value + case4.current.value + case5.current.value;
             const res = await Api.validateOTP(code, funcProps.token);
-            funcProps.onValid(res.data.token); // todo send token from validateOTP
+            funcProps.onValid(res.data.token);
         } catch (e) {
             const errorHandler: HttpErrorHandler = new HttpErrorHandler();
             errorHandler.actions.set(400, () => setCodeError("Invalid Code"));

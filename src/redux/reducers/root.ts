@@ -7,7 +7,7 @@ export const LOGIN = "LOGIN";
 export const LOGOUT = "LOGOUT";
 export const AXIOS_ERROR = "AXIOS_ERROR";
 
-// todo organize with combineReducers
+// could be organized with combineReducers once it gets too big
 export class State {
     content: string = "toto";
     decryptedLabels: DecryptedImage[] = [];

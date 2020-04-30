@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-function useQuery() {
+export function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
 
