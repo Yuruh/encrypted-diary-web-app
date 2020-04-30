@@ -87,28 +87,37 @@ const useStyles = makeStyles((theme: Theme) =>
             borderRadius: "15px",
             '&:hover': {
                 '& $elemBar': {
-                    transition: theme.transitions.create("all", {
+/*                    transition: [theme.transitions.create("all", {
                         easing: theme.transitions.easing.sharp,
                         duration: theme.transitions.duration.enteringScreen,
                     }),
-//                    background:
-  //                      'linear-gradient(to top, rgba(0,0,0,1) 0%, ' +
-    //                                    'rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.4) 100%)',
-    //                backgroundColor: "red",
-    //                height: "50px",
-                    backgroundColor: "rgba(0, 0, 0, 0.9)",
+                        theme.transitions.create("filter", {
+                            easing: theme.transitions.easing.sharp,
+                            duration: 0,
+                        })],*/
+                    background:
+                        'linear-gradient(to top, rgba(0,0,0,1) 0%, ' +
+                                        'rgba(0,0,0,0.8) 70%, rgba(0,0,0,0.7) 100%)',
+                    height: "60px",
+//                    backgroundColor: "rgba(0, 0, 0, 0.9)",
+                    color: "rgba(0,0,0,0)",
+                    filter: "blur(0px)",
                     visibility: "visible",
                 }
             },
         },
         elemBar: {
+            '& $title': {
+                color: "rgba(0,0,0,0)",
+            },
 
 //            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            visibility: "hidden",
-            height: "60px",
-            textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.6), 1px -1px 1px rgba(0, 0, 0, 0.6), -1px 1px 1px rgba(0, 0, 0, 0.6), 1px 1px 1px rgba(0, 0, 0, 0.6);",
-//            background:
-  //              'linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)',
+//            visibility: "hidden",
+            filter: "blur(15px)",
+            height: "20px",
+//            backgroundColor: "#666666",
+//            textShadow: "-1px -1px 1px rgba(0, 0, 0, 0.6), 1px -1px 1px rgba(0, 0, 0, 0.6), -1px 1px 1px rgba(0, 0, 0, 0.6), 1px 1px 1px rgba(0, 0, 0, 0.6);",
+            background:'linear-gradient(to top, #000000 0%, #FFFFFF 100%)',
         },
         elemIcon: {
             color: "white",
