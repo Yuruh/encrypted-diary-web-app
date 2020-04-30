@@ -19,15 +19,11 @@ import IconButton from "@material-ui/core/IconButton";
 import VirtualKeyboard from "./login/VirtualKeyboard";
 import Tooltip from "@material-ui/core/Tooltip";
 import Collapse from "@material-ui/core/Collapse";
-import {useDispatch, useSelector} from "react-redux";
-import {axiosError, EXAMPLE_ACTION, State} from "./redux/reducers/root";
+import {useDispatch} from "react-redux";
+import {axiosError} from "./redux/reducers/root";
 import {login as actionLogin} from "./redux/reducers/root";
 import {EnterOTP} from "./Account";
-import {AxiosError} from "axios";
-import Snackbar from "@material-ui/core/Snackbar";
-import {Alert} from "@material-ui/lab";
 import HttpErrorHandler from "./utils/HttpErrorHandler";
-import AxiosErrorHandler from "./utils/AxiosErrorHandler";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
