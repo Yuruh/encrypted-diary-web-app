@@ -1,14 +1,14 @@
 import React from "react"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, Theme, Drawer, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
-import useTheme from "@material-ui/core/styles/useTheme";
 import clsx from 'clsx';
-import IconButton from "@material-ui/core/IconButton";
-import {ChevronRight, ChevronLeft, Label, CalendarToday} from "@material-ui/icons";
+import {Label, CalendarToday, AccountCircle} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import {useHistory, useLocation} from "react-router-dom";
-//Taken from https://material-ui.com/components/drawers/#mini-variant-drawer
+import Link from "@material-ui/core/Link";
+
+//Adapted from https://material-ui.com/components/drawers/#mini-variant-drawer
 
 export const DRAWER_WIDTH = 240;
 
@@ -54,6 +54,10 @@ const useStyles = makeStyles((theme: Theme) =>
             flexGrow: 1,
             padding: theme.spacing(3),
         },
+        footer: {
+            margin: "auto 10px 10px 10px",
+
+        }
     }),
 );
 
@@ -63,14 +67,15 @@ export default function AppDrawer(props: {
     content: JSX.Element
 }) {
     const classes = useStyles();
-    const theme = useTheme();
 
     const location = useLocation();
-    const history = useHistory();
 
 
     const entriesPath = "/entries";
     const labelsPath = "/labels";
+    const accountPath = "/account";
+
+    const history = useHistory();
 
     return (
         <div className={classes.root}>
@@ -87,11 +92,7 @@ export default function AppDrawer(props: {
                     }),
                 }}
             >
-                <div className={classes.toolbar}>
-                    <IconButton onClick={() => props.changeOpen(false)}>
-                        {theme.direction === 'rtl' ? <ChevronRight/> : <ChevronLeft/>}
-                    </IconButton>
-                </div>
+                <div className={classes.toolbar}/>
                 <Divider/>
                 <List>
                     <ListItem button selected={location.pathname.substr(0, entriesPath.length) === entriesPath} onClick={() => history.push(entriesPath)}>
@@ -102,7 +103,17 @@ export default function AppDrawer(props: {
                         <ListItemIcon><Label/></ListItemIcon>
                         <ListItemText primary={"Labels"} />
                     </ListItem>
+                    <ListItem button selected={location.pathname.substr(0, accountPath.length) === accountPath} onClick={() => history.push(accountPath)}>
+                        <ListItemIcon><AccountCircle/></ListItemIcon>
+                        <ListItemText primary={"Settings"} />
+                    </ListItem>
                 </List>
+                <div className={classes.footer}>
+                    <Link href={"https://github.com/yuruh/encrypted-diary#encrypted-diary"} target={"_blank"} rel={"noreferrer"}
+                          variant={"subtitle1"}>
+                        About
+                    </Link>
+                </div>
             </Drawer>
             <main className={classes.content}>
                 {props.content}

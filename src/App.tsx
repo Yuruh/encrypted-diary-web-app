@@ -5,7 +5,7 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Redirect, useHistory
+    Redirect
 } from "react-router-dom";
 import EntryList from "./EntryList";
 import {
@@ -18,11 +18,10 @@ import Page from "./entry/Page";
 import {Login} from "./Login";
 import Header from "./Header";
 import LabelList from "./label/LabelList";
-import {useDispatch, useSelector} from "react-redux";
-import {axiosError, login, State} from "./redux/reducers/root";
+import {useDispatch} from "react-redux";
+import {axiosError} from "./redux/reducers/root";
 import Account from "./Account";
 import AxiosErrorHandler from "./utils/AxiosErrorHandler";
-import Card from "@material-ui/core/Card";
 
 // use this so goland does know what's happening
 // function mapStateToProps(state: TypeOfYourRootStore, props: TypeOfYourComponentsProps) {}
@@ -77,23 +76,7 @@ const theme = createMuiTheme({
     }
 } as any);
 
-// c'est con en fait, ça sert à rien
-/*const UnAuthorizeCatcher : React.FunctionComponent<{}> = (props) => {
-    const unAuthorized = useSelector((state: State) => state.redirectToLogout);
-    const history = useHistory();
-    const dispatch = useDispatch();
-
-    if (unAuthorized) {
-        // we reset the redirect boolean to false
-        dispatch(login());
-        history.push("/login");
-    }
-
-    return <React.Fragment/>
-};*/
-
-
-// every 2 minutes we check that the user is still logged in (by checking that a /me does not return 401), otherwise we log him out
+// Every 2 minutes we check that the user is still logged in (by checking that a /me does not return 401), otherwise we log him out
 function EndSession() {
     const dispatch = useDispatch();
 

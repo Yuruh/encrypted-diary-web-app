@@ -4,24 +4,22 @@ import Api from "./Api";
 import {Typography} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import Container from "@material-ui/core/Container";
-import {BoxCenter} from "./BoxCenter";
 import {axiosError} from "./redux/reducers/root";
 import {useDispatch} from "react-redux";
 import HttpErrorHandler from "./utils/HttpErrorHandler";
 
 export default function Account() {
     const [user, setUser] = useState(new User());
-    const [fetching, setFetching] = React.useState(false);
+//    const [fetching, setFetching] = React.useState(false);
     const [qrSrc, setQrSrc] = React.useState("");
     const [token, setToken] = React.useState("");
     const dispatch = useDispatch();
 
     const fetchData = async() => {
-        setFetching(true);
+  //      setFetching(true);
         const res = await Api.getAccountInfos();
         setUser(res.data.user);
-        setFetching(false)
+    //    setFetching(false)
     };
 
     async function startOTPRegistration() {
@@ -41,6 +39,7 @@ export default function Account() {
 
     useEffect(() => {
         fetchData().catch(e => dispatch(axiosError(e)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
@@ -49,8 +48,8 @@ export default function Account() {
             Settings for <strong>{user.email}</strong>
         </Typography>
         <div>
-            {user.has_registered_otp ? <p>2FA With OTP ok</p> : (token == "" && <Button onClick={startOTPRegistration} disabled={user.has_registered_otp}>Enable Two Factors Authentication</Button>)}
-            {token != "" && <div>
+            {user.has_registered_otp ? <p>2FA With OTP ok</p> : (token === "" && <Button onClick={startOTPRegistration} disabled={user.has_registered_otp}>Enable Two Factors Authentication</Button>)}
+            {token !== "" && <div>
                 <Typography variant={"h3"}>
                     Two Factors Authentication Registration
                 </Typography>

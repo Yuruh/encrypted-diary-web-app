@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import AppBar from "@material-ui/core/AppBar";
 import {Link, useHistory} from "react-router-dom";
-import {Menu, Search} from "@material-ui/icons";
+import {ExitToApp, Menu, Search} from "@material-ui/icons";
 import Api from "./Api";
 import InputBase from "@material-ui/core/InputBase";
 import AppDrawer from "./AppDrawer";
@@ -19,10 +19,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         appBar: {
             zIndex: theme.zIndex.drawer + 1,
-            transition: theme.transitions.create(['width', 'margin'], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
         },
         menuButton: {
             marginRight: theme.spacing(2),
@@ -77,7 +73,7 @@ export default function Header(props: {
     const classes = useStyles({});
     const history = useHistory();
 
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
 
     const loggedIn = Api.token !== "" && Api.token !== null;
 
@@ -95,7 +91,7 @@ export default function Header(props: {
     }
 
     return <div className={classes.root}>
-        <AppBar position="static" className={classes.appBar}>
+        <AppBar position="sticky" className={classes.appBar}>
             <Toolbar>
                 <IconButton onClick={handleDrawerChange}
                             className={classes.menuButton}
@@ -122,13 +118,7 @@ export default function Header(props: {
                     />
                 </div>}
                 <div className={classes.grow}/>
-                {loggedIn &&
-                    <React.Fragment>
-                        <Link to="/account">
-                            <Button>Account</Button>
-                        </Link>
-                        <Button color="inherit" onClick={redirectHome}>Logout</Button>
-                    </React.Fragment>}
+                {loggedIn && <Button startIcon={<ExitToApp/>} color="inherit" onClick={redirectHome}>Logout</Button>}
             </Toolbar>
         </AppBar>
         {loggedIn ? <AppDrawer open={open} changeOpen={(value) => setOpen(value)} content={props.content}/>

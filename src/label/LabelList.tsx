@@ -13,7 +13,7 @@ import Button from "@material-ui/core/Button";
 import {Delete, Save} from "@material-ui/icons";
 import ImageCropper from "./Cropper";
 import {useDispatch, useSelector} from "react-redux";
-import {addDecryptedLabel, axiosError, EXAMPLE_ACTION, State} from "../redux/reducers/root";
+import {addDecryptedLabel, axiosError, State} from "../redux/reducers/root";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -66,6 +66,7 @@ export default function LabelList() {
 
     useEffect(() => {
         fetchData().catch((e) => dispatch(axiosError(e)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (fetching) {

@@ -76,6 +76,7 @@ export default function Page() {
 
     useEffect(() => {
         fetchData().catch(e => dispatch(axiosError(e)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (fetching) {

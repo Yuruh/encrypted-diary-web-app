@@ -88,7 +88,7 @@ export function Register() {
             await Api.register(email, password);
             setRedirect(true)
         } catch (e) {
-            dispatch(axiosError(e, undefined));
+            dispatch(axiosError(e));
         }
     }
 

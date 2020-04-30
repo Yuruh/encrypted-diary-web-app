@@ -26,9 +26,8 @@ import { BoxCenter } from "./BoxCenter";
 import {TileContent} from "./entry/EntryListTile";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Label} from "./models/Label";
-import {addDecryptedLabel, axiosError, logout, State} from "./redux/reducers/root";
+import {addDecryptedLabel, axiosError, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
-import Button from "@material-ui/core/Button";
 
 moment.locale(navigator.language);
 
@@ -141,7 +140,7 @@ export interface IEntriesByMonth {
 // We assume it is received from newest to oldest
 // Should it be done server side ?
 function parseEntriesMonth(entries: Entry[]) {
-    entries = entries.sort((a: Entry, b: Entry) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    entries = entries.sort((a: Entry, b: Entry) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     const ret: IEntriesByMonth[] = [];
     let currentMonth = "";
     let currentYear = "";
@@ -249,17 +248,16 @@ export default function EntryList() {
             }
         }
 
-
-
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
     };
 
+    // https://github.com/facebook/create-react-app/issues/6880
     useEffect(() => {
         fetchData(1).catch(e => dispatch(axiosError(e)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
 
     if (redirect !== "") {
         history.push(redirect);
@@ -291,7 +289,7 @@ export default function EntryList() {
             hasMore={pagination.has_next_page}>
             <div className={classes.root}>
                 <GridList cellHeight={200} cols={nbColsInGrid} spacing={30}>
-                    {monthlyEntries.map((monthly: IEntriesByMonth, i) => {
+                    {monthlyEntries.map((monthly: IEntriesByMonth) => {
                         return [
                             <GridListTile key="Subheader" cols={nbColsInGrid} style={{ height: 'auto'}}>
                                 <Divider/>
