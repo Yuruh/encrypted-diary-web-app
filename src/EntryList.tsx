@@ -29,6 +29,7 @@ import {Label} from "./models/Label";
 import {addDecryptedLabel, axiosError, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
 import {Skeleton} from "@material-ui/lab";
+import EntryFilterDrawer from "./entry/EntryFilterDrawer";
 
 moment.locale(navigator.language);
 
@@ -220,11 +221,11 @@ export default function EntryList() {
     const downMd = useMediaQuery(theme.breakpoints.down('md'));
     const elemsPerPage = 10;
 
-    let nbColsInGrid = 4;
+    let nbColsInGrid = 3;
     if (downSm) {
-        nbColsInGrid = 2;
+        nbColsInGrid = 1;
     } else if (downMd) {
-        nbColsInGrid = 3;
+        nbColsInGrid = 2;
     }
 
     const [entries, setEntries] = React.useState<Entry[]>([]);
@@ -298,7 +299,7 @@ export default function EntryList() {
 
     // I'll do the infinite scroll loader myself
     return <React.Fragment>
-        <InfiniteScroll
+        <EntryFilterDrawer content={<InfiniteScroll
             pageStart={1}
             threshold={250}
             loadMore={loadMoreEntries}
@@ -327,7 +328,7 @@ export default function EntryList() {
                                     colSpan = 2
                                 }
                                 return <GridListTile key={i} cols={colSpan} /*className={classes.tile}*/
-                                classes={{tile: classes.tile}}>
+                                                     classes={{tile: classes.tile}}>
                                     <TileContent elem={elem}/>
                                     <GridListTileBar
                                         title={date}
@@ -355,6 +356,7 @@ export default function EntryList() {
                 {/*pagination.has_next_page && <EntryListLoader nbColsInGrid={nbColsInGrid}/>*/}
             </div>
         </InfiniteScroll>
+        }/>
         <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={async () => {
             const entry: Entry = new Entry();
             entry.title = "Diary Entry";

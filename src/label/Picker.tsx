@@ -27,6 +27,7 @@ interface IProps extends WithStyles<typeof styles> {
     addLabelToEntry: (ids: number[]) => Promise<void>
     labels: Label[]
     handleError: (error: AxiosError) => void;
+    narrow: boolean
 }
 
 interface IState {
@@ -58,6 +59,10 @@ class Picker extends React.Component<IProps, IState> {
         this.triggerAutocompletion = this.triggerAutocompletion.bind(this);
         this.onOptionsChange = this.onOptionsChange.bind(this);
     }
+
+    public static defaultProps = {
+        narrow: false
+    };
 
     componentDidMount(): void {
         this.triggerAutocompletion();
@@ -201,8 +206,8 @@ class Picker extends React.Component<IProps, IState> {
                         ...params.InputProps,
                         endAdornment: (
                             <React.Fragment>
-                                {this.state.loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
+                                {this.state.loading && !this.props.narrow ? <CircularProgress color="inherit" size={20} /> : null}
+                                {!this.props.narrow && params.InputProps.endAdornment}
                             </React.Fragment>
                         ),
                     }}
