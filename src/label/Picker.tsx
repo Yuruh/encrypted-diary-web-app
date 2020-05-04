@@ -39,6 +39,9 @@ interface IState {
 
 const TIME_BEFORE_REQUEST_MS = 200;
 
+/*
+    todo fix and optimize avatar label loading
+ */
 class Picker extends React.Component<IProps, IState> {
     timeout: NodeJS.Timeout | null = null;
     constructor(props: IProps) {

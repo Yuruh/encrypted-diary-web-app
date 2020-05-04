@@ -28,6 +28,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import {Label} from "./models/Label";
 import {addDecryptedLabel, axiosError, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
+import {Skeleton} from "@material-ui/lab";
 
 moment.locale(navigator.language);
 
@@ -188,18 +189,28 @@ export function upperCaseFirstLetter(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-/*function RenderDivider(props: {monthly: IEntriesByMonth, nbColsInGrid: number}) {
-    return <GridListTile key="Subheader" cols={props.nbColsInGrid} style={{ height: 'auto'}}>
+// Skeleton to simulate entry list
+// Using https://material-ui.com/components/skeleton/
+// Should be updated on entry tile style change
+function EntryListLoader(props: {
+    nbColsInGrid: number
+}) {
+    const content: any[] = [];
+    for (let i = 0; i < 15; i++) {
+        content.push(<GridListTile key={i} cols={1} style={{height: "auto"}}>
+            <Skeleton animation="wave" variant={"rect"} height={200} style={{borderRadius: "15px"}}/>
+        </GridListTile>)
+    }
+    return <div>
         <Divider/>
         <br/>
-        <Typography className={"divider"}
-                    color="textPrimary"
-                    display="block"
-                    variant="subtitle1">
-            {upperCaseFirstLetter(props.monthly.month + " " + props.monthly.year)}
-        </Typography>
-    </GridListTile>
-}*/
+        <Skeleton animation="wave" variant={"text"} width={200}/>
+        <br/>
+        <br/>
+        <GridList cellHeight={200} cols={props.nbColsInGrid} spacing={30}>
+        {content}
+    </GridList></div>
+}
 
 export default function EntryList() {
     const classes = useStyles({});
@@ -223,15 +234,11 @@ export default function EntryList() {
     const decryptedLabels = useSelector((state: State) => state.decryptedLabels);
     const dispatch = useDispatch();
 
-    const fetchData = async(page: number) => {
-        setFetching(true);
-        const result = await Api.getEntries(elemsPerPage, page);
+    // To load images after entries are loaded.
+    const populateImages = async(newEntries: Entry[]) => {
 
-
-        // DUPLICATED CODE FROM LABEL_LIST
-
-        const promises = [];
-        for (const entry of result.data.entries) {
+        const updatedEntries: Entry[] = await Promise.all(newEntries.map(async (entry: Entry) => {
+            const promises = [];
 
             for (const label of entry.labels as Label[]) {
                 const existing = decryptedLabels.find((elem) => elem.id === label.id);
@@ -246,11 +253,20 @@ export default function EntryList() {
             for (const label of decrypted) {
                 dispatch(addDecryptedLabel({id: label.id, decryptedImage: label.avatar_url}));
             }
-        }
+            return entry
+        }));
+
+        setEntries(updatedEntries);
+    };
+
+    const fetchData = async(page: number) => {
+        setFetching(true);
+        const result = await Api.getEntries(elemsPerPage, page);
 
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
+        populateImages(entries.concat(result.data.entries)).catch((e) => console.log("something went wrong", e));
     };
 
     // https://github.com/facebook/create-react-app/issues/6880
@@ -265,9 +281,8 @@ export default function EntryList() {
 
     const monthlyEntries: IEntriesByMonth[] = parseEntriesMonth(entries);
 
-    // or use https://material-ui.com/components/skeleton/
     if (fetching && entries.length === 0) {
-        return <BoxCenter><CircularProgress/></BoxCenter>
+        return <EntryListLoader nbColsInGrid={nbColsInGrid}/>
     }
 
     async function loadMoreEntries(page: number) {
@@ -285,6 +300,7 @@ export default function EntryList() {
     return <React.Fragment>
         <InfiniteScroll
             pageStart={1}
+            threshold={250}
             loadMore={loadMoreEntries}
             hasMore={pagination.has_next_page}>
             <div className={classes.root}>
@@ -336,7 +352,7 @@ export default function EntryList() {
                             })]
                     })}
                 </GridList>
-                {pagination.has_next_page && <BoxCenter style={{width: '100%', marginTop: 30}}><CircularProgress/></BoxCenter>}
+                {/*pagination.has_next_page && <EntryListLoader nbColsInGrid={nbColsInGrid}/>*/}
             </div>
         </InfiniteScroll>
         <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={async () => {
