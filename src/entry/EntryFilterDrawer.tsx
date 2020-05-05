@@ -8,10 +8,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {setFiltersLabels, State} from "../redux/reducers/root";
 import {Label} from "../models/Label";
 
+export default function EntryFilterDrawer(props: React.PropsWithChildren<{
 
-export default function EntryFilterDrawer(props: {
-    content: JSX.Element
-}) {
+}>) {
     const classes = useDrawerStyles();
     const open = true;
     const dispatch = useDispatch();
@@ -23,7 +22,7 @@ export default function EntryFilterDrawer(props: {
 
     return (<div className={classes.root}>
             <main className={classes.content}>
-                {props.content}
+                {props.children}
             </main>
 
             <Drawer

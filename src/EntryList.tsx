@@ -7,7 +7,6 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
 import IconButton from "@material-ui/core/IconButton";
 import {Edit, Visibility} from "@material-ui/icons";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import {useHistory} from "react-router-dom";
 import {addImageIfGodWillsIt} from "./label/EntryLabelList";
 import {DRAWER_WIDTH} from "./AppDrawer";
@@ -29,7 +28,6 @@ import {Label} from "./models/Label";
 import {addDecryptedLabel, axiosError, DecryptedImage, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
 import {Skeleton} from "@material-ui/lab";
-import EntryFilterDrawer from "./entry/EntryFilterDrawer";
 
 moment.locale(navigator.language);
 
@@ -44,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
         fab: {
             margin: 0,
             top: 'auto',
-            right: 20,
+            right: DRAWER_WIDTH + 20, // Fixme Not responsive
             bottom: 20,
             left: 'auto',
             position: 'fixed',
@@ -253,6 +251,7 @@ export default function EntryList() {
         nbColsInGrid = 2;
     }
 
+    let scrollerRef: any;
     const [entries, setEntries] = React.useState<Entry[]>([]);
     const [fetching, setFetching] = React.useState(false);
     const [redirect, setRedirect] = React.useState("");
@@ -281,20 +280,23 @@ export default function EntryList() {
         setEntries(updatedEntries);
     };
 
-    const fetchData = async(page: number) => {
+    const fetchData = async(page: number, currentEntries: Entry[]) => {
+        console.log("FETCH DATA page =", page, " nb of entries =", currentEntries.length);
         setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page, filterLabels.map((elem: Label) => elem.id));
 
-        setEntries(entries.concat(result.data.entries));
+        setEntries(currentEntries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
-        populateImages(entries.concat(result.data.entries)).catch((e) => console.log("something went wrong", e));
+        populateImages(currentEntries.concat(result.data.entries)).catch((e) => console.log("something went wrong", e));
     };
 
-    // https://github.com/facebook/create-react-app/issues/6880
     useEffect(() => {
-        setEntries([]);
-        fetchData(1).catch(e => dispatch(axiosError(e)));
+        // To restart scroller to page 1 when filters change
+        scrollerRef.pageLoaded = 1;
+        console.log("USE EFFECT", scrollerRef);
+            //        setEntries([]);
+        fetchData(1, []).catch(e => dispatch(axiosError(e)));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filterLabels]);
 
@@ -305,23 +307,28 @@ export default function EntryList() {
     const monthlyEntries: IEntriesByMonth[] = parseEntriesMonth(entries);
 
     if (fetching && entries.length === 0) {
-        return <EntryFilterDrawer content={<EntryListLoader nbColsInGrid={nbColsInGrid}/>}/>
+        return <EntryListLoader nbColsInGrid={nbColsInGrid}/>
     }
 
     async function loadMoreEntries(page: number) {
+        console.log("FETCHING MORE ENTRIES");
         // We set has_next_page to false while we retrieve data so infinite scroller does not trigger
         setPagination({...pagination, has_next_page: false});
         try {
-            await fetchData(page);
+            await fetchData(page, entries);
+            console.log("DONE FETCHING MORE ENTRIES, pagination", pagination);
+
         }
         catch (err) {
             dispatch(axiosError(err))
         }
     }
+    console.log("has more", pagination.has_next_page);
 
     // I'll do the infinite scroll loader myself
     return <React.Fragment>
-        <EntryFilterDrawer content={<InfiniteScroll
+        <InfiniteScroll
+            ref={scroller => scrollerRef = scroller}
             pageStart={1}
             threshold={250}
             loadMore={loadMoreEntries}
@@ -378,7 +385,6 @@ export default function EntryList() {
                 {/*pagination.has_next_page && <EntryListLoader nbColsInGrid={nbColsInGrid}/>*/}
             </div>
         </InfiniteScroll>
-        }/>
         <Fab color="primary" aria-label="add" size={"large"} className={classes.fab} onClick={async () => {
             const entry: Entry = new Entry();
             entry.title = "Diary Entry";

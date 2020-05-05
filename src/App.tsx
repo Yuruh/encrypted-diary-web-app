@@ -22,6 +22,8 @@ import {useDispatch} from "react-redux";
 import {axiosError} from "./redux/reducers/root";
 import Account from "./Account";
 import AxiosErrorHandler from "./utils/AxiosErrorHandler";
+import EntryFilterDrawer from "./entry/EntryFilterDrawer";
+import InfiniteScroll from "react-infinite-scroller";
 
 // use this so goland does know what's happening
 // function mapStateToProps(state: TypeOfYourRootStore, props: TypeOfYourComponentsProps) {}
@@ -128,11 +130,11 @@ const App = () => {
                                       </div>
                                   </div>
                               </Route>
-                              <PrivateRoute component={Page} path="/entries/:id"/>
-                              <PrivateRoute component={EntryList} path="/entries"/>
+                              <PrivateRoute component={WrappedEntryPage} path="/entries/:id"/>
+                              <PrivateRoute component={WrappedEntryList} path="/entries"/>
                               <PrivateRoute component={LabelList} path="/labels"/>
                               <PrivateRoute component={Account} path="/account"/>
-                              <PrivateRoute component={EntryList} path="/"/>
+                              <PrivateRoute component={WrappedEntryList} path="/"/>
                               <Redirect to='/entries' />
                           </Switch>
                       </div>
@@ -141,5 +143,18 @@ const App = () => {
       </Router>
   );
 };
+
+
+function WrappedEntryPage() {
+    return <EntryFilterDrawer>
+        <Page/>
+    </EntryFilterDrawer>
+}
+
+function WrappedEntryList() {
+    return <EntryFilterDrawer>
+        <EntryList/>
+    </EntryFilterDrawer>
+}
 
 export default App;

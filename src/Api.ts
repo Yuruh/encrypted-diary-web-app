@@ -127,7 +127,7 @@ export default class Api {
             params: {
                 limit,
                 page,
-                labelsIds
+                label_ids: JSON.stringify(labelsIds)
             }
         });
     }
