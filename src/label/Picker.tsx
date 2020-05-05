@@ -25,7 +25,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface IProps extends WithStyles<typeof styles> {
-    addLabelToEntry: (ids: number[]) => Promise<void>
+    addLabelToEntry: (labels: Label[]) => Promise<void>
     labels: Label[]
     narrow: boolean
     handleError: (error: AxiosError) => void;
@@ -141,7 +141,7 @@ class Picker extends React.Component<IProps, IState> {
             }
         }
         try {
-            await this.props.addLabelToEntry((value as Label[]).map((elem: Label) => elem.id));
+            await this.props.addLabelToEntry(value as Label[]);
             this.setState({
                 labels: value as Label[]
             });

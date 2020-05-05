@@ -1,11 +1,12 @@
 import React from "react"
-import {Drawer, ListItem, ListItemText} from "@material-ui/core";
+import {Drawer} from "@material-ui/core";
 import clsx from 'clsx';
-import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
 import {useDrawerStyles} from "../AppDrawer";
 import Picker from "../label/Picker";
 import Typography from "@material-ui/core/Typography";
+import {useDispatch, useSelector} from "react-redux";
+import {setFiltersLabels, State} from "../redux/reducers/root";
+import {Label} from "../models/Label";
 
 
 export default function EntryFilterDrawer(props: {
@@ -13,8 +14,14 @@ export default function EntryFilterDrawer(props: {
 }) {
     const classes = useDrawerStyles();
     const open = true;
+    const dispatch = useDispatch();
+    const filterLabels = useSelector((state: State) => state.filterLabels)
 
-    return ( <div className={classes.root}>
+    async function updateLabels(labels: Label[]) {
+        dispatch(setFiltersLabels(labels));
+    }
+
+    return (<div className={classes.root}>
             <main className={classes.content}>
                 {props.content}
             </main>
@@ -38,7 +45,7 @@ export default function EntryFilterDrawer(props: {
                 <Typography variant={"h4"} color={"primary"} align={"center"} gutterBottom>
                     Filters
                 </Typography>
-                <Picker labels={[]} addLabelToEntry={async (ids: number[]) => {return}} narrow={true}/>
+                <Picker labels={filterLabels} addLabelToEntry={updateLabels} narrow={true}/>
                 </div>
             </Drawer>
     </div>

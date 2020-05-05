@@ -280,7 +280,7 @@ export default function EntryList() {
     const fetchData = async(page: number) => {
         setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page);
-        
+
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
