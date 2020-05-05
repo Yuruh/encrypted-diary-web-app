@@ -12,6 +12,7 @@ import {useHistory, useLocation} from "react-router-dom";
 import EntryLabelList from "../label/EntryLabelList";
 import moment from "moment";
 import {upperCaseFirstLetter} from "../EntryList";
+import Typography from "@material-ui/core/Typography";
 const ReactMarkdown = require('react-markdown');
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -33,6 +34,10 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     }),
 );
+
+export function formatDate(date: string | Date | number) {
+    return upperCaseFirstLetter(moment(date).format("dddd D MMMM YYYY "));
+}
 
 export default function Viewer(props: {
     entry: Entry

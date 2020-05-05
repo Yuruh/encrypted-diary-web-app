@@ -108,11 +108,15 @@ export default class Api {
         return this.axiosInstance.delete("/labels/" + label.id);
     }
 
-    static async getEntry(entryId: number | string) {
+    static async getEntry(entryId: number | string, labelsIds?: number[]) {
         if (!this.encryptionKey) {
             throw new Error("encryption key undefined");
         }
-        const response = await this.axiosInstance.get("/entries/" + entryId);
+        const response = await this.axiosInstance.get("/entries/" + entryId, {
+            params: {
+                label_ids: JSON.stringify(labelsIds)
+            }
+        });
         response.data.entry.content = decrypt(response.data.entry.content, this.encryptionKey);
         const promises = [];
         for (const label of response.data.entry.labels as Label[]) {
