@@ -33,6 +33,9 @@ import EntryFilterDrawer from "./entry/EntryFilterDrawer";
 
 moment.locale(navigator.language);
 
+
+//Todo this file definitely needs refacto
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         tooltip: {
@@ -255,6 +258,7 @@ export default function EntryList() {
     const [redirect, setRedirect] = React.useState("");
     const [pagination, setPagination] = React.useState<Pagination>(new Pagination());
     const decryptedLabels = useSelector((state: State) => state.decryptedLabels);
+    const filterLabels = useSelector((state: State) => state.filterLabels);
     const dispatch = useDispatch();
 
     // To load images after entries are loaded.
@@ -279,7 +283,7 @@ export default function EntryList() {
 
     const fetchData = async(page: number) => {
         setFetching(true);
-        const result = await Api.getEntries(elemsPerPage, page);
+        const result = await Api.getEntries(elemsPerPage, page, filterLabels.map((elem: Label) => elem.id));
 
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
@@ -289,9 +293,10 @@ export default function EntryList() {
 
     // https://github.com/facebook/create-react-app/issues/6880
     useEffect(() => {
+        setEntries([]);
         fetchData(1).catch(e => dispatch(axiosError(e)));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [filterLabels]);
 
     if (redirect !== "") {
         history.push(redirect);
@@ -300,7 +305,7 @@ export default function EntryList() {
     const monthlyEntries: IEntriesByMonth[] = parseEntriesMonth(entries);
 
     if (fetching && entries.length === 0) {
-        return <EntryListLoader nbColsInGrid={nbColsInGrid}/>
+        return <EntryFilterDrawer content={<EntryListLoader nbColsInGrid={nbColsInGrid}/>}/>
     }
 
     async function loadMoreEntries(page: number) {

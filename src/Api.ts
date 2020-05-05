@@ -122,32 +122,16 @@ export default class Api {
         return response
     }
 
-    static getEntries(limit?: number, page?: number) {
+    static getEntries(limit?: number, page?: number, labelsIds?: number[]) {
         return this.axiosInstance.get("/entries", {
             params: {
                 limit,
                 page,
+                labelsIds
             }
         });
     }
 
-    static async getAccountInfos() {
-        return this.axiosInstance.get("/me")
-    }
-
-    static async requestOTPRegistration() {
-        return this.axiosInstance.post("/auth/two-factors/otp/register", null, {
-            responseType: "blob"
-        })
-    }
-
-    static async validateOTP(passcode: string, token: string) {
-        return this.axiosInstance.post("/auth/two-factors/otp/authenticate", {passcode, token})
-    }
-
-    static async request2FAToken() {
-        return this.axiosInstance.get("/auth/two-factors/otp/token")
-    }
 
     static addEntry(entry: Entry) {
         if (!this.encryptionKey) {
@@ -172,6 +156,24 @@ export default class Api {
 
     static deleteEntry(entryId: number | string) {
         return this.axiosInstance.delete("/entries/" + entryId)
+    }
+
+    static async getAccountInfos() {
+        return this.axiosInstance.get("/me")
+    }
+
+    static async requestOTPRegistration() {
+        return this.axiosInstance.post("/auth/two-factors/otp/register", null, {
+            responseType: "blob"
+        })
+    }
+
+    static async validateOTP(passcode: string, token: string) {
+        return this.axiosInstance.post("/auth/two-factors/otp/authenticate", {passcode, token})
+    }
+
+    static async request2FAToken() {
+        return this.axiosInstance.get("/auth/two-factors/otp/token")
     }
 
     static async login(email: string, pwd: string, timeMs: number) {
