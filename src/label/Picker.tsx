@@ -7,9 +7,10 @@ import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {LabelChip} from "./EntryLabelList";
-import {axiosError} from "../redux/reducers/root";
+import {addDecryptedLabel, axiosError, DecryptedImage, State} from "../redux/reducers/root";
 import {connect} from "react-redux";
 import {AxiosError} from "axios";
+import {populateLabelAvatar} from "../EntryList";
 
 // Theme-dependent styles
 const styles = (theme: Theme) => createStyles({
@@ -26,8 +27,10 @@ const styles = (theme: Theme) => createStyles({
 interface IProps extends WithStyles<typeof styles> {
     addLabelToEntry: (ids: number[]) => Promise<void>
     labels: Label[]
-    handleError: (error: AxiosError) => void;
     narrow: boolean
+    handleError: (error: AxiosError) => void;
+    addDecryptedLabel: (payload: DecryptedImage) => void;
+    decryptedLabels: DecryptedImage[];
 }
 
 interface IState {
@@ -40,9 +43,6 @@ interface IState {
 
 const TIME_BEFORE_REQUEST_MS = 200;
 
-/*
-    todo fix and optimize avatar label loading
- */
 class Picker extends React.Component<IProps, IState> {
     timeout: NodeJS.Timeout | null = null;
     constructor(props: IProps) {
@@ -82,6 +82,21 @@ class Picker extends React.Component<IProps, IState> {
                 this.setState({
                     offeredLabels: res.data.labels
                 });
+                // We populate images after once labels are displayed
+                const promises = [];
+
+                for (const label of res.data.labels as Label[]) {
+                    promises.push(populateLabelAvatar(label, this.props.decryptedLabels));
+                }
+                const decrypted: Label[] = await Promise.all(promises);
+
+                for (const label of decrypted) {
+                    this.props.addDecryptedLabel({id: label.id, decryptedImage: label.avatar_url});
+                }
+                this.setState({
+                    offeredLabels: decrypted
+                })
+
             } catch (e) {
                 this.props.handleError(e);
             }
@@ -217,10 +232,17 @@ class Picker extends React.Component<IProps, IState> {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapStateToProps = (state: State) => {
     return {
-        handleError: (error: AxiosError) => dispatch(axiosError(error))
+        decryptedLabels: state.decryptedLabels
     }
 };
 
-export default withStyles(styles)(connect(null, mapDispatchToProps)(Picker));
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        handleError: (error: AxiosError) => dispatch(axiosError(error)),
+        addDecryptedLabel: (payload: DecryptedImage) => dispatch(addDecryptedLabel(payload))
+    }
+};
+
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Picker));

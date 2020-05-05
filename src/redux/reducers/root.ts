@@ -18,7 +18,7 @@ export class State {
 const initialState: State = new State();
 
 //We use an array of object instead of a map as it is not advised in redux (https://github.com/reduxjs/redux/issues/1499)
-class DecryptedImage {
+export class DecryptedImage {
     id: number = 0;
     decryptedImage: string = ""
 }
@@ -96,6 +96,7 @@ export function rootReducer(
         case ADD_DECRYPTED_LABEL:
             const existing = state.decryptedLabels.find((elem: DecryptedImage) => elem.id === action.decrypted.id);
             if (existing) {
+                // todo overwrite if exists
                 return {
                     ...state
                 }

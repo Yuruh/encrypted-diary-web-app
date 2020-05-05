@@ -52,7 +52,7 @@ export default function AxiosErrorHandler() {
             return "No response received from the server";
         } else {
             // Something happened in setting up the request and triggered an Error
-            console.log('Error', error.message);
+            console.log('Error', error.message, error);
             return "Could not build request";
         }
     };

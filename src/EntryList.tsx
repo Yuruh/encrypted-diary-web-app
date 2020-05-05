@@ -26,7 +26,7 @@ import { BoxCenter } from "./BoxCenter";
 import {TileContent} from "./entry/EntryListTile";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Label} from "./models/Label";
-import {addDecryptedLabel, axiosError, State} from "./redux/reducers/root";
+import {addDecryptedLabel, axiosError, DecryptedImage, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
 import {Skeleton} from "@material-ui/lab";
 import EntryFilterDrawer from "./entry/EntryFilterDrawer";
@@ -213,6 +213,28 @@ function EntryListLoader(props: {
     </GridList></div>
 }
 
+export async function populateLabelAvatar(label: Label, decryptedLabels: DecryptedImage[]): Promise<Label> {
+    const existing = decryptedLabels.find((elem) => elem.id === label.id);
+    if (existing) {
+        label.avatar_url = existing.decryptedImage;
+        return label;
+    } else {
+        return decryptLabelAvatar(label);
+    }
+}
+
+export function labelsStrippedOfAvatar(labels: Label[]): Label[] {
+    // Deep copy of labels to preserve avatar url
+    const labelsCpy = JSON.parse(JSON.stringify(labels));
+
+    // We start by displaying the label without avatar (for faster loading and in case the object storage provider has a problem)
+    return labelsCpy.map((elem: Label) => {
+        // Deleting the url here as we don't want to html to load it as an image, as it must be decrypted first
+        delete elem.avatar_url;
+        return elem;
+    });
+}
+
 export default function EntryList() {
     const classes = useStyles({});
     const history = useHistory();
@@ -242,12 +264,7 @@ export default function EntryList() {
             const promises = [];
 
             for (const label of entry.labels as Label[]) {
-                const existing = decryptedLabels.find((elem) => elem.id === label.id);
-                if (existing) {
-                    label.avatar_url = existing.decryptedImage
-                } else {
-                    promises.push(decryptLabelAvatar(label));
-                }
+                promises.push(populateLabelAvatar(label, decryptedLabels));
             }
             const decrypted: Label[] = await Promise.all(promises);
 
@@ -263,7 +280,7 @@ export default function EntryList() {
     const fetchData = async(page: number) => {
         setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page);
-
+        
         setEntries(entries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);

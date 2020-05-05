@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {Box, createStyles, Theme} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Api, {decryptLabelAvatar} from "../Api";
+import Api from "../Api";
 import {Label} from "../models/Label";
 import {LabelChip} from "./EntryLabelList";
 import Grid from "@material-ui/core/Grid";
@@ -14,6 +14,7 @@ import {Delete, Save} from "@material-ui/icons";
 import ImageCropper from "./Cropper";
 import {useDispatch, useSelector} from "react-redux";
 import {addDecryptedLabel, axiosError, State} from "../redux/reducers/root";
+import {labelsStrippedOfAvatar, populateLabelAvatar} from "../EntryList";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -25,9 +26,6 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     }),
 );
-
-// For avatars: https://github.com/roadmanfong/react-cropper
-
 
 export default function LabelList() {
 //    const classes = useStyles({});
@@ -43,25 +41,23 @@ export default function LabelList() {
         setFetching(true);
         const result = await Api.getLabels("", [], Number.MAX_SAFE_INTEGER, 1);
 
-        // This logic should be in a reducer. Use redux thunks middleware for async actions
 
-        // For each label avatar url, we check if it is already saved globally.
+        // We start by displaying the label without avatar (for faster loading and in case the object storage provider has a problem)
+        setLabels(labelsStrippedOfAvatar(result.data.labels));
+        setFetching(false);
+
+        // We populate images after once labels are displayed
         const promises = [];
         for (const label of result.data.labels as Label[]) {
-            const existing = decryptedLabels.find((elem) => elem.id === label.id);
-            if (existing) {
-                label.avatar_url = existing.decryptedImage
-            } else {
-                promises.push(decryptLabelAvatar(label));
-            }
+            promises.push(populateLabelAvatar(label, decryptedLabels));
         }
         const decrypted: Label[] = await Promise.all(promises);
 
         for (const label of decrypted) {
             dispatch(addDecryptedLabel({id: label.id, decryptedImage: label.avatar_url}));
         }
-        setLabels(result.data.labels);
-        setFetching(false);
+        setLabels(decrypted);
+
     };
 
     useEffect(() => {
