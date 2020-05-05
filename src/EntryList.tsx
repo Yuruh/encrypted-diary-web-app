@@ -281,7 +281,6 @@ export default function EntryList() {
     };
 
     const fetchData = async(page: number, currentEntries: Entry[]) => {
-        console.log("FETCH DATA page =", page, " nb of entries =", currentEntries.length);
         setFetching(true);
         const result = await Api.getEntries(elemsPerPage, page, filterLabels.map((elem: Label) => elem.id));
 
@@ -294,8 +293,6 @@ export default function EntryList() {
     useEffect(() => {
         // To restart scroller to page 1 when filters change
         scrollerRef.pageLoaded = 1;
-        console.log("USE EFFECT", scrollerRef);
-            //        setEntries([]);
         fetchData(1, []).catch(e => dispatch(axiosError(e)));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filterLabels]);
@@ -311,23 +308,20 @@ export default function EntryList() {
     }
 
     async function loadMoreEntries(page: number) {
-        console.log("FETCHING MORE ENTRIES");
         // We set has_next_page to false while we retrieve data so infinite scroller does not trigger
         setPagination({...pagination, has_next_page: false});
         try {
             await fetchData(page, entries);
-            console.log("DONE FETCHING MORE ENTRIES, pagination", pagination);
-
         }
         catch (err) {
             dispatch(axiosError(err))
         }
     }
-    console.log("has more", pagination.has_next_page);
 
     // I'll do the infinite scroll loader myself
     return <React.Fragment>
         <InfiniteScroll
+            // This creates a react warning but we need it to handle restart on filters change
             ref={scroller => scrollerRef = scroller}
             pageStart={1}
             threshold={250}

@@ -23,10 +23,6 @@ import {axiosError} from "./redux/reducers/root";
 import Account from "./Account";
 import AxiosErrorHandler from "./utils/AxiosErrorHandler";
 import EntryFilterDrawer from "./entry/EntryFilterDrawer";
-import InfiniteScroll from "react-infinite-scroller";
-
-// use this so goland does know what's happening
-// function mapStateToProps(state: TypeOfYourRootStore, props: TypeOfYourComponentsProps) {}
 
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
