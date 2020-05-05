@@ -14,6 +14,7 @@ import Picker from "../label/Picker";
 import {AxiosError} from "axios";
 import {axiosError} from "../redux/reducers/root";
 import {connect} from "react-redux";
+import {Label} from "../models/Label";
 
 const ReactMarkdown = require('react-markdown');
 require('codemirror/mode/markdown/markdown');
@@ -123,9 +124,9 @@ class Editor extends React.Component<IProps, IState> {
         });
     }
 
-    async addLabelToEntry(labels_id: number[]) {
+    async addLabelToEntry(labels: Label[]) {
         try {
-            const res = await Api.editEntry(this.state.entry, labels_id);
+            const res = await Api.editEntry(this.state.entry, labels.map((elem: Label) => elem.id));
             this.setState({
                 saveStatus: EntrySaveStatus.SAVED,
             });

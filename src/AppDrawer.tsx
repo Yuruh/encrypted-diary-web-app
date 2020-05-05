@@ -12,7 +12,7 @@ import Link from "@material-ui/core/Link";
 
 export const DRAWER_WIDTH = 240;
 
-const useStyles = makeStyles((theme: Theme) =>
+export const useDrawerStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             display: 'flex',
@@ -23,19 +23,17 @@ const useStyles = makeStyles((theme: Theme) =>
             whiteSpace: 'nowrap',
         },
         drawerOpen: {
-            backgroundColor: "rgba(255, 255, 255, 1)",
             width: DRAWER_WIDTH,
-            transition: theme.transitions.create('width', {
+/*            transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.enteringScreen,
-            }),
+            }),*/
         },
         drawerClose: {
-            backgroundColor: "rgba(255, 255, 255, 0)",
-            transition: theme.transitions.create('width', {
+/*            transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
-            }),
+            }),*/
             overflowX: 'hidden',
             width: theme.spacing(7) + 1,
             [theme.breakpoints.up('sm')]: {
@@ -66,7 +64,7 @@ export default function AppDrawer(props: {
     changeOpen: (open: boolean) => void,
     content: JSX.Element
 }) {
-    const classes = useStyles();
+    const classes = useDrawerStyles();
 
     const location = useLocation();
 
@@ -96,15 +94,15 @@ export default function AppDrawer(props: {
                 <Divider/>
                 <List>
                     <ListItem button selected={location.pathname.substr(0, entriesPath.length) === entriesPath} onClick={() => history.push(entriesPath)}>
-                        <ListItemIcon><CalendarToday/></ListItemIcon>
-                        <ListItemText primary={"Entries"} />
+                        <ListItemIcon><CalendarToday color="primary"/></ListItemIcon>
+                        <ListItemText color="primary" primary={"Entries"} />
                     </ListItem>
                     <ListItem button selected={location.pathname.substr(0, labelsPath.length) === labelsPath} onClick={() => history.push(labelsPath)}>
-                        <ListItemIcon><Label/></ListItemIcon>
+                        <ListItemIcon><Label color="primary"/></ListItemIcon>
                         <ListItemText primary={"Labels"} />
                     </ListItem>
                     <ListItem button selected={location.pathname.substr(0, accountPath.length) === accountPath} onClick={() => history.push(accountPath)}>
-                        <ListItemIcon><AccountCircle/></ListItemIcon>
+                        <ListItemIcon><AccountCircle color="primary"/></ListItemIcon>
                         <ListItemText primary={"Settings"} />
                     </ListItem>
                 </List>

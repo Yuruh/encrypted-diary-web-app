@@ -1,24 +1,27 @@
 import {AxiosError} from "axios";
 import HttpErrorHandler from "../../utils/HttpErrorHandler";
+import {Label} from "../../models/Label";
 
 export const EXAMPLE_ACTION = "EXAMPLE_ACTION";
 export const ADD_DECRYPTED_LABEL = "ADD_DECRYPTED_LABEL";
 export const LOGIN = "LOGIN";
 export const LOGOUT = "LOGOUT";
 export const AXIOS_ERROR = "AXIOS_ERROR";
+export const SET_FILTER_LABELS = "SET_FILTER_LABELS";
 
-// could be organized with combineReducers once it gets too big
+// should be organized with combineReducers once it gets too big
 export class State {
     content: string = "toto";
     decryptedLabels: DecryptedImage[] = [];
     redirectToLogout: boolean = false;
     axiosError?: AxiosError;
-    httpErrorHandler: HttpErrorHandler = new HttpErrorHandler()
+    httpErrorHandler: HttpErrorHandler = new HttpErrorHandler();
+    filterLabels: Label[] = [];
 }
 const initialState: State = new State();
 
 //We use an array of object instead of a map as it is not advised in redux (https://github.com/reduxjs/redux/issues/1499)
-class DecryptedImage {
+export class DecryptedImage {
     id: number = 0;
     decryptedImage: string = ""
 }
@@ -42,6 +45,11 @@ interface LoginAction {
     type: typeof LOGIN;
 }
 
+interface SetFilterLabelAction {
+    type: typeof SET_FILTER_LABELS
+    labels: Label[]
+}
+
 interface AxiosErrorAction {
     type: typeof AXIOS_ERROR
     payload: {
@@ -51,13 +59,20 @@ interface AxiosErrorAction {
     }
 }
 
-type ActionType = AddLabelAction | ExampleAction | LoginAction | LogoutAction | AxiosErrorAction;
+type ActionType = AddLabelAction | ExampleAction | LoginAction | LogoutAction | AxiosErrorAction | SetFilterLabelAction;
 
 // Action creators
 export function addDecryptedLabel(payload: DecryptedImage): ActionType {
     return {
         type: ADD_DECRYPTED_LABEL,
         decrypted: payload
+    }
+}
+
+export function setFiltersLabels(labels: Label[]): ActionType {
+    return {
+        type: SET_FILTER_LABELS,
+        labels,
     }
 }
 
@@ -96,6 +111,7 @@ export function rootReducer(
         case ADD_DECRYPTED_LABEL:
             const existing = state.decryptedLabels.find((elem: DecryptedImage) => elem.id === action.decrypted.id);
             if (existing) {
+                // todo overwrite if exists
                 return {
                     ...state
                 }
@@ -120,6 +136,12 @@ export function rootReducer(
                 axiosError: action.payload.axiosError,
                 httpErrorHandler: action.payload.httpErrorHandler || state.httpErrorHandler,
             };
+        case SET_FILTER_LABELS:
+            return {
+                ...state,
+                filterLabels: action.labels
+            };
+
         default:
             return state
     }

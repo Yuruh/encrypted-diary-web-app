@@ -7,7 +7,6 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
 import IconButton from "@material-ui/core/IconButton";
 import {Edit, Visibility} from "@material-ui/icons";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import {useHistory} from "react-router-dom";
 import {addImageIfGodWillsIt} from "./label/EntryLabelList";
 import {DRAWER_WIDTH} from "./AppDrawer";
@@ -26,11 +25,14 @@ import { BoxCenter } from "./BoxCenter";
 import {TileContent} from "./entry/EntryListTile";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Label} from "./models/Label";
-import {addDecryptedLabel, axiosError, State} from "./redux/reducers/root";
+import {addDecryptedLabel, axiosError, DecryptedImage, State} from "./redux/reducers/root";
 import {useDispatch, useSelector} from "react-redux";
 import {Skeleton} from "@material-ui/lab";
 
 moment.locale(navigator.language);
+
+
+//Todo this file definitely needs refacto
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
         fab: {
             margin: 0,
             top: 'auto',
-            right: 20,
+            right: DRAWER_WIDTH + 20, // Fixme Not responsive
             bottom: 20,
             left: 'auto',
             position: 'fixed',
@@ -212,6 +214,28 @@ function EntryListLoader(props: {
     </GridList></div>
 }
 
+export async function populateLabelAvatar(label: Label, decryptedLabels: DecryptedImage[]): Promise<Label> {
+    const existing = decryptedLabels.find((elem) => elem.id === label.id);
+    if (existing) {
+        label.avatar_url = existing.decryptedImage;
+        return label;
+    } else {
+        return decryptLabelAvatar(label);
+    }
+}
+
+export function labelsStrippedOfAvatar(labels: Label[]): Label[] {
+    // Deep copy of labels to preserve avatar url
+    const labelsCpy = JSON.parse(JSON.stringify(labels));
+
+    // We start by displaying the label without avatar (for faster loading and in case the object storage provider has a problem)
+    return labelsCpy.map((elem: Label) => {
+        // Deleting the url here as we don't want to html to load it as an image, as it must be decrypted first
+        delete elem.avatar_url;
+        return elem;
+    });
+}
+
 export default function EntryList() {
     const classes = useStyles({});
     const history = useHistory();
@@ -220,18 +244,20 @@ export default function EntryList() {
     const downMd = useMediaQuery(theme.breakpoints.down('md'));
     const elemsPerPage = 10;
 
-    let nbColsInGrid = 4;
+    let nbColsInGrid = 3;
     if (downSm) {
-        nbColsInGrid = 2;
+        nbColsInGrid = 1;
     } else if (downMd) {
-        nbColsInGrid = 3;
+        nbColsInGrid = 2;
     }
 
+    let scrollerRef: any;
     const [entries, setEntries] = React.useState<Entry[]>([]);
     const [fetching, setFetching] = React.useState(false);
     const [redirect, setRedirect] = React.useState("");
     const [pagination, setPagination] = React.useState<Pagination>(new Pagination());
     const decryptedLabels = useSelector((state: State) => state.decryptedLabels);
+    const filterLabels = useSelector((state: State) => state.filterLabels);
     const dispatch = useDispatch();
 
     // To load images after entries are loaded.
@@ -241,12 +267,7 @@ export default function EntryList() {
             const promises = [];
 
             for (const label of entry.labels as Label[]) {
-                const existing = decryptedLabels.find((elem) => elem.id === label.id);
-                if (existing) {
-                    label.avatar_url = existing.decryptedImage
-                } else {
-                    promises.push(decryptLabelAvatar(label));
-                }
+                promises.push(populateLabelAvatar(label, decryptedLabels));
             }
             const decrypted: Label[] = await Promise.all(promises);
 
@@ -259,21 +280,22 @@ export default function EntryList() {
         setEntries(updatedEntries);
     };
 
-    const fetchData = async(page: number) => {
+    const fetchData = async(page: number, currentEntries: Entry[]) => {
         setFetching(true);
-        const result = await Api.getEntries(elemsPerPage, page);
+        const result = await Api.getEntries(elemsPerPage, page, filterLabels.map((elem: Label) => elem.id));
 
-        setEntries(entries.concat(result.data.entries));
+        setEntries(currentEntries.concat(result.data.entries));
         setPagination(result.data.pagination);
         setFetching(false);
-        populateImages(entries.concat(result.data.entries)).catch((e) => console.log("something went wrong", e));
+        populateImages(currentEntries.concat(result.data.entries)).catch((e) => console.log("something went wrong", e));
     };
 
-    // https://github.com/facebook/create-react-app/issues/6880
     useEffect(() => {
-        fetchData(1).catch(e => dispatch(axiosError(e)));
+        // To restart scroller to page 1 when filters change
+        scrollerRef.pageLoaded = 1;
+        fetchData(1, []).catch(e => dispatch(axiosError(e)));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [filterLabels]);
 
     if (redirect !== "") {
         history.push(redirect);
@@ -289,7 +311,7 @@ export default function EntryList() {
         // We set has_next_page to false while we retrieve data so infinite scroller does not trigger
         setPagination({...pagination, has_next_page: false});
         try {
-            await fetchData(page);
+            await fetchData(page, entries);
         }
         catch (err) {
             dispatch(axiosError(err))
@@ -299,6 +321,8 @@ export default function EntryList() {
     // I'll do the infinite scroll loader myself
     return <React.Fragment>
         <InfiniteScroll
+            // This creates a react warning but we need it to handle restart on filters change
+            ref={scroller => scrollerRef = scroller}
             pageStart={1}
             threshold={250}
             loadMore={loadMoreEntries}
@@ -327,7 +351,7 @@ export default function EntryList() {
                                     colSpan = 2
                                 }
                                 return <GridListTile key={i} cols={colSpan} /*className={classes.tile}*/
-                                classes={{tile: classes.tile}}>
+                                                     classes={{tile: classes.tile}}>
                                     <TileContent elem={elem}/>
                                     <GridListTileBar
                                         title={date}
