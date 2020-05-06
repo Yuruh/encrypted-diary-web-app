@@ -12,7 +12,6 @@ import {useHistory, useLocation} from "react-router-dom";
 import EntryLabelList from "../label/EntryLabelList";
 import moment from "moment";
 import {upperCaseFirstLetter} from "../EntryList";
-import Typography from "@material-ui/core/Typography";
 const ReactMarkdown = require('react-markdown');
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -48,7 +47,6 @@ export default function Viewer(props: {
 
     let date = moment(props.entry.created_at).format("dddd D MMMM YYYY ");
     date = upperCaseFirstLetter(date);
-
 
     return <Card elevation={2} className={classes.preview}>
         <CardHeader title={date}

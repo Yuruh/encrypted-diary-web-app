@@ -126,7 +126,7 @@ const App = () => {
                                       </div>
                                   </div>
                               </Route>
-                              <PrivateRoute component={WrappedEntryPage} path="/entries/:id"/>
+                              <PrivateRoute component={Page} path="/entries/:id"/>
                               <PrivateRoute component={WrappedEntryList} path="/entries"/>
                               <PrivateRoute component={LabelList} path="/labels"/>
                               <PrivateRoute component={Account} path="/account"/>
@@ -139,13 +139,6 @@ const App = () => {
       </Router>
   );
 };
-
-
-function WrappedEntryPage() {
-    return <EntryFilterDrawer>
-        <Page/>
-    </EntryFilterDrawer>
-}
 
 function WrappedEntryList() {
     return <EntryFilterDrawer>
