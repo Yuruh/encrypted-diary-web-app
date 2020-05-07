@@ -1,16 +1,12 @@
 import React, {useEffect} from "react";
 
-import {
-    useParams,
-    useLocation,
-    useHistory
-} from "react-router-dom";
+import {useHistory, useLocation, useParams} from "react-router-dom";
 import "codemirror";
 import Editor from "./Editor";
 import {NavigateNext} from "@material-ui/icons";
-import {createStyles, IconButton, Theme} from "@material-ui/core";
+import {createStyles, Theme} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import Viewer, {formatDate} from "./Viewer";
+import Viewer from "./Viewer";
 import {Entry} from "../models/Entry";
 import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -22,7 +18,6 @@ import {axiosError, State} from "../redux/reducers/root";
 import {Label} from "../models/Label";
 import Typography from "@material-ui/core/Typography";
 import EntryFilterDrawer from "./EntryFilterDrawer";
-import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -70,10 +65,6 @@ export default function Page() {
 
     const filterLabels = useSelector((state: State) => state.filterLabels);
 
-    // We store these as classic variable to handle keyUp event (state is not accessible in window global even)
-    let nextEntryGlobal: Entry;
-    let prevEntryGlobal: Entry;
-
     const dispatch = useDispatch();
 
     const fetchData = async() => {
@@ -82,8 +73,6 @@ export default function Page() {
         setEntry({...result.data.entry});
         setNextEntry(result.data.next_entry);
         setPrevEntry(result.data.prev_entry);
-        prevEntryGlobal = result.data.prev_entry;
-        nextEntryGlobal = result.data.next_entry;
         setFetching(false);
     };
 
@@ -103,21 +92,17 @@ export default function Page() {
         loadEntry(prevEntry)
     }
 
-
-    function onKeyUp(event: any) {
-        if (event.keyCode === 37) {
-            loadEntry(prevEntryGlobal)
-        } else if (event.keyCode === 39) {
-            loadEntry(nextEntryGlobal)
+    function onKeyUp(keyCode: number) {
+        if (keyCode === 37) {
+            loadEntry(prevEntry)
+        } else if (keyCode === 39) {
+            loadEntry(nextEntry)
         }
     }
 
     useEffect(() => {
         fetchData().catch(e => dispatch(axiosError(e)));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        window.addEventListener("keyup", onKeyUp);
-        return () => window.removeEventListener("keyup", onKeyUp);
-
     }, [filterLabels]);
 
     if (fetching) {
@@ -140,7 +125,7 @@ export default function Page() {
                     </div>
                 </Hidden>
                 <div style={{maxWidth: 1000, width: "100%"}}>
-                    <Viewer entry={entry}/>
+                    <Viewer entry={entry} onKeyUp={onKeyUp}/>
                 </div>
                 <Hidden xsDown={true}>
                     <div className={classes.prevNext}>
