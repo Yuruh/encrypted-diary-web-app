@@ -75,6 +75,7 @@ const theme = createMuiTheme({
 } as any);
 
 // Every 2 minutes we check that the user is still logged in (by checking that a /me does not return 401), otherwise we log him out
+// Todo instead of running a dummy request, check token expiration date
 function EndSession() {
     const dispatch = useDispatch();
 

@@ -25,10 +25,17 @@ export function encrypt (msg: string, key: string) {
     return encrypted.toString();
 }
 
-export function decrypt (encryptedMessage: string, key: string) {
+export function decrypt (encryptedMessage: string, key: string): string {
     const decrypted = CryptoJS.AES.decrypt(encryptedMessage, key);
 
-    return decrypted.toString(CryptoJS.enc.Utf8);
+    let ret = "";
+    try {
+       ret =  decrypted.toString(CryptoJS.enc.Utf8);
+    } catch (e) {
+        console.log("Could not decrypt", e)
+    }
+
+    return ret
 }
 
 export async function decryptLabelAvatar(label: Label): Promise<Label> {
@@ -118,11 +125,12 @@ export default class Api {
             }
         });
         response.data.entry.content = decrypt(response.data.entry.content, this.encryptionKey);
-        const promises = [];
+        //todo load labels afterwards
+/*        const promises = [];
         for (const label of response.data.entry.labels as Label[]) {
             promises.push(decryptLabelAvatar(label));
         }
-        await Promise.all(promises);
+        await Promise.all(promises);*/
         return response
     }
 
