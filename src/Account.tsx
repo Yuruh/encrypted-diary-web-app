@@ -22,6 +22,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Modal from "@material-ui/core/Modal";
+import {ConfirmationModal} from "./utils/ConfirmationModal";
+import {EnterOTP} from "./login/EnterOPT";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -81,6 +83,7 @@ export default function Account() {
     const [qrSrc, setQrSrc] = React.useState("");
     const [token, setToken] = React.useState("");
     const [modelOtp, setModalOtp] = React.useState(false);
+    const [openDisableOTP, setOpenDisableOTP] = React.useState(false);
     const dispatch = useDispatch();
     const classes = useAccountStyles();
 
@@ -92,18 +95,22 @@ export default function Account() {
     };
 
     async function startOTPRegistration() {
-        try {
-            const res = await Api.requestOTPRegistration();
-            setQrSrc(URL.createObjectURL(res.data))
+        if (user.has_registered_otp) {
+            setOpenDisableOTP(true)
+        } else {
             try {
-                const res = await Api.request2FAToken();
-                setToken(res.data.token);
-                setModalOtp(true)
+                const res = await Api.requestOTPRegistration();
+                setQrSrc(URL.createObjectURL(res.data));
+                try {
+                    const res = await Api.request2FAToken();
+                    setToken(res.data.token);
+                    setModalOtp(true)
+                } catch (e) {
+                    dispatch(axiosError(e));
+                }
             } catch (e) {
                 dispatch(axiosError(e));
             }
-        } catch (e) {
-            dispatch(axiosError(e));
         }
 
     }
@@ -164,6 +171,14 @@ export default function Account() {
                 fetchData().catch((e) => console.log(e));
             }
         }} qrSrc={qrSrc} token={token}/>
+        <ConfirmationModal open={openDisableOTP} handleChoice={(valid: boolean) => {
+            setOpenDisableOTP(false);
+            if (valid) {
+                alert("Not implemented yet");
+            }
+        }}>
+            Do you really want to disable OTP ?
+        </ConfirmationModal>
     </div>
 }
 
@@ -216,78 +231,7 @@ function RegisterOTPModal(props: {
             </Typography>
             <EnterOTP token={props.token} onValid={() => {
                 props.handleClose(true);
-            }}/>
+            }} ctx={"tfa-registration"}/>
         </div>
     </Modal>
-}
-
-export function EnterOTP (funcProps: {
-    token: string
-    onValid: (token: string) => void
-}) {
-    // cannot use loop for react hooks
-    const case0: any = React.useRef();
-    const case1: any = React.useRef();
-    const case2: any = React.useRef();
-    const case3: any = React.useRef();
-    const case4: any = React.useRef();
-    const case5: any = React.useRef();
-    const button: any = React.useRef();
-    const dispatch = useDispatch();
-
-    const [codeError, setCodeError] = React.useState("");
-
-    const Case = React.forwardRef((props: {
-        idx: number
-        //ref?: any
-        nextCaseRef?: any
-    }, ref: Ref<HTMLDivElement>) => {
-
-        // Uncontrolled, we use ref to retrieve the value
-        return <TextField inputRef={ref} inputProps={{
-            maxLength: 1,
-            pattern: "[0-9]*",
-  //          inputMode: "numeric"
-        }} variant={"outlined"} style={{width: 50, textAlign: "center"}} onChange={(e) => {
-            let value = e.target.value;
-            if (value.length > 0) {
-                if (props.nextCaseRef) {
-                    props.nextCaseRef.current.value = "";
-                    props.nextCaseRef.current.focus();
-                }
-            }
-        }}/>
-    });
-
-    async function go() {
-        setCodeError("");
-        try {
-            const code = case0.current.value + case1.current.value + case2.current.value +
-                case3.current.value + case4.current.value + case5.current.value;
-            const res = await Api.validateOTP(code, funcProps.token);
-            funcProps.onValid(res.data.token);
-        } catch (e) {
-            const errorHandler: HttpErrorHandler = new HttpErrorHandler();
-            errorHandler.actions.set(400, () => setCodeError("Invalid Code"));
-            dispatch(axiosError(e, errorHandler));
-        }
-    }
-    return <div>
-        <Typography variant="h5" color={"primary"}>
-            Two-Factor Authentication requested
-        </Typography>
-        <Typography variant={"subtitle1"} gutterBottom color={"secondary"}>
-            Enter Passcode from your TOTP authenticator
-        </Typography>
-        <Case idx={0} ref={case0} nextCaseRef={case1}/>
-        <Case idx={1} ref={case1} nextCaseRef={case2}/>
-        <Case idx={2} ref={case2} nextCaseRef={case3}/>
-        <Case idx={3} ref={case3} nextCaseRef={case4}/>
-        <Case idx={4} ref={case4} nextCaseRef={case5}/>
-        <Case idx={5} ref={case5}  nextCaseRef={button}/>
-        <br/>
-        <br/>
-        <Button style={{marginLeft: "auto", marginRight: "auto"}} ref={button} onClick={go} variant={"outlined"} color={"primary"}>Validate Code</Button>
-        {codeError !== "" && <Typography color={"error"} variant={"body2"}>{codeError}</Typography>}
-    </div>
 }

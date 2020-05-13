@@ -180,8 +180,8 @@ export default class Api {
         })
     }
 
-    static async validateOTP(passcode: string, token: string) {
-        return this.axiosInstance.post("/auth/two-factors/otp/authenticate", {passcode, token})
+    static async validateOTP(passcode: string, token: string, keepActive: boolean) {
+        return this.axiosInstance.post("/auth/two-factors/otp/authenticate", {passcode, token, keep_active: keepActive})
     }
 
     static async request2FAToken() {

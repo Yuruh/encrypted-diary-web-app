@@ -15,7 +15,7 @@ import {
 import {blueGrey, indigo} from "@material-ui/core/colors";
 import {Register} from "./Register";
 import Page from "./entry/Page";
-import {Login} from "./Login";
+import {Login} from "./login/Login";
 import Header from "./Header";
 import LabelList from "./label/LabelList";
 import {useDispatch} from "react-redux";

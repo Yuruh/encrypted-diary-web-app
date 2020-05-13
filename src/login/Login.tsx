@@ -8,7 +8,7 @@ import React, {ChangeEvent} from "react";
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Divider from "@material-ui/core/Divider";
 import {Link, Redirect} from "react-router-dom";
-import Api from "./Api";
+import Api from "../Api";
 import {Select} from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
@@ -16,17 +16,17 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import {Keyboard as KeyboardIcon} from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
-import VirtualKeyboard from "./login/VirtualKeyboard";
+import VirtualKeyboard from "./VirtualKeyboard";
 import Tooltip from "@material-ui/core/Tooltip";
 import Collapse from "@material-ui/core/Collapse";
 import {useDispatch} from "react-redux";
-import {axiosError} from "./redux/reducers/root";
-import {login as actionLogin} from "./redux/reducers/root";
-import {EnterOTP} from "./Account";
-import HttpErrorHandler from "./utils/HttpErrorHandler";
+import {axiosError} from "../redux/reducers/root";
+import {login as actionLogin} from "../redux/reducers/root";
+import HttpErrorHandler from "../utils/HttpErrorHandler";
 import Snackbar from "@material-ui/core/Snackbar";
 import {Alert} from "@material-ui/lab";
-import {useQuery} from "./entry/Page";
+import {useQuery} from "../entry/Page";
+import {EnterOTP} from "./EnterOPT";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -60,7 +60,7 @@ export function Login() {
     const [redirect, setRedirect] = React.useState<boolean>(false);
     const [duration, setDuration] = React.useState<number>(1000 * 60 * 30); // 30 minutes
     const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false);
-    const [TFAToken, setTFAToken] = React.useState("");
+    const [TFAToken, setTFAToken] = React.useState("tata");
     const query = useQuery();
 
     let ctx: string | null = query.get("ctx");
@@ -170,7 +170,7 @@ export function Login() {
                     Api.onLogin(accessToken);
                     dispatch(actionLogin());
                     setRedirect(true)
-                }}/>
+                }} ctx={"login"}/>
             }
             <Divider className={classes.divider}/>
             <Link to={"/register"}>Register here</Link>
