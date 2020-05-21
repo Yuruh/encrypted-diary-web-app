@@ -1,8 +1,9 @@
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 
 import CryptoJS from "crypto-js";
 import {Entry} from "./models/Entry";
 import {Label} from "./models/Label";
+
 const pbkdf2 = require('pbkdf2');
 
 // Code goes here
@@ -61,8 +62,10 @@ export default class Api {
 
     static axiosInstance = axios.create({
         baseURL: process.env.REACT_APP_API_URL || "http://localhost:8090",
-        headers: {'Content-Type' : 'application/json', "Authorization": "Bearer " + Api.token}
+        headers: {'Content-Type' : 'application/json', "Authorization": "Bearer " + Api.token},
+        withCredentials: true
     });
+
     static register(email: string, pwd: string) {
         return this.axiosInstance.post("/register", {
             email,
@@ -180,8 +183,10 @@ export default class Api {
         })
     }
 
-    static async validateOTP(passcode: string, token: string, keepActive: boolean) {
-        return this.axiosInstance.post("/auth/two-factors/otp/authenticate", {passcode, token, keep_active: keepActive})
+    static validateOTP(passcode: string, token: string, keepActive: boolean): Promise<AxiosResponse> {
+        return this.axiosInstance.post("/auth/two-factors/otp/authenticate",
+            {passcode, token, keep_active: keepActive},
+        )
     }
 
     static async request2FAToken() {

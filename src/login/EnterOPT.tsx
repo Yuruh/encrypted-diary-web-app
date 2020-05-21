@@ -9,7 +9,6 @@ import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import { uuid } from 'uuidv4';
 import {useCookies} from "react-cookie";
 
 const TFA_ACTIVE_COOKIE_KEY = "tfa-active-session";
@@ -69,6 +68,7 @@ export function EnterOTP (funcProps: {
                     secure: true,
                 })
             }*/
+
 
             const res = await Api.validateOTP(code, funcProps.token, keepActive);
             funcProps.onValid(res.data.token);

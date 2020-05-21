@@ -60,7 +60,7 @@ export function Login() {
     const [redirect, setRedirect] = React.useState<boolean>(false);
     const [duration, setDuration] = React.useState<number>(1000 * 60 * 30); // 30 minutes
     const [openKeyboard, setOpenKeyboard] = React.useState<boolean>(false);
-    const [TFAToken, setTFAToken] = React.useState("tata");
+    const [TFAToken, setTFAToken] = React.useState("");
     const query = useQuery();
 
     let ctx: string | null = query.get("ctx");
