@@ -9,9 +9,6 @@ import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import {useCookies} from "react-cookie";
-
-const TFA_ACTIVE_COOKIE_KEY = "tfa-active-session";
 
 export function EnterOTP (funcProps: {
     token: string
@@ -29,8 +26,8 @@ export function EnterOTP (funcProps: {
     const dispatch = useDispatch();
 
     const [codeError, setCodeError] = React.useState("");
-    const [keepActive, setKeepActive] = React.useState(false);
-    const [cookies, setCookie, removeCookie] = useCookies(['cookie-name']);
+
+    const checkboxRef = React.useRef();
 
     const Case = React.forwardRef((props: {
         idx: number
@@ -59,18 +56,9 @@ export function EnterOTP (funcProps: {
         try {
             const code = case0.current.value + case1.current.value + case2.current.value +
                 case3.current.value + case4.current.value + case5.current.value;
-            // Cookies should be set server side
 
-            /*            const cookieUUID = keepActive ? uuid() : "";
-            if (keepActive) {
-                setCookie(TFA_ACTIVE_COOKIE_KEY, cookieUUID, {
-                    httpOnly: true,
-                    secure: true,
-                })
-            }*/
-
-
-            const res = await Api.validateOTP(code, funcProps.token, keepActive);
+            // @ts-ignore  checkbox will never be undefined
+            const res = await Api.validateOTP(code, funcProps.token, checkboxRef.current.checked);
             funcProps.onValid(res.data.token);
         } catch (e) {
             const errorHandler: HttpErrorHandler = new HttpErrorHandler();
@@ -98,7 +86,7 @@ export function EnterOTP (funcProps: {
         <br/>
         {funcProps.ctx === "login" &&
         <Tooltip title={"If enabled, you won't have to enter two factors code of this browser for 2 weeks"}>
-            <FormControlLabel control={<Checkbox checked={keepActive} onChange={() => setKeepActive(!keepActive)}/>} label={"Keep session active"}/>
+            <FormControlLabel control={<Checkbox inputRef={checkboxRef}/>} label={"Keep session active"}/>
         </Tooltip>
         }
     </div>

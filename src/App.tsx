@@ -46,7 +46,7 @@ const theme = createMuiTheme({
     overrides: {
         MuiTooltip: {
             tooltip: {
-                fontSize: "0.8rem"
+                fontSize: "1rem"
             }
         },
         MuiGridListTileBar: {

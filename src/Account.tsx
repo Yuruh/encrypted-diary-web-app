@@ -1,18 +1,24 @@
-import React, {Ref, useEffect, useState} from "react"
-import {User} from "./models/User";
+import React, {useEffect, useState} from "react"
+import {TwoFactorsCookies, User} from "./models/User";
 import Api from "./Api";
 import {createStyles, Theme, Typography} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
 import {axiosError} from "./redux/reducers/root";
 import {useDispatch} from "react-redux";
-import HttpErrorHandler from "./utils/HttpErrorHandler";
 import Divider from "@material-ui/core/Divider";
 import Collapse from "@material-ui/core/Collapse";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
-import {CheckCircle, ExpandMore, PhoneAndroid, PhonelinkErase, Sms, VerifiedUser, VpnKey} from "@material-ui/icons";
+import {
+    CheckCircle,
+    DesktopWindows,
+    ExpandMore,
+    PhoneAndroid,
+    PhonelinkErase,
+    Sms,
+    VerifiedUser,
+    VpnKey
+} from "@material-ui/icons";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import clsx from 'clsx';
 import CardContent from "@material-ui/core/CardContent";
@@ -24,6 +30,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import Modal from "@material-ui/core/Modal";
 import {ConfirmationModal} from "./utils/ConfirmationModal";
 import {EnterOTP} from "./login/EnterOPT";
+import {dateToLocalDateTime} from "./utils/date";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -40,6 +47,9 @@ const useStyles = makeStyles((theme: Theme) =>
         expandOpen: {
             transform: 'rotate(180deg)',
         },
+        header: {
+            fontSize: "1.2rem"
+        }
     }),
 );
 
@@ -48,22 +58,26 @@ function Section(props: React.PropsWithChildren<{
     icon: JSX.Element
 }>) {
     const classes = useStyles();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
     return <Card className={classes.root}>
-        <CardHeader title={props.title}
-                    avatar={props.icon}
-                    action={<IconButton
-                        onClick={() => setOpen(!open)}
-                        aria-label="show more"
-                        className={clsx(classes.expand, {
-                            [classes.expandOpen]: open,
-                        })}
-                    >
-                        <ExpandMore/>
-                    </IconButton>}/>
+        <CardHeader
+            title={props.title}
+            avatar={props.icon}
+            classes={{
+                title: classes.header
+            }}
+            action={<IconButton
+                onClick={() => setOpen(!open)}
+                aria-label="show more"
+                className={clsx(classes.expand, {
+                    [classes.expandOpen]: open,
+                })}
+            >
+                <ExpandMore/>
+            </IconButton>}/>
         <Collapse in={open} timeout={"auto"}>
             <CardContent>
-            {props.children}
+                {props.children}
             </CardContent>
         </Collapse>
     </Card>
@@ -128,8 +142,15 @@ export default function Account() {
         <Divider/>
         <br/>
 
-        <Section title={"Two Factors Authentication"} icon={<VerifiedUser/>}>
-            <List subheader={<ListSubheader>Methods</ListSubheader>}>
+        <Section title={"Two Factors Authentication"} icon={<VerifiedUser fontSize={"large"}/>}>
+            <List subheader={<ListSubheader>
+                <Typography variant={"h5"}>
+                    Methods
+                </Typography>
+                <Typography variant={"subtitle1"} color={"secondary"}>
+                    Manage your secondary authentication methods
+                </Typography>
+            </ListSubheader>}>
                 <ListItem button onClick={startOTPRegistration}>
                     <ListItemIcon>
                         <PhoneAndroid/>
@@ -152,15 +173,19 @@ export default function Account() {
                     <ListItemText primary={"SMS"} secondary={"Authenticate through code received by SMS"}/>
                 </ListItem>
             </List>
-            <Typography variant={"h5"}>
-                Active sessions
-            </Typography>
-            <Typography variant={"subtitle1"} color={"secondary"}>
-                Sessions where TFA is not prompted on login
-            </Typography>
+            <List subheader={<ListSubheader>
+                <Typography variant={"h5"}>
+                    Active sessions
+                </Typography>
+                <Typography variant={"subtitle1"} color={"secondary"}>
+                    Consult sessions where two factors authentication is not prompted on login
+                </Typography>
+            </ListSubheader>}>
+                {user.two_factors_cookies.map((elem, i) => <TwoFactorsCookie elem={elem} key={i}/>)}
+            </List>
         </Section>
         <br/>
-        <Section title={"Password"} icon={<VpnKey/>}>
+        <Section title={"Password"} icon={<VpnKey fontSize={"large"}/>}>
             <p>
                 Password change soon to come - require heavy client side logic
             </p>
@@ -180,6 +205,38 @@ export default function Account() {
             Do you really want to disable OTP ?
         </ConfirmationModal>
     </div>
+}
+
+function TwoFactorsCookie(props: {
+    elem: TwoFactorsCookies
+}) {
+    return  <React.Fragment>
+    <ListItem>
+            <ListItemIcon>
+                <DesktopWindows fontSize={"large"}/>
+            </ListItemIcon>
+            <ListItemText
+                primary={props.elem.ip_addr}
+                secondary={
+                    <React.Fragment>
+                        <Typography>
+                            Created: {dateToLocalDateTime(new Date(props.elem.created_at))}
+                        </Typography>
+                        <Typography>
+                            Last Used: {dateToLocalDateTime(new Date(props.elem.last_used))}
+                        </Typography>
+                        <Typography>
+                            Expires: {dateToLocalDateTime(new Date(props.elem.expires))}
+                        </Typography>
+                        <Typography>
+                            Agent: {props.elem.user_agent}
+                        </Typography>
+                    </React.Fragment>
+                }
+            />
+        </ListItem>
+        <Divider component="li"/>
+    </React.Fragment>
 }
 
 const useModalStyles = makeStyles((theme: Theme) =>

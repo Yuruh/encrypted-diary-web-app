@@ -2,7 +2,7 @@ import React from "react"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, Theme, Drawer, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import clsx from 'clsx';
-import {Label, CalendarToday, AccountCircle, Lock} from "@material-ui/icons";
+import {Label, CalendarToday, Lock} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import {useHistory, useLocation} from "react-router-dom";

@@ -12,7 +12,6 @@ import {useHistory, useLocation} from "react-router-dom";
 import EntryLabelList from "../label/EntryLabelList";
 import moment from "moment";
 import {upperCaseFirstLetter} from "../EntryList";
-import {axiosError} from "../redux/reducers/root";
 const ReactMarkdown = require('react-markdown');
 
 const useStyles = makeStyles((theme: Theme) =>
