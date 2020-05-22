@@ -15,7 +15,7 @@ import {
 import {blueGrey, indigo} from "@material-ui/core/colors";
 import {Register} from "./Register";
 import Page from "./entry/Page";
-import {Login} from "./Login";
+import {Login} from "./login/Login";
 import Header from "./Header";
 import LabelList from "./label/LabelList";
 import {useDispatch} from "react-redux";
@@ -46,7 +46,7 @@ const theme = createMuiTheme({
     overrides: {
         MuiTooltip: {
             tooltip: {
-                fontSize: "0.8rem"
+                fontSize: "1rem"
             }
         },
         MuiGridListTileBar: {
@@ -75,6 +75,7 @@ const theme = createMuiTheme({
 } as any);
 
 // Every 2 minutes we check that the user is still logged in (by checking that a /me does not return 401), otherwise we log him out
+// Todo instead of running a dummy request, check token expiration date
 function EndSession() {
     const dispatch = useDispatch();
 
@@ -126,7 +127,7 @@ const App = () => {
                                       </div>
                                   </div>
                               </Route>
-                              <PrivateRoute component={WrappedEntryPage} path="/entries/:id"/>
+                              <PrivateRoute component={Page} path="/entries/:id"/>
                               <PrivateRoute component={WrappedEntryList} path="/entries"/>
                               <PrivateRoute component={LabelList} path="/labels"/>
                               <PrivateRoute component={Account} path="/account"/>
@@ -139,13 +140,6 @@ const App = () => {
       </Router>
   );
 };
-
-
-function WrappedEntryPage() {
-    return <EntryFilterDrawer>
-        <Page/>
-    </EntryFilterDrawer>
-}
 
 function WrappedEntryList() {
     return <EntryFilterDrawer>

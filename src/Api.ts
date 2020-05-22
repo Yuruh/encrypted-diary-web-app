@@ -1,8 +1,9 @@
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 
 import CryptoJS from "crypto-js";
 import {Entry} from "./models/Entry";
 import {Label} from "./models/Label";
+
 const pbkdf2 = require('pbkdf2');
 
 // Code goes here
@@ -25,10 +26,17 @@ export function encrypt (msg: string, key: string) {
     return encrypted.toString();
 }
 
-export function decrypt (encryptedMessage: string, key: string) {
+export function decrypt (encryptedMessage: string, key: string): string {
     const decrypted = CryptoJS.AES.decrypt(encryptedMessage, key);
 
-    return decrypted.toString(CryptoJS.enc.Utf8);
+    let ret = "";
+    try {
+       ret =  decrypted.toString(CryptoJS.enc.Utf8);
+    } catch (e) {
+        console.log("Could not decrypt", e)
+    }
+
+    return ret
 }
 
 export async function decryptLabelAvatar(label: Label): Promise<Label> {
@@ -54,8 +62,10 @@ export default class Api {
 
     static axiosInstance = axios.create({
         baseURL: process.env.REACT_APP_API_URL || "http://localhost:8090",
-        headers: {'Content-Type' : 'application/json', "Authorization": "Bearer " + Api.token}
+        headers: {'Content-Type' : 'application/json', "Authorization": "Bearer " + Api.token},
+        withCredentials: true
     });
+
     static register(email: string, pwd: string) {
         return this.axiosInstance.post("/register", {
             email,
@@ -118,11 +128,12 @@ export default class Api {
             }
         });
         response.data.entry.content = decrypt(response.data.entry.content, this.encryptionKey);
-        const promises = [];
+        //todo load labels afterwards
+/*        const promises = [];
         for (const label of response.data.entry.labels as Label[]) {
             promises.push(decryptLabelAvatar(label));
         }
-        await Promise.all(promises);
+        await Promise.all(promises);*/
         return response
     }
 
@@ -172,8 +183,10 @@ export default class Api {
         })
     }
 
-    static async validateOTP(passcode: string, token: string) {
-        return this.axiosInstance.post("/auth/two-factors/otp/authenticate", {passcode, token})
+    static validateOTP(passcode: string, token: string, keepActive: boolean): Promise<AxiosResponse> {
+        return this.axiosInstance.post("/auth/two-factors/otp/authenticate",
+            {passcode, token, keep_active: keepActive},
+        )
     }
 
     static async request2FAToken() {

@@ -1,16 +1,12 @@
 import React, {useEffect} from "react";
 
-import {
-    useParams,
-    useLocation,
-    useHistory
-} from "react-router-dom";
+import {useHistory, useLocation, useParams} from "react-router-dom";
 import "codemirror";
 import Editor from "./Editor";
 import {NavigateNext} from "@material-ui/icons";
-import {createStyles, IconButton, Theme} from "@material-ui/core";
+import {createStyles, Theme} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import Viewer, {formatDate} from "./Viewer";
+import Viewer from "./Viewer";
 import {Entry} from "../models/Entry";
 import Api from "../Api";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -21,6 +17,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {axiosError, State} from "../redux/reducers/root";
 import {Label} from "../models/Label";
 import Typography from "@material-ui/core/Typography";
+import EntryFilterDrawer from "./EntryFilterDrawer";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -31,8 +29,17 @@ const useStyles = makeStyles((theme: Theme) =>
             display: "flex",
             justifyContent: "center",
         },
+        prevNext: {
+            position: "sticky",
+            top: 80,
+            alignSelf: "flex-start",
+        },
         nextContent: {
-            maxWidth: "150px"
+            maxWidth: "150px",
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textTransform: "none",
         }
     }),
 );
@@ -70,18 +77,26 @@ export default function Page() {
     };
 
     function loadNextEntry() {
-        if (nextEntry !== undefined) {
-            id = String(nextEntry.id);
-            history.push("/entries/" + String(nextEntry.id) + location.search);
+        loadEntry(nextEntry);
+    }
+    
+    function loadEntry(entry: Entry | undefined) {
+        if (entry !== undefined) {
+            id = String(entry.id);
+            history.push("/entries/" + String(entry.id) + location.search);
             fetchData().catch(e => dispatch(axiosError(e)));
         }
     }
 
     function loadPrevEntry() {
-        if (prevEntry !== undefined) {
-            id = String(prevEntry.id);
-            history.push("/entries/" + String(prevEntry.id) + location.search);
-            fetchData().catch(e => dispatch(axiosError(e)));
+        loadEntry(prevEntry)
+    }
+
+    function onKeyUp(keyCode: number) {
+        if (keyCode === 37) {
+            loadEntry(prevEntry)
+        } else if (keyCode === 39) {
+            loadEntry(nextEntry)
         }
     }
 
@@ -97,30 +112,33 @@ export default function Page() {
     let content: JSX.Element;
 
     if (display !== "edit") {
-        content = <Box className={classes.root}>
-            <Hidden xsDown={true}>
-                <IconButton color={"primary"}  disabled={prevEntry === undefined} onClick={loadPrevEntry}>
-                    <NavigateNext className={classes.prevIcon}/>
-                    {prevEntry && <p className={classes.nextContent}>
-                        <Typography variant={"h5"} gutterBottom>{formatDate(prevEntry.created_at)}</Typography>
-                        <Typography variant={"h6"}>{prevEntry?.title}</Typography>
-                    </p>}
-                </IconButton>
-            </Hidden>
-            <div style={{maxWidth: 1000, width: "100%"}}>
-                <Viewer entry={entry}/>
-            </div>
-            <Hidden xsDown={true}>
-                <IconButton color={"primary"} disabled={nextEntry === undefined} onClick={loadNextEntry}>
-                    {nextEntry && <p className={classes.nextContent}>
-                        <Typography variant={"h5"} gutterBottom>{formatDate(nextEntry.created_at)}</Typography>
-                        <Typography variant={"h6"}>{nextEntry.title}</Typography>
-                    </p>}
-
-                    <NavigateNext/>
-                </IconButton>
-            </Hidden>
-        </Box>
+        content = <EntryFilterDrawer>
+            <Box className={classes.root}>
+                <Hidden xsDown={true}>
+                    <div className={classes.prevNext}>
+                        <Button size="large" startIcon={<NavigateNext className={classes.prevIcon}/>} color={"primary"}  disabled={prevEntry === undefined} onClick={loadPrevEntry}>
+                            {prevEntry ? <span>
+                                <Typography className={classes.nextContent} variant={"body1"} gutterBottom>{new Date(prevEntry.created_at).toLocaleDateString()}</Typography>
+                                <Typography className={classes.nextContent} variant={"body2"}>{prevEntry.title}</Typography>
+                            </span>: ""}
+                        </Button>
+                    </div>
+                </Hidden>
+                <div style={{maxWidth: 1000, width: "100%"}}>
+                    <Viewer entry={entry} onKeyUp={onKeyUp}/>
+                </div>
+                <Hidden xsDown={true}>
+                    <div className={classes.prevNext}>
+                        <Button size="large" endIcon={<NavigateNext/>} color={"primary"}  disabled={nextEntry === undefined} onClick={loadNextEntry}>
+                            {nextEntry ? <span>
+                                <Typography className={classes.nextContent} variant={"body1"} gutterBottom>{new Date(nextEntry.created_at).toLocaleDateString()}</Typography>
+                                <Typography className={classes.nextContent} variant={"body2"}>{nextEntry.title}</Typography>
+                            </span>: ""}
+                        </Button>
+                    </div>
+                </Hidden>
+            </Box>
+        </EntryFilterDrawer>
     } else {
         content = <Editor entry={entry} updateEntry={(updated: Entry) => setEntry(updated)}/>
     }

@@ -2,7 +2,7 @@ import React from "react"
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, Theme, Drawer, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import clsx from 'clsx';
-import {Label, CalendarToday, AccountCircle} from "@material-ui/icons";
+import {Label, CalendarToday, Lock} from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import {useHistory, useLocation} from "react-router-dom";
@@ -102,8 +102,8 @@ export default function AppDrawer(props: {
                         <ListItemText primary={"Labels"} />
                     </ListItem>
                     <ListItem button selected={location.pathname.substr(0, accountPath.length) === accountPath} onClick={() => history.push(accountPath)}>
-                        <ListItemIcon><AccountCircle color="primary"/></ListItemIcon>
-                        <ListItemText primary={"Settings"} />
+                        <ListItemIcon><Lock color="primary"/></ListItemIcon>
+                        <ListItemText primary={"Security"} />
                     </ListItem>
                 </List>
                 <div className={classes.footer}>

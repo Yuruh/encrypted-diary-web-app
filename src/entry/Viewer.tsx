@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import "codemirror";
 import {createStyles, IconButton, Theme} from "@material-ui/core";
@@ -12,7 +12,6 @@ import {useHistory, useLocation} from "react-router-dom";
 import EntryLabelList from "../label/EntryLabelList";
 import moment from "moment";
 import {upperCaseFirstLetter} from "../EntryList";
-import Typography from "@material-ui/core/Typography";
 const ReactMarkdown = require('react-markdown');
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,14 +40,26 @@ export function formatDate(date: string | Date | number) {
 
 export default function Viewer(props: {
     entry: Entry
+    onKeyUp: (keyCode: number) => void
 }) {
     const classes = useStyles();
     const location = useLocation();
     const history = useHistory();
 
+    function onKeyUp(event: any) {
+        if (event.keyCode === 37 || event.keyCode === 39) {
+            props.onKeyUp(event.keyCode)
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener("keyup", onKeyUp);
+        return () => window.removeEventListener("keyup", onKeyUp);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     let date = moment(props.entry.created_at).format("dddd D MMMM YYYY ");
     date = upperCaseFirstLetter(date);
-
 
     return <Card elevation={2} className={classes.preview}>
         <CardHeader title={date}
