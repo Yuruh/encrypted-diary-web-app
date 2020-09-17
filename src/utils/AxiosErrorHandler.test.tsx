@@ -1,16 +1,15 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import AxiosErrorHandler from "./AxiosErrorHandler";
 import { Provider } from "react-redux"
 import store from "../redux/store";
 import {
     BrowserRouter as Router,
-    Switch,
-    Route,
-    Redirect
 } from "react-router-dom";
-import {unmountComponentAtNode} from "react-dom";
+import {render, unmountComponentAtNode} from "react-dom";
 import { act } from "react-dom/test-utils";
+
+import {axiosError} from "../redux/reducers/root";
+import {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 
 // We test a function that uses redux so we simulate a store too
 
@@ -39,13 +38,68 @@ afterEach(() => {
     }
 });
 
-it("dunno yet", () => {
+
+const error: AxiosError = new class implements AxiosError<any> {
+    code: string = "401";
+    config: any = null;
+    isAxiosError: boolean = true;
+    message: string = "error message";
+    name: string = "error name";
+    request: any = null;
+    response: AxiosResponse<any> = new class implements AxiosResponse<any> {
+        config: any = null;
+        data: any;
+        headers: any;
+        request: any;
+        status: number = 400;
+        statusText: string = "Bad request";
+    }();
+    stack: string = "";
+
+    toJSON(): object {
+        return {};
+    }
+}();
+
+it("should not render anything", () => {
     act(()=> {
         render(<Provider store={store}>
             <Router>
                 <AxiosErrorHandler/>
             </Router>
-        </Provider>)
+        </Provider>, container)
+    })
+    expect(container).toBeDefined();
+    if (container) {
+        expect(container.textContent).toBe("");
+    }
+})
+
+it("should render error message using response", () => {
+    store.dispatch(axiosError(error))
+    act(()=> {
+        render(<Provider store={store}>
+            <Router>
+                <AxiosErrorHandler/>
+            </Router>
+        </Provider>, container)
+    })
+    expect(container).toBeDefined();
+    if (container) {
+        expect(container.textContent).toBe("Bad Request");
+    }
+})
+
+it("should clear tokens on 401", () => {
+    if (error.response)
+        error.response.status = 401
+    store.dispatch(axiosError(error))
+    act(()=> {
+        render(<Provider store={store}>
+            <Router>
+                <AxiosErrorHandler/>
+            </Router>
+        </Provider>, container)
     })
     expect(container).toBeDefined();
     if (container) {
@@ -54,12 +108,19 @@ it("dunno yet", () => {
 })
 
 
-/*test("dunno yet", () => {
-    const { getByText } = render(<Provider store={store}>
-        <Router>
-        <AxiosErrorHandler/>
-        </Router>
-    </Provider>)
-    const tast = getByText(/toto/i);
-    expect(tast).toBeInTheDocument();
-})*/
+it("should render error message specifying there's no response", () => {
+    error.response = undefined;
+    error.request = {};
+    store.dispatch(axiosError(error))
+    act(()=> {
+        render(<Provider store={store}>
+            <Router>
+                <AxiosErrorHandler/>
+            </Router>
+        </Provider>, container)
+    })
+    expect(container).toBeDefined();
+    if (container) {
+        expect(container.textContent).toBe("No response received from the server");
+    }
+})

@@ -42,14 +42,17 @@
     "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "coverage": "react-scripts test --coverage",
+    "coverage": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
   "jest": {
-    "coverageReporters": ["text", "lcov"]
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}"
+    ],
+    "coverageReporters": ["text", "lcov", "json", "clover"]
   },
   "browserslist": {
     "production": [
