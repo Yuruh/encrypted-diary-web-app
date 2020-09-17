@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ErrorInfo, Suspense} from 'react';
 import './App.css';
 import Api from "./Api";
 import {
@@ -7,22 +7,24 @@ import {
     Route,
     Redirect
 } from "react-router-dom";
-import EntryList from "./EntryList";
 import {
     createMuiTheme,
     ThemeProvider,
 } from '@material-ui/core/styles';
 import {blueGrey, indigo} from "@material-ui/core/colors";
-import {Register} from "./Register";
-import Page from "./entry/Page";
-import {Login} from "./login/Login";
 import Header from "./Header";
-import LabelList from "./label/LabelList";
 import {useDispatch} from "react-redux";
 import {axiosError} from "./redux/reducers/root";
-import Account from "./Account";
 import AxiosErrorHandler from "./utils/AxiosErrorHandler";
 import EntryFilterDrawer from "./entry/EntryFilterDrawer";
+import {BoxCenter} from "./BoxCenter";
+
+const EntryList = React.lazy(() => import('./EntryList'));
+const Page = React.lazy(() => import('./entry/Page'));
+const Register = React.lazy(() => import('./Register'));
+const Login = React.lazy(() => import('./login/Login'));
+const LabelList = React.lazy(() => import('./label/LabelList'));
+const Account = React.lazy(() => import('./Account'));
 
 // @ts-ignore
 const PrivateRoute = ({ component: Component, ...rest }) => (
@@ -92,53 +94,86 @@ function EndSession() {
     return <React.Fragment/>
 }
 
+class ErrorBoundary extends React.Component<{}, {hasError: boolean}> {
+    constructor(props: any) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    // Update state so we display fallback UI
+    static getDerivedStateFromError(error: Error) {
+        // TODO different display for different errors (chunk not loaded / logic error for instance)
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        // TODO Log to sentry
+    }
+    render() {
+        if (this.state.hasError) {
+            // TODO show a nice display
+            return <BoxCenter>
+                <h1>Something went wrong.</h1>
+                <h2>Please Reload.</h2>
+                <h3>Sorry.</h3>
+                <h4>Thank you.</h4>
+            </BoxCenter>
+        }
+        return this.props.children;
+    }
+}
+
 const App = () => {
-  return (
-      <Router>
-          <ThemeProvider theme={theme}>
-              <AxiosErrorHandler/>
-              <EndSession/>
-              <Header content={
-                      <div>
-                          {/* <Switch> looks through its children <Route>s and
+    return (
+        <ErrorBoundary>
+            <Router>
+                <ThemeProvider theme={theme}>
+                    <AxiosErrorHandler/>
+                    <EndSession/>
+                    <Header content={
+                        <div>
+                            <Suspense fallback={<h3>Loading ...</h3>}>
+                                {/* <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-                          <Switch>
-                              <Route path="/login">
-                                  <div style={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      flexDirection: "column",
-                                  }}>
-                                      <div style={{marginTop: 50}}>
-                                          <Login/>
-                                      </div>
-                                  </div>
-                              </Route>
-                              <Route path="/register">
-                                  <div style={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      flexDirection: "column",
-                                  }}>
-                                      <div style={{marginTop: 50}}>
-                                          <Register/>
-                                      </div>
-                                  </div>
-                              </Route>
-                              <PrivateRoute component={Page} path="/entries/:id"/>
-                              <PrivateRoute component={WrappedEntryList} path="/entries"/>
-                              <PrivateRoute component={LabelList} path="/labels"/>
-                              <PrivateRoute component={Account} path="/account"/>
-                              <PrivateRoute component={WrappedEntryList} path="/"/>
-                              <Redirect to='/entries' />
-                          </Switch>
-                      </div>
-                  }/>
-          </ThemeProvider>
-      </Router>
-  );
+                                <Switch>
+                                    <Route path="/login">
+                                        <div style={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            flexDirection: "column",
+                                        }}>
+                                            <div style={{marginTop: 50}}>
+                                                <Login/>
+                                            </div>
+                                        </div>
+                                    </Route>
+                                    <Route path="/register">
+                                        <div style={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            flexDirection: "column",
+                                        }}>
+                                            <div style={{marginTop: 50}}>
+                                                <Register/>
+                                            </div>
+                                        </div>
+                                    </Route>
+                                    <PrivateRoute component={Page} path="/entries/:id"/>
+                                    <PrivateRoute component={WrappedEntryList} path="/entries"/>
+                                    <PrivateRoute component={LabelList} path="/labels"/>
+                                    <PrivateRoute component={Account} path="/account"/>
+                                    <PrivateRoute component={WrappedEntryList} path="/"/>
+                                    <Redirect to='/entries' />
+                                </Switch>
+                            </Suspense>
+                        </div>
+                    }/>
+                </ThemeProvider>
+            </Router>
+        </ErrorBoundary>
+    );
 };
 
 function WrappedEntryList() {

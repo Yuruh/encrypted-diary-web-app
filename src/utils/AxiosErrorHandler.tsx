@@ -31,11 +31,6 @@ export default function AxiosErrorHandler() {
         history.push("/login?ctx=expired")
     });
 
-
-
-
-
-
     if (!error) {
         return <React.Fragment/>
     }
@@ -80,7 +75,8 @@ export default function AxiosErrorHandler() {
         dispatch(axiosError(undefined, new HttpErrorHandler()));
     }
 
-    return <Snackbar open={error !== undefined} autoHideDuration={6000} onClose={onClose}>
+    // Has to be open as we previously check error is defined
+    return <Snackbar open={true} autoHideDuration={6000} onClose={onClose}>
         <Alert onClose={onClose} severity="error" variant={"outlined"}>
             {msg}
         </Alert>

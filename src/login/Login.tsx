@@ -53,7 +53,7 @@ const useStyles = makeStyles(() =>
     }),
 );
 
-export function Login() {
+export default function Login() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');

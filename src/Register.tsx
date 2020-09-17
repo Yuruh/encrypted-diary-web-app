@@ -67,7 +67,7 @@ function validatePwd(pwd: string): boolean {
     return number && upper && special;
 }
 
-export function Register() {
+export default function Register() {
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
