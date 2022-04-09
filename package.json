@@ -22,7 +22,7 @@
     "axios": "latest",
     "codemirror": "^5.52.2",
     "crypto-js": "^4.0.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "pbkdf2": "^3.0.17",
     "randomcolor": "^0.5.4",
     "react": "^16.12.0",
